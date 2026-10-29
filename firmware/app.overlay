@@ -1,0 +1,39 @@
+#include <zephyr/dt-bindings/gpio/gpio.h>
+#include <zephyr/dt-bindings/lora/sx126x.h>
+
+/ {
+	aliases {
+		lora0 = &wio_lora;
+	};
+};
+
+/* Pinned Zephyr f80761e gpio_esp32.c accesses gpio1 through a full
+ * gpio_dev_t (out1/in1), so both port nodes must use the shared GPIO
+ * register-block base. The upstream gpio1 node's +0x800 address makes
+ * GPIO32+ writes target unrelated registers with that driver revision.
+ */
+&gpio1 {
+	reg = <0x60004000 0x800>;
+};
+
+/* ESP32S3 B2B kit, not the nRF52840 through-hole module pinout.
+ * GPIO32..53 are gpio1 pins 0..21.
+ */
+&spi2 {
+	cs-gpios = <&gpio1 9 GPIO_ACTIVE_LOW>; /* GPIO41 NSS */
+	wio_lora: sx1262@0 {
+		compatible = "semtech,sx1262";
+		zephyr,deferred-init;
+		reg = <0>;
+		spi-max-frequency = <2000000>;
+		reset-gpios = <&gpio1 10 GPIO_ACTIVE_LOW>; /* GPIO42 */
+		busy-gpios = <&gpio1 8 GPIO_ACTIVE_HIGH>; /* GPIO40 */
+		dio1-gpios = <&gpio1 7 GPIO_ACTIVE_HIGH>; /* GPIO39 */
+		antenna-enable-gpios = <&gpio1 6 GPIO_ACTIVE_HIGH>; /* GPIO38 */
+		dio2-tx-enable;
+		dio3-tcxo-voltage = <SX126X_DIO3_TCXO_3V0>;
+		tcxo-power-startup-delay-ms = <10>;
+		regulator-ldo;
+		status = "okay";
+	};
+};

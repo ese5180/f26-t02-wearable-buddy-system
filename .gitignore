@@ -1,0 +1,10 @@
+.DS_Store
+.venv/
+build*/
+artifacts/
+evidence/raw/
+*.pyc
+__pycache__/
+*.pem
+!keys/team2-signing-public.pem
+.env

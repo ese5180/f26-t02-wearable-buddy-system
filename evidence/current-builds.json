@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-29",
+  "board": "xiao_esp32s3/esp32s3/procpu",
+  "zephyr_revision": "f80761e49401497b5ee64ee9732dc2791055ec52",
+  "builds": [
+    {
+      "role": "tag",
+      "version": "1.1.7",
+      "artifact": "buddyguard-tag-1.1.7.signed.bin",
+      "signed_bytes": 434940,
+      "signed_file_sha256": "e79ab807c2d68c9dd0fc0ed9f5b7b9140cd31221c3ab3f90f7b4d91d7dbb6c8e",
+      "unsigned_bytes": 434788,
+      "bootloader_bytes": 46672
+    },
+    {
+      "role": "counselor",
+      "version": "1.1.7",
+      "artifact": "buddyguard-counselor-1.1.7.signed.bin",
+      "signed_bytes": 435324,
+      "signed_file_sha256": "aa827c29da7a527bb0e58b4be137c8a9601b2a0ac6eb54f9ba691ed44ae0762c",
+      "unsigned_bytes": 435172,
+      "bootloader_bytes": 46672
+    }
+  ],
+  "status": "Historical 1.1.7 candidates: startup SPI readback failed; neither remains active. Source subsequently gained deferred radio initialization. Devices at pause run confirmed 1.1.4."
+}

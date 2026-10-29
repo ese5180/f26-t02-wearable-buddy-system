@@ -1,0 +1,7 @@
+diff --git a/drivers/spi/spi_bitbang.c b/drivers/spi/spi_bitbang.c
+index e963c2d3ad2..6705fdcbe26 100644
+--- a/drivers/spi/spi_bitbang.c
++++ b/drivers/spi/spi_bitbang.c
+@@ -158 +158 @@ static int spi_bitbang_transceive(const struct device *dev,
+-		if (ctx->tx_len) {
++		if (ctx->tx_len && ctx->tx_buf) {
