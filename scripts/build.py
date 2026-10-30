@@ -1,58 +1,108 @@
 #!/usr/bin/env python3
-"""Build the pinned Zephyr app; the private signing key stays outside the repo."""
+"""Build role-specific, signed firmware against the pinned Zephyr workspace."""
 import argparse
+import hashlib
+import json
 import os
+from pathlib import Path
 import re
 import shutil
-from pathlib import Path
 import subprocess
 import sys
 
+BOARD = 'xiao_esp32s3/esp32s3/procpu'
+ROOT = Path(__file__).resolve().parents[1]
+
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--build-dir', required=True, type=Path)
-    parser.add_argument('--key', type=Path,
-                        default=Path.home() / '.config/buddyguard/team2-signing/firmware-ecdsa-p256.pem')
-    parser.add_argument('--fault', action='store_true')
-    parser.add_argument('--counselor', action='store_true')
-    parser.add_argument('--version', help='Build an isolated test version, e.g. 1.2.0')
-    args = parser.parse_args()
-    root = Path(__file__).resolve().parents[1]
-    zephyr_workspace = Path(os.environ.get('BUDDYGUARD_ZEPHYR_WORKSPACE', Path.home() / 'zephyrproject'))
-    west = zephyr_workspace / '.venv/bin/west'
-    if not args.key.is_file():
-        parser.error('Signing key missing; generate a team key outside the repository first.')
-    if root == args.key.resolve() or root in args.key.resolve().parents:
-        parser.error('The private signing key must be outside the repository.')
-    build_dir = args.build_dir.resolve()
-    if ' ' in str(build_dir) or ' ' in str(root):
-        parser.error('Use paths without spaces with this toolchain.')
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--build-dir', required=True, type=Path)
+    p.add_argument('--workspace', type=Path, help='West workspace containing zephyr/ and .venv/')
+    p.add_argument('--key', type=Path, default=Path.home() / '.config/buddyguard/team2-signing/firmware-ecdsa-p256.pem')
+    p.add_argument('--role', choices=('tag', 'counselor'))
+    p.add_argument('--counselor', action='store_true', help='Compatibility alias for --role counselor')
+    p.add_argument('--tag-id', type=int, choices=range(1, 4), default=None)
+    p.add_argument('--fault', action='store_true', help='Rollback test ONLY: stop feeding WDT before confirmation')
+    p.add_argument('--version', help='Isolated major.minor.patch override; does not edit source VERSION')
+    args = p.parse_args()
+    if args.counselor and args.role == 'tag':
+        p.error('--counselor conflicts with --role tag')
+    role = args.role or ('counselor' if args.counselor else 'tag')
+    if role == 'counselor' and args.tag_id is not None:
+        p.error('--tag-id applies only to the tag role')
+    tag = 200 if role == 'counselor' else (args.tag_id or 1)
+    workspace = args.workspace or os.environ.get('BUDDYGUARD_ZEPHYR_WORKSPACE')
+    if workspace is None:
+        workspace = ROOT.parent if (ROOT.parent / '.west').is_dir() else Path.home() / 'zephyrproject'
+    workspace = Path(workspace).expanduser().resolve()
+    west = workspace / '.venv/bin/west'
+    if not west.is_file() or not (workspace / 'zephyr').is_dir():
+        p.error('Workspace needs zephyr/ and .venv/bin/west; see docs/en/GETTING_STARTED.md')
+    key = args.key.expanduser().resolve()
+    if not key.is_file() or ROOT in key.parents:
+        p.error('Signing key must exist OUTSIDE the repository; never put a private key in Git.')
+    build = args.build_dir.expanduser().resolve()
+    if any(' ' in str(x) for x in (ROOT, workspace, build, key)):
+        p.error('Use source, workspace, build and signing-key paths without spaces.')
+    if build == ROOT or ROOT in build.parents:
+        p.error('Keep build directories outside the source repository.')
+    pinned = re.search(r'revision:\s*(\w+)', (ROOT / 'west.yml').read_text()).group(1)
+    actual = subprocess.check_output(['git', '-C', str(workspace / 'zephyr'), 'rev-parse', 'HEAD'], text=True).strip()
+    if actual != pinned:
+        p.error(f'Zephyr HEAD {actual} differs from west.yml {pinned}; run west update in the documented workspace.')
+    profile = {'board': BOARD, 'role': role, 'tag_id': tag, 'fault': args.fault, 'key': str(key)}
+    marker = build.with_name(build.name + '.buddyguard.json')
+    if marker.exists() and json.loads(marker.read_text()) != profile:
+        p.error('Build directory belongs to another role/ID/key/fault profile. Choose a new build directory.')
+    if build.exists() and any(build.iterdir()) and not marker.exists():
+        p.error('Existing build directory has no BuddyGuard profile. Choose a new, empty build directory.')
+    build.parent.mkdir(parents=True, exist_ok=True)
+    application = ROOT / 'firmware'
+    if args.version:
+        if not re.fullmatch(r'\d{1,3}\.\d{1,3}\.\d{1,3}', args.version) or max(map(int, args.version.split('.'))) > 255:
+            p.error('--version must be major.minor.patch with components in 0..255')
+        snapshot = build.with_name(build.name + '-source')
+        owned = snapshot / '.buddyguard-generated'
+        if snapshot.exists() and not owned.exists():
+            p.error(f'Refusing to overwrite an unowned source snapshot: {snapshot}')
+        application = snapshot / 'firmware'
+        if application.exists():
+            shutil.rmtree(application)
+        shutil.copytree(ROOT / 'firmware', application)
+        owned.touch()
+        major, minor, patch = map(int, args.version.split('.'))
+        (application / 'VERSION').write_text(f'VERSION_MAJOR = {major}\nVERSION_MINOR = {minor}\nPATCHLEVEL = {patch}\nVERSION_TWEAK = 0\nEXTRAVERSION =\n')
+    elif marker.exists() and (build / 'CMakeCache.txt').exists():
+        cache = (build / 'CMakeCache.txt').read_text()
+        if str(build.with_name(build.name + '-source')) in cache:
+            p.error('This build uses an isolated version snapshot; keep --version or choose a fresh directory.')
+    config = build.with_name(build.name + '.profile.conf')
+    config.write_text(f'CONFIG_BUDDYGUARD_COUNSELOR={"y" if role == "counselor" else "n"}\n'
+        f'CONFIG_BT_OBSERVER={"y" if role == "counselor" else "n"}\n'
+        f'CONFIG_BUDDYGUARD_TAG_ID={tag}\n'
+        f'CONFIG_BT_DEVICE_NAME="BG-{ "C01" if role == "counselor" else f"T{tag:02d}" }"\n'
+        f'CONFIG_BUDDYGUARD_FAULT_ON_BOOT={"y" if args.fault else "n"}\n')
+    marker.write_text(json.dumps(profile, indent=2) + '\n')
     env = os.environ.copy()
     env['PATH'] = str(west.parent) + os.pathsep + env['PATH']
-    application = root / 'firmware'
-    if args.version:
-        if not re.fullmatch(r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}', args.version):
-            parser.error('--version must be major.minor.patch')
-        major, minor, patch = map(int, args.version.split('.'))
-        if max(major, minor, patch) > 255:
-            parser.error('Version components must fit in 0..255')
-        application = build_dir.parent / (build_dir.name + '-source') / 'firmware'
-        shutil.copytree(root / 'firmware', application, dirs_exist_ok=True)
-        version_file = application / 'VERSION'
-        version_file.write_text(f'VERSION_MAJOR = {major}\nVERSION_MINOR = {minor}\n'
-                                f'PATCHLEVEL = {patch}\nVERSION_TWEAK = 0\nEXTRAVERSION =\n')
-    cmd = [str(west), 'build', '-b', 'xiao_esp32s3/esp32s3/procpu', '--sysbuild',
-           str(application), '-d', str(build_dir), '--',
-           '-DSB_CONFIG_BOOT_SIGNATURE_KEY_FILE="' + str(args.key.resolve()) + '"']
-    overlays = []
-    if args.fault:
-        overlays.append('conf/fault.conf')
-    if args.counselor:
-        overlays.append('conf/counselor.conf')
-    if overlays:
-        cmd.append('-DEXTRA_CONF_FILE=' + ';'.join(overlays))
-    return subprocess.call(cmd, cwd=zephyr_workspace, env=env)
+    cmd = [str(west), 'build', '-b', BOARD, '--sysbuild', str(application), '-d', str(build), '--',
+           '-DSB_CONFIG_BOOT_SIGNATURE_KEY_FILE="' + str(key) + '"', '-DEXTRA_CONF_FILE=' + str(config)]
+    rc = subprocess.call(cmd, cwd=workspace, env=env)
+    if rc:
+        return rc
+    image = build / 'firmware/zephyr/zephyr.signed.bin'
+    public = subprocess.check_output([str(west.parent / 'imgtool'), 'getpub', '-k', str(key), '-e', 'pem'])
+    public_path = build / 'signing-public.pem'
+    public_path.write_bytes(public)
+    subprocess.run([str(west.parent / 'imgtool'), 'verify', '-k', str(public_path), str(image)], check=True)
+    report = {k: v for k, v in profile.items() if k != 'key'}
+    report.update(zephyr_revision=actual, version_file=(application / 'VERSION').read_text(),
+        image=str(image), signed_bytes=image.stat().st_size,
+        sha256=hashlib.sha256(image.read_bytes()).hexdigest(),
+        public_key_sha256=hashlib.sha256(public).hexdigest())
+    (build / 'buddyguard-build.json').write_text(json.dumps(report, indent=2) + '\n')
+    print(json.dumps(report, indent=2))
+    return 0
 
 
 if __name__ == '__main__':

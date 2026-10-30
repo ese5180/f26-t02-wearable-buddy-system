@@ -3,13 +3,13 @@
 #include <zephyr/logging/log.h>
 #include "radio_link.h"
 #include "roster.h"
+#include "wire.h"
 
 LOG_MODULE_REGISTER(bg_roster, LOG_LEVEL_INF);
 
 #if defined(CONFIG_BUDDYGUARD_COUNSELOR)
 #include <zephyr/bluetooth/bluetooth.h>
 #include <zephyr/sys/atomic.h>
-#include <zephyr/sys/byteorder.h>
 
 struct member {
 	atomic_t last_seen;
@@ -18,22 +18,21 @@ struct member {
 	bool announced;
 	bool missing;
 };
-static struct member roster[4];
+static struct member roster[BG_MAX_TAGS + 1];
 
 static bool parse_presence(struct bt_data *data, void *user_data)
 {
 	ARG_UNUSED(user_data);
-	const uint8_t *p = data->data;
-	if (data->type != BT_DATA_MANUFACTURER_DATA || data->data_len != 8 ||
-		p[0] != 0xff || p[1] != 0xff || p[2] != 1 || p[7] != 1 ||
-		p[3] == 0 || p[3] > 3 || (p[6] & ~3)) {
+	struct bg_presence_frame frame;
+	if (data->type != BT_DATA_MANUFACTURER_DATA ||
+		!bg_presence_decode(data->data, data->data_len, &frame)) {
 		return true;
 	}
-	struct member *m = &roster[p[3]];
-	uint16_t seq = sys_get_le16(p + 4);
+	struct member *m = &roster[frame.tag];
+	uint16_t seq = frame.sequence;
 	if (!atomic_get(&m->last_seen) || atomic_get(&m->sequence) != seq) {
 		atomic_set(&m->sequence, seq);
-		atomic_set(&m->maintenance, p[6] & 1);
+		atomic_set(&m->maintenance, frame.flags & 1);
 		atomic_set(&m->last_seen, (atomic_val_t)(uint32_t)k_uptime_get());
 	}
 	return false;
@@ -60,7 +59,7 @@ int bg_roster_start(void)
 void bg_roster_poll(void)
 {
 	uint32_t now = (uint32_t)k_uptime_get();
-	for (unsigned tag = 1; tag <= 3; ++tag) {
+	for (unsigned tag = 1; tag <= BG_MAX_TAGS; ++tag) {
 		struct member *m = &roster[tag];
 		uint32_t last = (uint32_t)atomic_get(&m->last_seen);
 		if (!last) {

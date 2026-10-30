@@ -26,6 +26,17 @@ def main():
     if backup.stat().st_size != metadata['flash_bytes'] or \
             hashlib.sha256(backup.read_bytes()).hexdigest() != metadata['sha256']:
         parser.error('Original flash backup size/hash did not match.')
+    if metadata['flash_bytes'] != 0x800000:
+        parser.error('Expected a complete 8 MiB backup for XIAO ESP32S3.')
+    ports = [port for port in serial.tools.list_ports.comports() if port.device == args.port]
+    if len(ports) != 1:
+        parser.error('Selected USB port is not available.')
+    expected = metadata.get('device_usb_serial') or metadata.get('device_mac')
+    observed = ports[0].serial_number
+    if expected and (not observed or expected.lower() != observed.lower()):
+        parser.error('Backup belongs to another device; recheck USB port and backup metadata.')
+    if not expected:
+        print('Legacy backup has no device identity: manually match it to this board before provisioning.', flush=True)
     files = []
     for domain in ['mcuboot', 'firmware']:
         zdir = args.build_dir.resolve() / domain / 'zephyr'
@@ -35,6 +46,9 @@ def main():
                        if x.startswith('--esp-app-address='))
         if not image.is_file():
             parser.error('Missing build image: ' + str(image))
+        expected_address = 0 if domain == 'mcuboot' else 0x20000
+        if int(address, 0) != expected_address:
+            parser.error('Unexpected flash partition map; inspect generated runners before provisioning.')
         files.extend([address, str(image)])
     args.log_prefix.parent.mkdir(parents=True, exist_ok=True)
     command = [sys.executable, '-m', 'esptool', '--chip', 'esp32s3',
