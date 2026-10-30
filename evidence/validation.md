@@ -1,4 +1,6 @@
-# Hardware validation — 29 October 2026
+# Hardware validation — 29–30 October 2026
+
+**Latest / 最新:** modular 1.1.16 passed both-role BLE OTA, SOS, missing/query/recovery and fresh 1.2.1 watchdog rollback. [Detailed modularization results / 模块化验证](modularization-20261030.md). Both devices ended active and confirmed on 1.1.16.
 
 These are observations from two physical XIAO ESP32S3 + Wio-SX1262 B2B kits on the development Mac. Each board was backed up and provisioned once over USB. Subsequent firmware changes were transferred over BLE SMP; USB supplied power and logs. Private keys, full flash backups and raw captures are excluded from Git.
 

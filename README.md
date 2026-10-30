@@ -12,9 +12,9 @@
 | Module interfaces, threads, radio formats, update chain and limits / 固件解释 | [固件解释](docs/zh/FIRMWARE.md) | [Firmware explanation](docs/en/FIRMWARE.md) |
 | Observed build and hardware results / 实测结果 | [Validation record](evidence/validation.md) | [Current build metadata](evidence/current-builds.json) |
 
-Current source: **1.1.16**, modularized from the validated 1.1.15 baseline. Check the validation record for the final hardware outcome of each test. The branch is `codex/buddyguard-wireless-fota`; clone that branch while changes are under review.
+Current source: **1.1.16**, modularized from the validated 1.1.15 baseline. Both roles passed BLE OTA and self-confirmation; SOS, missing/query/recovery and a fresh watchdog rollback also passed. The branch is `codex/buddyguard-wireless-fota`; clone that branch while changes are under review.
 
-当前源码 **1.1.16**，基于已验证 1.1.15 拆分模块。每项测试的最终实板结果见验证记录。审核期间请克隆 `codex/buddyguard-wireless-fota` 分支。
+当前源码 **1.1.16**，基于已验证 1.1.15 拆分模块。两端 BLE 更新／自确认、SOS、失联查询／恢复及本次 watchdog 回滚均已通过，详见验证记录。审核期间请克隆 `codex/buddyguard-wireless-fota` 分支。
 
 ## Repository layout / 目录
 

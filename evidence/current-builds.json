@@ -5,24 +5,28 @@
   "builds": [
     {
       "role": "tag",
-      "version": "1.1.15",
-      "artifact": "buddyguard-tag-1.1.15.signed.bin",
-      "signed_bytes": 434971,
-      "signed_file_sha256": "423734a0ca626a79c3f06e33745fb70578545f1e4e0fbe2b472a2cdbe1ce405c",
-      "unsigned_bytes": 434820,
+      "version": "1.1.16",
+      "artifact": "buddyguard-tag-1.1.16.signed.bin",
+      "signed_bytes": 435002,
+      "signed_file_sha256": "8b555e657e214b11ac8b0738af200cb4e55e34aeeccdc1beb81a4dcf7577a9a0",
+      "unsigned_bytes": 434852,
+      "unsigned_sha256": "e693e4adcbed0a88905e1eaa2813a4efe5791ae1d43ecd43c401b513bd6b83a7",
       "bootloader_bytes": 46672,
-      "image_digest": "e8a943204b285a20afc0d72fca37906df05601f53cebf59f0900f17d72acaaa7"
+      "image_digest": "8b40edd7507043611351770319ecff69991b505a41e4a75b2e3957478c6268c8"
     },
     {
       "role": "counselor",
-      "version": "1.1.15",
-      "artifact": "buddyguard-counselor-1.1.15.signed.bin",
-      "signed_bytes": 435354,
-      "signed_file_sha256": "6e7847fa17d814ebd9cdd8f02b89ac59fd66adc8684f9ea20f0c270001060886",
-      "unsigned_bytes": 435204,
+      "version": "1.1.16",
+      "artifact": "buddyguard-counselor-1.1.16.signed.bin",
+      "signed_bytes": 435370,
+      "signed_file_sha256": "02f6493d55c6789d287d14fbdb3a04fbea2ff52c46697045b74f7c6ef401026a",
+      "unsigned_bytes": 435220,
+      "unsigned_sha256": "f79c55131098102565a9ca72c2b9e0c3517eac13350b49c3e4ff4a6a7ca6c26b",
       "bootloader_bytes": 46672,
-      "image_digest": "ca7eca4de352e93aefa5a9e20cc172137c2a52ec65c6c3a5d71ec6d53b342457"
+      "image_digest": "405f7ff4255f999de793df6ba43ba5fed5f95649ef7e7ff041effea9305b567b"
     }
   ],
-  "status": "Both roles fully BLE-upgraded to 1.1.15, active and confirmed. Status/ACK, SOS, query/reply, normal BLE loss/recovery and maintenance-grace regression passed on the bench."
+  "source_commit": "3d78fa6",
+  "public_key_sha256": "243b7509cec77ffaa1167f1d817836e3a5f3bfc3e3627b15dba457003eecba28",
+  "status": "Both roles fully BLE-upgraded to 1.1.16, active and confirmed. SOS/ACK, BLE loss at 8929 ms, LoRa QUERY/REPLY, BLE recovery, maintenance-grace observation and signed 1.2.1 watchdog rollback to 1.1.16 passed. Final source rebuild unsigned payloads match those installed."
 }
