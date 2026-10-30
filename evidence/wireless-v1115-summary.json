@@ -1,0 +1,18 @@
+{
+  "test_date": "2026-10-30",
+  "version": "1.1.15",
+  "maintenance_grace_seconds": 600,
+  "normal_timeout_ms": 8000,
+  "grace_capture_seconds": 296.133,
+  "no_false_missing_in_grace_capture": true,
+  "tag_full_ble_upload_seconds": 219.57,
+  "intentional_normal_missing_age_ms": 9836,
+  "sos_ack_attempt": 1,
+  "query_reply_ack_attempt": 1,
+  "peer_status_frames_in_grace_capture": 24,
+  "both_roles_active_confirmed": "1.1.15",
+  "manual_query_seq2_replied": false,
+  "manual_query_seq3_operator_retry_replied": true,
+  "unmodified_zephyr_checkout": true,
+  "scope": "Bench paths verified; packet-loss/range qualification and automatic query retries remain outstanding."
+}

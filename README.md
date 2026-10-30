@@ -1,6 +1,6 @@
 # BuddyGuard — ESE 5180 Team 02
 
-**Paused 2026-10-29:** BLE and signed-update tests passed; LoRa has not passed SPI readback or RF communication. Both devices currently run confirmed 1.1.4. The source is a development candidate. Resume from [the checkpoint](docs/PAUSED-2026-10-29.md).
+**Resumed 2026-10-30:** reseating the B2B connections restored radio readback and ACKs. Both roles now run confirmed **1.1.15**, installed through complete BLE transfers. SOS, normal BLE loss/query/recovery and the longer maintenance-grace regression passed on the bench. See [the hardware/software review](docs/REVIEW-2026-10-30.md); the older [pause checkpoint](docs/PAUSED-2026-10-29.md) is historical.
 
 **Team:** Jet2Holiday
 
@@ -53,12 +53,13 @@ The radio and MCU use separate LoRa and 2.4 GHz antennas. The first implementati
 | MCUboot ECDSA-P256, primary-image validation, move-based swap | Verified through successful, rejected and reverted BLE updates |
 | BLE presence advertisement, increasing sequence number | Verified by a Mac BLE scan |
 | BLE SMP image-state query | Verified before/after updates; host never confirms the image |
-| Signed BLE updates | 1.0.0 → 1.1.0 → 1.1.1 → 1.1.3 → 1.1.4 verified; current source version is 1.1.7 |
+| Signed BLE updates | Verified on both roles through 1.1.15; the final installations used full BLE transfers |
 | Wrong-key and corrupted-image rejection | Full BLE transfers completed; confirmed primary retained after reboot |
 | Unconfirmed-image failure/revert | Signed 1.2.0 fault image booted, watchdog reset it, MCUboot restored 1.1.1 |
 | Interrupted upload/resume | Valid transfer stopped at 20%; old primary retained; resumed at the same byte offset |
 | Counselor BLE roster | C01 observed T01; 8-second laboratory timeout with maintenance grace |
-| LoRa status, SOS, ACK/retries and roll call | Implemented but unverified; SPI readback fails, no valid RF ACK received |
+| LoRa status, SOS, ACK/retries and roll call | Verified on 1.1.15: status/ACK, SOS, automatic roll call, BLE loss/recovery; manual query succeeded after an operator retry |
+| Planned-update presence grace | 296-second counselor capture without a false alarm; normal loss still detected in 9.836 seconds |
 | Child-to-child buddy pairing | Planned; current bench setup is one tag and one counselor |
 | IMU, vibration, clasp and GNSS integration | Not enabled in this firmware stage |
 | Wi-Fi/cloud integration | Not enabled in this firmware stage |
@@ -133,13 +134,13 @@ A laboratory maintenance window is open for the first 300 seconds after boot. `b
 
 `bg heartbeat off` stops advertisements for loss-detection experiments; `bg heartbeat on` restores them. During an SMP connection, presence advertisements pause. A counselor must treat the updating tag as under maintenance.
 
-The counselor passively scans tags T01–T03 and counts only a changed sequence as fresh presence. In normal mode it reports missing after 8 seconds and requests a LoRa status; a fresh BLE sequence reports recovery. If the last frame announced maintenance, the timeout is 120 seconds. This is a bounded grace period, so long uploads may still produce a warning. Tags never observed are not considered online.
+The counselor passively scans tags T01–T03 and counts only a changed sequence as fresh presence. In normal mode it reports missing after 8 seconds and requests a LoRa status; a fresh BLE sequence reports recovery. If the last frame announced maintenance, a separate configurable timeout applies: `CONFIG_BUDDYGUARD_MAINTENANCE_GRACE_SECONDS`, default 600 seconds from 1.1.15. This covers a full BLE upload while keeping the ordinary 8-second missing-tag threshold unchanged. The grace remains bounded, so a stalled or unusually long update can still produce a warning. Planned maintenance must be supervised. Tags never observed are not considered online.
 
 ## LoRa P2P protocol
 
-Both roles use 915 MHz, SF7, 125 kHz bandwidth, coding rate 4/5, an 8-symbol preamble, private-network mode and 4 dBm transmit power, through Zephyr's LoRaMac-node backend. The SX1262 is connected through the ESP32S3 kit's B2B connector: SCK=7, MOSI=9, MISO=8, NSS=41, RESET=42, BUSY=40, DIO1=39, antenna enable=38. The overlay specifies the DIO2 RF switch and 3 V TCXO; the application explicitly selects LDO after each modem configuration because this backend ignores `regulator-ldo`. Startup reads back the private sync word (0x1424) and refuses to confirm if SPI readback fails.
+Both roles use 915 MHz, SF7, 125 kHz bandwidth, coding rate 4/5, an 8-symbol preamble, private-network mode and 4 dBm transmit power, through Zephyr's LoRaMac-node backend. The SX1262 is connected through the ESP32S3 kit's B2B connector: SCK=7, MOSI=9, MISO=8, NSS=41, RESET=42, BUSY=40, DIO1=39, antenna enable=38. The overlay specifies the DIO2 RF switch and 3 V TCXO; the application explicitly selects DC-DC, matching the Wio-SX1262 Module Datasheet V1.1. Startup reads back the private sync word (0x1424) and refuses to confirm if SPI readback fails.
 
-For the pinned Zephyr revision, `app.overlay` also maps `gpio1` to the shared GPIO register-block base. That revision's GPIO driver accesses `out1`/`in1` through a full `gpio_dev_t`, while the upstream high-port node uses a base offset of 0x800. The override is a candidate workaround for that driver/devicetree mismatch; the actual radio still returned 0xffff after it was applied. It did not resolve the link. Re-evaluate it when changing Zephyr revisions.
+Normal firmware uses the upstream GPIO definitions and hardware SPI. The trial high-port override was removed after the original 1.1.4 firmware communicated successfully following B2B reseating. The software-SPI patch is retained only as historical diagnostic material and is not automatically applied. See [the review](docs/REVIEW-2026-10-30.md).
 
 Frames are 12 bytes: `BG`, protocol, type, tag, flags, little-endian sequence, motion, clasp and little-endian battery millivolts. Types are STATUS=1, ACK=2, SOS=3, QUERY=4, REPLY=5. Tags send status about every 10 seconds. STATUS/SOS/REPLY use a 600 ms ACK window and up to three attempts; the counselor acknowledges repeated events while suppressing repeated action logs. `bg sos` queues a tag alert; `bg query 1` requests T01's response.
 
@@ -180,7 +181,7 @@ Additional upstream reservations follow these regions; see generated `zephyr.dts
 
 Measured v1.0.0 binary sizes: MCUboot **46,672 bytes**, application before MCUboot signing **432,468 bytes**, signed file **432,618 bytes**. The esptool write aligns the latter to a four-byte boundary. Binary size is distinct from allocated partition capacity and RAM usage.
 
-The rejected 1.1.7 bring-up candidates had signed application sizes of **434,940 bytes (tag)** and **435,324 bytes (counselor)**; their bootloader builds remain **46,672 bytes**. File hashes and unsigned sizes are recorded in [current-builds.json](evidence/current-builds.json).
+Version 1.1.15 signed applications are **434,971 bytes (tag)** and **435,354 bytes (counselor)**; their bootloader builds remain **46,672 bytes**. File hashes and unsigned sizes are recorded in [current-builds.json](evidence/current-builds.json).
 
 ### Update procedure
 
@@ -210,7 +211,7 @@ See [hardware validation](evidence/validation.md) for observed versions, rejecti
 ## Remaining product work
 
 - Child-to-child buddy pairing, using an additional tag.
-- Outdoor BLE/LoRa range and reliability measurements; the bench test does not establish a separation distance.
+- LoRa reliability: QUERY currently has no automatic retry; a query overlapped a tag STATUS transmission and needed an operator retry. Queue other frame types received during ACK waits, add query timeout/retry handling, and measure loss/range outdoors. A bench ACK does not establish separation distance.
 - External IMU, DRV2605L vibration and clasp inputs; GNSS after basic links are stable.
 - Wi-Fi and the approved device-management platform, deferred by the team while BLE/LoRa/FOTA are completed.
 - Management authorization, authenticated business messages, replay protection and rotating session IDs.

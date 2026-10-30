@@ -18,6 +18,15 @@ config BUDDYGUARD_TAG_ID
 	range 1 255
 	default 1
 
+config BUDDYGUARD_MAINTENANCE_GRACE_SECONDS
+	int "Roster grace for a tag whose last frame announced maintenance"
+	range 120 900
+	default 600
+	help
+	  A 244-byte BLE SMP upload takes several minutes while advertisements
+	  pause. Keep this separate from the normal missing-tag timeout, and
+	  bounded so a stalled update cannot suppress warnings indefinitely.
+
 config BUDDYGUARD_CONFIRM_AFTER_SECONDS
 	int "Healthy runtime before confirming a test image"
 	range 5 300

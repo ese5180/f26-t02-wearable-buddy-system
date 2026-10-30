@@ -50,8 +50,9 @@ int bg_roster_start(void)
 {
 	int rc = bt_le_scan_start(BT_LE_SCAN_PASSIVE, received);
 	if (rc == 0) {
-		LOG_INF("Counselor BLE roster started: demo timeout=%u ms; maintenance grace=120 s",
-			CONFIG_BUDDYGUARD_PRESENCE_TIMEOUT_MS);
+		LOG_INF("Counselor BLE roster started: demo timeout=%u ms; maintenance grace=%u s",
+			CONFIG_BUDDYGUARD_PRESENCE_TIMEOUT_MS,
+			CONFIG_BUDDYGUARD_MAINTENANCE_GRACE_SECONDS);
 	}
 	return rc;
 }
@@ -67,7 +68,8 @@ void bg_roster_poll(void)
 		}
 		uint32_t age = now - last;
 		uint32_t timeout = atomic_get(&m->maintenance) ?
-			120000U : CONFIG_BUDDYGUARD_PRESENCE_TIMEOUT_MS;
+			CONFIG_BUDDYGUARD_MAINTENANCE_GRACE_SECONDS * 1000U :
+			CONFIG_BUDDYGUARD_PRESENCE_TIMEOUT_MS;
 		bool missing = age > timeout;
 		if (!m->announced || (m->missing && !missing)) {
 			LOG_INF("%s tag=T%02u seq=%ld maintenance=%ld", m->announced ? "RECOVERED" : "ONLINE",

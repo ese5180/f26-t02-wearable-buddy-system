@@ -30,20 +30,6 @@ def main():
         parser.error('Use paths without spaces with this toolchain.')
     env = os.environ.copy()
     env['PATH'] = str(west.parent) + os.pathsep + env['PATH']
-    # The pinned SPI bitbang driver dereferences NULL dummy TX buffers, which
-    # SX126x register reads legitimately use. Apply only the checked patch;
-    # preserve other workspace changes and accept an already-applied patch.
-    patch = root / 'patches/zephyr-spi-bitbang-null-buffer.patch'
-    zephyr_source = zephyr_workspace / 'zephyr'
-    check = subprocess.run(['git', 'apply', '--unidiff-zero', '--check', str(patch)],
-                           cwd=zephyr_source, capture_output=True)
-    if check.returncode == 0:
-        subprocess.run(['git', 'apply', '--unidiff-zero', str(patch)], cwd=zephyr_source, check=True)
-    else:
-        applied = subprocess.run(['git', 'apply', '--unidiff-zero', '--reverse', '--check', str(patch)],
-                                 cwd=zephyr_source, capture_output=True)
-        if applied.returncode != 0:
-            parser.error('SPI compatibility patch does not match this Zephyr checkout; resolve it before building.')
     application = root / 'firmware'
     if args.version:
         if not re.fullmatch(r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}', args.version):

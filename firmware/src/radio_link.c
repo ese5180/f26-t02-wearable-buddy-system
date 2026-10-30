@@ -31,11 +31,10 @@ static int configure(bool tx)
 	};
 	int rc = lora_config(radio, &cfg);
 	if (rc == 0) {
-		/* LoRaMac-node Radio.Init() selects DCDC and does not consume the
-		 * devicetree regulator-ldo property. Apply the Wio board's LDO
-		 * configuration explicitly after each modem reconfiguration.
+		/* Wio-SX1262 Module Datasheet V1.1 specifies the DC-DC design.
+		 * Keep this explicit: some board BSP examples select LDO instead.
 		 */
-		SX126xSetRegulatorMode(USE_LDO);
+		SX126xSetRegulatorMode(USE_DCDC);
 		tx_mode = tx;
 	}
 	return rc;

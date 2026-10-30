@@ -7,15 +7,6 @@
 	};
 };
 
-/* Pinned Zephyr f80761e gpio_esp32.c accesses gpio1 through a full
- * gpio_dev_t (out1/in1), so both port nodes must use the shared GPIO
- * register-block base. The upstream gpio1 node's +0x800 address makes
- * GPIO32+ writes target unrelated registers with that driver revision.
- */
-&gpio1 {
-	reg = <0x60004000 0x800>;
-};
-
 /* ESP32S3 B2B kit, not the nRF52840 through-hole module pinout.
  * GPIO32..53 are gpio1 pins 0..21.
  */
@@ -33,7 +24,6 @@
 		dio2-tx-enable;
 		dio3-tcxo-voltage = <SX126X_DIO3_TCXO_3V0>;
 		tcxo-power-startup-delay-ms = <10>;
-		regulator-ldo;
 		status = "okay";
 	};
 };

@@ -1,6 +1,6 @@
 # BuddyGuard bench demo
 
-**Draft:** the LoRa expectations below have not passed on hardware. See [the pause checkpoint](PAUSED-2026-10-29.md) before continuing.
+**2026-10-30:** both devices run confirmed 1.1.15 after complete BLE updates; the maintenance-grace and normal loss/recovery tests passed. Use the verified results in [validation.md](../evidence/validation.md).
 
 Use two assembled ESP32S3 + Wio-SX1262 B2B kits with the correct LoRa and BLE antennas attached. The current devices are T01 (tag) and C01 (counselor). Keep antennas apart on the bench. USB supplies power and the shell; application traffic uses BLE/LoRa, and updates use BLE.
 
@@ -8,24 +8,24 @@ Use two assembled ESP32S3 + Wio-SX1262 B2B kits with the correct LoRa and BLE an
 
 Repository: `/Users/guan/esp/projects/buddyguard`.
 
-Current Mac ports, which may change after reconnection:
+Current Mac ports on 2026-10-30, which may change after reconnection:
 
 | Device | Port | BLE name |
 |---|---|---|
-| T01 | `/dev/cu.usbmodem1101` | `BG-T01` |
-| C01 | `/dev/cu.usbmodem101` | `BG-C01` |
+| T01 | `/dev/cu.usbmodem101` | `BG-T01` |
+| C01 | `/dev/cu.usbmodem1101` | `BG-C01` |
 
 Run commands from the repository with `.venv/bin/python`. Use only one serial reader per port and one BLE management client per device.
 
 ## Presence, LoRa and alarm demonstration
 
-1. Run `tools/bg_serial.py --port PORT command bg status` for each device. At this checkpoint expect version 1.1.4, the correct role and `confirmed=1`; its LoRa link is not working. Do not assume a candidate is active merely because its upload completed.
-2. Close maintenance admission on both devices: `tools/bg_serial.py --port PORT command bg maintenance 0`. This makes the short loss-detection demo possible; maintenance otherwise grants a 120-second grace period.
-3. Monitor C01: `tools/bg_serial.py --port /dev/cu.usbmodem101 monitor --seconds 45`. Expect periodic LoRa `RX ... type=1` status messages. In a separate terminal monitor T01 to see matching `ACK ... type=1` messages.
-4. Stop the T01 serial monitor before using its shell. Run `tools/bg_serial.py --port /dev/cu.usbmodem1101 command bg sos`. C01 should print `type=3` and `ACTION: counselor check tag T01, SOS received`. The tag should get an ACK.
-5. With C01 still monitored, run `tools/bg_serial.py --port /dev/cu.usbmodem1101 command bg heartbeat off`. After about 8–10 seconds C01 should report `BLE MISSING`, send a LoRa QUERY and receive a `type=5` reply. This means BLE contact was lost while the tag remained reachable over LoRa; it is not a measured separation distance.
-6. Restore BLE with `tools/bg_serial.py --port /dev/cu.usbmodem1101 command bg heartbeat on`. C01 should report `RECOVERED` on a fresh sequence.
-7. To request a manual roll call, stop C01's serial monitor and run `tools/bg_serial.py --port /dev/cu.usbmodem101 command bg query 1`.
+1. Run `tools/bg_serial.py --port PORT command bg status` for each device. Verify the intended version (1.1.15), correct role and `confirmed=1`. Do not assume a candidate is active merely because its upload completed.
+2. Close maintenance admission on both devices: `tools/bg_serial.py --port PORT command bg maintenance 0`. This makes the short loss-detection demo possible; maintenance otherwise grants a 600-second grace period in 1.1.15.
+3. Monitor C01: `tools/bg_serial.py --port /dev/cu.usbmodem1101 monitor --seconds 45`. Expect periodic LoRa `RX ... type=1` status messages. In a separate terminal monitor T01 to see matching `ACK ... type=1` messages.
+4. Stop the T01 serial monitor before using its shell. Run `tools/bg_serial.py --port /dev/cu.usbmodem101 command bg sos`. C01 should print `type=3` and `ACTION: counselor check tag T01, SOS received`. The tag should get an ACK.
+5. With C01 still monitored, run `tools/bg_serial.py --port /dev/cu.usbmodem101 command bg heartbeat off`. After about 8–10 seconds C01 should report `BLE MISSING`, send a LoRa QUERY and receive a `type=5` reply. This means BLE contact was lost while the tag remained reachable over LoRa; it is not a measured separation distance.
+6. Restore BLE with `tools/bg_serial.py --port /dev/cu.usbmodem101 command bg heartbeat on`. C01 should report `RECOVERED` on a fresh sequence.
+7. To request a manual roll call, stop C01's serial monitor and run `tools/bg_serial.py --port /dev/cu.usbmodem1101 command bg query 1`. If no type=5 reply appears, retry after the periodic STATUS exchange. QUERY has no automatic retry in this prototype; one overlap with tag TX was observed during testing.
 
 LoRa types: STATUS=1, ACK=2, SOS=3, QUERY=4, REPLY=5. Each tag event gets up to three delivery attempts. A query response is logged separately and does not erase a missing-BLE warning. RSSI/SNR describe the received radio signal; they are not coordinates.
 
@@ -34,7 +34,7 @@ LoRa types: STATUS=1, ACK=2, SOS=3, QUERY=4, REPLY=5. Each tag event gets up to 
 Build from the pinned Zephyr workspace, using the private team key stored outside the repository:
 
 ```sh
-/Users/guan/zephyrproject/.venv/bin/python scripts/build.py --build-dir /Users/guan/zephyrproject/build-bg-demo --version 1.1.8
+/Users/guan/zephyrproject/.venv/bin/python scripts/build.py --build-dir /Users/guan/zephyrproject/build-bg-demo --version 1.1.16
 # Add --counselor when building for C01.
 ```
 
@@ -43,7 +43,7 @@ Use separate build directories for roles and fault cases. Never transfer a couns
 Open a maintenance window on the target, then monitor its serial port in another terminal:
 
 ```sh
-.venv/bin/python tools/bg_serial.py --port /dev/cu.usbmodem1101 command bg maintenance 300
+.venv/bin/python tools/bg_serial.py --port /dev/cu.usbmodem101 command bg maintenance 300
 .venv/bin/python tools/bg_ble.py images
 .venv/bin/python tools/bg_ble.py update /Users/guan/zephyrproject/build-bg-demo/firmware/zephyr/zephyr.signed.bin
 ```
