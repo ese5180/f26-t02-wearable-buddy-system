@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-31",
+  "assessment_only": true,
+  "deployed": false,
+  "uart_transfer_tested": false,
+  "wrong_signature_uart_tested": false,
+  "source_baseline": "4102f53",
+  "board": "xiao_esp32s3/esp32s3/procpu",
+  "zephyr_revision": "f80761e49401497b5ee64ee9732dc2791055ec52",
+  "existing_bootloader_bytes": 46672,
+  "serial_recovery_bootloader_bytes": 60624,
+  "boot_partition_bytes": 65536,
+  "remaining_bytes": 4912,
+  "sha256": "17bba3b033b9346e151a780b6b2ef133afb861a06d4714b0ddaa71338d72665e",
+  "uart": "UART0: TX=D6/GPIO43, RX=D7/GPIO44, 115200 8N1",
+  "configuration": [
+    "CONFIG_SERIAL=y",
+    "CONFIG_MCUBOOT_SERIAL=y",
+    "CONFIG_BOOT_SERIAL_UART=y",
+    "CONFIG_BOOT_SERIAL_ENTRANCE_GPIO=n",
+    "CONFIG_BOOT_SERIAL_WAIT_FOR_DFU=y",
+    "CONFIG_BOOT_SERIAL_WAIT_FOR_DFU_TIMEOUT=3000",
+    "CONFIG_BOOT_SERIAL_NO_APPLICATION=y",
+    "CONFIG_BOOT_VALIDATE_SLOT0=y"
+  ],
+  "chosen_uart_mcumgr": "uart0",
+  "host_serial_transport_imported": true,
+  "default_recovery_upload_slot": "primary",
+  "note": "Throwaway feasibility build only. Existing application/MCUboot configuration and hardware were not changed."
+}

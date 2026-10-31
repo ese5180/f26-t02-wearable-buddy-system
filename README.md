@@ -10,6 +10,7 @@
 |---|---|---|
 | Teammate setup, build, provisioning, wireless demo, OTA and troubleshooting / 队友完整复现 | [操作文档](docs/zh/GETTING_STARTED.md) | [Reproduction guide](docs/en/GETTING_STARTED.md) |
 | Module interfaces, threads, radio formats, update chain and limits / 固件解释 | [固件解释](docs/zh/FIRMWARE.md) | [Firmware explanation](docs/en/FIRMWARE.md) |
+| Firmware security checkoff + UART extra credit / 安全作业回答与加分评估 | [中文回答](docs/zh/FIRMWARE_SECURITY_CHECKOFF.md) | [English answer](docs/en/FIRMWARE_SECURITY_CHECKOFF.md) |
 | Optional SparkFun LSM6DSO / 可选 IMU | [IMU 接入](docs/zh/IMU_LSM6DSO.md) | [IMU integration](docs/en/IMU_LSM6DSO.md) |
 | Observed build and hardware results / 实测结果 | [Validation record](evidence/validation.md) | [Current build metadata](evidence/current-builds.json) |
 

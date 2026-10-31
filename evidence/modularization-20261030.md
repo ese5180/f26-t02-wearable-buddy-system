@@ -20,11 +20,11 @@ Source implementation / 实现提交: `3d78fa6`. Version / 版本: **1.1.16**, p
 | Watchdog rollback / 故障回滚 | Signed 1.2.1 booted unconfirmed, injected failure, reset with `TG0WDT_SYS_RST`; returned to confirmed 1.1.16, also verified by SMP / 真实试运行故障后恢复已确认镜像 |
 | Final state / 结束状态 | Both 1.1.16 confirmed, BLE disconnected, maintenance0; tag heartbeat restored on / 两端已确认、维护关闭、标签心跳已恢复 |
 
-The final committed C sources were rebuilt after formatting; **both unsigned application SHA256s matched the original builds installed over BLE**. ECDSA signatures can change on rebuild, including their encoded length, so the exact transferred signed artifacts are preserved locally and their hashes are in [current-builds.json](current-builds.json). This is not a claim that signed files are byte-identical across builds.
+The final committed C sources were rebuilt after formatting; **both unsigned application SHA256s matched the original builds installed over BLE**. ECDSA signatures can change on rebuild, including their encoded length, so the exact transferred signed artifacts are preserved locally and their hashes are in [builds-v1116.json](builds-v1116.json). This is not a claim that signed files are byte-identical across builds.
 
 格式整理后的最终源码重新构建，两端**未签名应用哈希与已刷入版本一致**。重新签名可能改变签名字节和长度；表内签名镜像对应实际上传并保留在本机的文件。旧 1.1.15 元数据保存在 [builds-v1115.json](builds-v1115.json)。
 
-Evidence: [machine-readable summary](modularization-v1116-summary.json), [selected normalized serial lines](modularization-v1116.log), [installed build hashes](current-builds.json). Full raw captures and binaries remain ignored/local. Earlier wrong-key, corruption and interrupted-resume results remain in [the historical validation record](validation.md); those negative cases were not repeated in this refactor, which leaves MCUboot/partition configuration unchanged.
+Evidence: [machine-readable summary](modularization-v1116-summary.json), [selected normalized serial lines](modularization-v1116.log), [installed build hashes](builds-v1116.json). Full raw captures and binaries remain ignored/local. Earlier wrong-key, corruption and interrupted-resume results remain in [the historical validation record](validation.md); those negative cases were not repeated in this refactor, which leaves MCUboot/partition configuration unchanged.
 
 证据见上述摘要、日志片段与镜像哈希。错误密钥／损坏拒绝、中断续传沿用历史实测，本次未重复；MCUboot 和分区配置没有更改。本次新做了故障回滚，验证拆分后的 watchdog／确认路径。
 
