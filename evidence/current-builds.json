@@ -1,32 +1,34 @@
 {
-  "date": "2026-10-30",
+  "date": "2026-10-31",
   "board": "xiao_esp32s3/esp32s3/procpu",
   "zephyr_revision": "f80761e49401497b5ee64ee9732dc2791055ec52",
+  "implementation_commit": "d9c7f99",
   "builds": [
     {
       "role": "tag",
-      "version": "1.1.16",
-      "artifact": "buddyguard-tag-1.1.16.signed.bin",
-      "signed_bytes": 435002,
-      "signed_file_sha256": "8b555e657e214b11ac8b0738af200cb4e55e34aeeccdc1beb81a4dcf7577a9a0",
-      "unsigned_bytes": 434852,
-      "unsigned_sha256": "e693e4adcbed0a88905e1eaa2813a4efe5791ae1d43ecd43c401b513bd6b83a7",
-      "bootloader_bytes": 46672,
-      "image_digest": "8b40edd7507043611351770319ecff69991b505a41e4a75b2e3957478c6268c8"
+      "version": "1.1.17",
+      "imu_enabled": true,
+      "artifact": "buddyguard-tag-1.1.17.signed.bin",
+      "signed_bytes": 436812,
+      "signed_file_sha256": "1369b06364242aeccc2a6d3c080cb92e51ed1017c0707c977966fa1f009f7d1b",
+      "image_digest": "ec4093e9459253f2053e0e7a499721208c19ee835fa927612a659983cc92d493",
+      "unsigned_bytes": 436660,
+      "unsigned_sha256": "44d46d9fe44fd0348fb1088a2500e360520113d77489954f767e06d7b5b3b6d7",
+      "bootloader_bytes": 46672
     },
     {
       "role": "counselor",
-      "version": "1.1.16",
-      "artifact": "buddyguard-counselor-1.1.16.signed.bin",
-      "signed_bytes": 435370,
-      "signed_file_sha256": "02f6493d55c6789d287d14fbdb3a04fbea2ff52c46697045b74f7c6ef401026a",
-      "unsigned_bytes": 435220,
-      "unsigned_sha256": "f79c55131098102565a9ca72c2b9e0c3517eac13350b49c3e4ff4a6a7ca6c26b",
-      "bootloader_bytes": 46672,
-      "image_digest": "405f7ff4255f999de793df6ba43ba5fed5f95649ef7e7ff041effea9305b567b"
+      "version": "1.1.18",
+      "imu_enabled": false,
+      "artifact": "buddyguard-counselor-1.1.18.signed.bin",
+      "signed_bytes": 435578,
+      "signed_file_sha256": "e6dd33bbb0fc16ad6d63dcc6e31f937cda466b09b774d140fe4a0aff0600cfe0",
+      "image_digest": "77f51e232faa9fb57bbf78b5fa1324e95013599d6400a1b263193e5fd268610b",
+      "unsigned_bytes": 435428,
+      "unsigned_sha256": "ae8831269388c5a5b0568ba7abafea2d9c92b20d7b542563a1fccd7ce890849b",
+      "bootloader_bytes": 46672
     }
   ],
-  "source_commit": "3d78fa6",
   "public_key_sha256": "243b7509cec77ffaa1167f1d817836e3a5f3bfc3e3627b15dba457003eecba28",
-  "status": "Both roles fully BLE-upgraded to 1.1.16, active and confirmed. SOS/ACK, BLE loss at 8929 ms, LoRa QUERY/REPLY, BLE recovery, maintenance-grace observation and signed 1.2.1 watchdog rollback to 1.1.16 passed. Final source rebuild unsigned payloads match those installed."
+  "status": "Tag 1.1.17 with LSM6DSO and counselor 1.1.18 active/confirmed. Real hand motion and LoRa STILL/MOVING/STILL verified on v17 pair; v18 scan fix observed over 3 minutes without unintended missing alarms, followed by intentional loss/query/recovery. Heartbeat restored; both maintenance windows closed."
 }

@@ -1,5 +1,7 @@
 # SparkFun LSM6DSO integration / 1.1.17
 
+IMU support began in 1.1.17; the 1.1.18 counselor also disables controller scan duplicate filtering for continuous heartbeats. Both versions use the same protocol1 frame. The physical test uses tag1.1.17 plus counselor1.1.18; new builds from current source report1.1.18.
+
 [中文](../zh/IMU_LSM6DSO.md) · [Full setup guide](GETTING_STARTED.md) · [Firmware explanation](FIRMWARE.md)
 
 Target: **SparkFun SEN-18020, LSM6DSO Qwiic**, replacing the planned LSM6DS3TR-C. Connect the IMU only to the child tag. The counselor needs updated software to display motion, but no sensor.

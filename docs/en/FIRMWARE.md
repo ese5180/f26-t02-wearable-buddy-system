@@ -43,7 +43,7 @@ flowchart TD
 
 1. Main logs version, role and confirmation state, then arms the **8-second reset watchdog before radio initialization**. Wio uses deferred initialization so an unresponsive BUSY pin cannot hang before the application has watchdog protection.
 2. It checks both image slots, initializes Wio (readback must be `0x1424`), enables BLE and starts the counselor scanner when applicable. Failure deliberately waits without watchdog feeds.
-3. On an unconfirmed fault-test build, it deliberately stops here without feeding WDT. Otherwise it starts the healthy-runtime timer.
+3. On an unconfirmed fault-test build, it deliberately stops here without feeding WDT. Otherwise it starts the optional IMU worker and healthy-runtime timer.
 4. Every two seconds it polls the roster, increments the BLE presence sequence and updates advertising. Advertising errors reset the healthy window and withhold the watchdog feed. On successful cycles, it may confirm the image after **15 seconds**, then feeds WDT.
 
 A healthy cycle means these startup checks and BLE loop are working. It does **not** prove successful LoRa delivery, correct sensor data or supervision safety. Image confirmation also requires the demo heartbeat enabled. Disabling heartbeat does not itself reset the healthy timer; this preserves the prior implementation. The watchdog only monitors the main loop, not independent progress of every worker.
@@ -57,6 +57,8 @@ When BLE disconnects, advertising restarts after the connection object is recycl
 Tag IDs are 1–3; counselor ID is 200. Tags advertise and send LoRa STATUS. C01 advertises for management, passively scans tag presence, ACKs events and requests missing-tag status. This is **counselor-to-tag supervision**, not implemented child-to-child pairing.
 
 A previously unseen tag is ignored until a valid first frame. C01 emits ONLINE on first observation. Only a **changed sequence number** refreshes last-seen time; duplicate advertisements do not extend presence. In normal mode, age greater than 8000 ms emits BLE MISSING once and queues a LoRa QUERY. Two-second polling adds detection latency (approximately 8–10 seconds on the bench). A fresh BLE frame emits RECOVERED. LoRa REPLY is logged separately and cannot clear missing-BLE status.
+
+From 1.1.18, the scanner explicitly disables controller duplicate filtering (`BT_LE_SCAN_OPT_NONE`). The convenience `BT_LE_SCAN_PASSIVE` macro enabled that filtering, and changing heartbeat payloads were not delivered reliably during the 1.1.17 bench run. The application already filters by sequence; it needs reports for fresh payloads from the same address. Scan interval/window and the 8-second timeout are unchanged. See the dated IMU validation for the before/after observations.
 
 If the latest tag frame has its maintenance flag set, the roster uses 600 seconds instead. The maintenance window admits BLE SMP connections for 300 seconds by default (`bg maintenance 0..600` overrides it). A connected transfer can finish after the admission deadline. The flag and bounded grace reduce expected-update false alarms but do not guarantee an alarm-free update. Normal frames restore the short timeout.
 

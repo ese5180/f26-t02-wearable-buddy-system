@@ -1,5 +1,7 @@
 # SparkFun LSM6DSO 接入 / 1.1.17
 
+IMU 从 1.1.17 起接入；1.1.18 辅导员另行关闭扫描器默认去重，以持续接收心跳。两者使用相同的协议版本 1。本次实板为标签 1.1.17＋辅导员 1.1.18；从当前源码新构建则版本为 1.1.18。
+
 [English](../en/IMU_LSM6DSO.md) · [完整操作文档](GETTING_STARTED.md) · [固件解释](FIRMWARE.md)
 
 适用于 **SparkFun SEN-18020、LSM6DSO Qwiic**，不是旧 BOM 的 LSM6DS3TR-C。仅把 IMU 接到儿童标签；辅导员只需要更新软件显示运动状态。

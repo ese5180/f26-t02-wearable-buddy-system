@@ -1,6 +1,8 @@
-# Hardware validation — 29–30 October 2026
+# Hardware validation — 29–31 October 2026
 
-**Latest / 最新:** modular 1.1.16 passed both-role BLE OTA, SOS, missing/query/recovery and fresh 1.2.1 watchdog rollback. [Detailed modularization results / 模块化验证](modularization-20261030.md). Both devices ended active and confirmed on 1.1.16.
+**Latest / IMU stage (2026-10-31):** real LSM6DSO six-axis data and STILL/MOVING/STILL over LoRa verified. Tag1.1.17 and counselor1.1.18 active/confirmed. Counselor scan duplicate filtering corrected; 186 seconds without unintended loss, then deliberate loss/query/recovery passed. [IMU validation / IMU 验证](imu-validation-20261031.md).
+
+**Previous modular baseline (2026-10-30):** [1.1.16 OTA/wireless/watchdog validation](modularization-20261030.md).
 
 These are observations from two physical XIAO ESP32S3 + Wio-SX1262 B2B kits on the development Mac. Each board was backed up and provisioned once over USB. Subsequent firmware changes were transferred over BLE SMP; USB supplied power and logs. Private keys, full flash backups and raw captures are excluded from Git.
 

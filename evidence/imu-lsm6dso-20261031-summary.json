@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-31",
+  "implementation_commit": "d9c7f99",
+  "protocol_version": 1,
+  "tag_version": "1.1.17",
+  "counselor_version": "1.1.18",
+  "sensor": {
+    "board": "SparkFun SEN-18020 LSM6DSO",
+    "address": "0x6b",
+    "whoami": "0x6c",
+    "poll_delay_ms": 40,
+    "odr_hz": 52,
+    "accel_range_g": 4,
+    "gyro_range_dps": 250,
+    "snapshot_age_ms": 11,
+    "snapshot_error": 0,
+    "snapshot_samples": 22289
+  },
+  "results": {
+    "native_python_tests": 4,
+    "hand_motion_local": [
+      "STILL",
+      "MOVING",
+      "STILL"
+    ],
+    "hand_motion_lora_counselor_v17": [
+      "STILL",
+      "MOVING",
+      "STILL"
+    ],
+    "sos_motion": "STILL",
+    "query_reply_motion": "STILL",
+    "optional_sensor_disabled_on_counselor": true,
+    "v17_normal_capture_unexpected_missing": 1,
+    "v18_normal_observation_ms": 186203,
+    "v18_unexpected_missing_before_intentional_test": 0,
+    "v18_intentional_missing_age_ms": 9896,
+    "v18_query_reply": true,
+    "v18_recovered": true,
+    "fresh_clone_build": "d9c7f99 clone, --imu --version 1.1.17, build and signature verified; existing pinned SDK reused"
+  },
+  "known_limits": [
+    "One physical IMU and one tag/counselor bench pair.",
+    "Heuristic thresholds, no fall/danger diagnosis or field validation.",
+    "Physical IMU disconnection/power-failure tests were not performed; freshness/filter failure paths have native tests and code review.",
+    "LoRa QUERY retry/ACK-wait receive limitations and unauthenticated business frames remain.",
+    "Normal observation bounds a bench test; it does not establish field reliability."
+  ]
+}
