@@ -22,6 +22,7 @@ def main():
     p.add_argument('--role', choices=('tag', 'counselor'))
     p.add_argument('--counselor', action='store_true', help='Compatibility alias for --role counselor')
     p.add_argument('--tag-id', type=int, choices=range(1, 4), default=None)
+    p.add_argument('--imu', action='store_true', help='Tag only: enable SparkFun LSM6DSO on I2C D4/D5')
     p.add_argument('--fault', action='store_true', help='Rollback test ONLY: stop feeding WDT before confirmation')
     p.add_argument('--version', help='Isolated major.minor.patch override; does not edit source VERSION')
     args = p.parse_args()
@@ -30,6 +31,8 @@ def main():
     role = args.role or ('counselor' if args.counselor else 'tag')
     if role == 'counselor' and args.tag_id is not None:
         p.error('--tag-id applies only to the tag role')
+    if role == 'counselor' and args.imu:
+        p.error('--imu applies only to the tag role')
     tag = 200 if role == 'counselor' else (args.tag_id or 1)
     workspace = args.workspace or os.environ.get('BUDDYGUARD_ZEPHYR_WORKSPACE')
     if workspace is None:
@@ -50,7 +53,7 @@ def main():
     actual = subprocess.check_output(['git', '-C', str(workspace / 'zephyr'), 'rev-parse', 'HEAD'], text=True).strip()
     if actual != pinned:
         p.error(f'Zephyr HEAD {actual} differs from west.yml {pinned}; run west update in the documented workspace.')
-    profile = {'board': BOARD, 'role': role, 'tag_id': tag, 'fault': args.fault, 'key': str(key)}
+    profile = {'board': BOARD, 'role': role, 'tag_id': tag, 'fault': args.fault, 'imu': args.imu, 'key': str(key)}
     marker = build.with_name(build.name + '.buddyguard.json')
     if marker.exists() and json.loads(marker.read_text()) != profile:
         p.error('Build directory belongs to another role/ID/key/fault profile. Choose a new build directory.')
@@ -81,12 +84,14 @@ def main():
         f'CONFIG_BT_OBSERVER={"y" if role == "counselor" else "n"}\n'
         f'CONFIG_BUDDYGUARD_TAG_ID={tag}\n'
         f'CONFIG_BT_DEVICE_NAME="BG-{ "C01" if role == "counselor" else f"T{tag:02d}" }"\n'
-        f'CONFIG_BUDDYGUARD_FAULT_ON_BOOT={"y" if args.fault else "n"}\n')
+        f'CONFIG_BUDDYGUARD_FAULT_ON_BOOT={"y" if args.fault else "n"}\n'
+        f'CONFIG_BUDDYGUARD_IMU={"y" if args.imu else "n"}\n')
     marker.write_text(json.dumps(profile, indent=2) + '\n')
     env = os.environ.copy()
     env['PATH'] = str(west.parent) + os.pathsep + env['PATH']
     cmd = [str(west), 'build', '-b', BOARD, '--sysbuild', str(application), '-d', str(build), '--',
-           '-DSB_CONFIG_BOOT_SIGNATURE_KEY_FILE="' + str(key) + '"', '-DEXTRA_CONF_FILE=' + str(config)]
+           '-DSB_CONFIG_BOOT_SIGNATURE_KEY_FILE="' + str(key) + '"', '-DEXTRA_CONF_FILE=' + str(config),
+           '-Dfirmware_EXTRA_DTC_OVERLAY_FILE=' + (str(application / 'conf/lsm6dso.overlay') if args.imu else '')]
     rc = subprocess.call(cmd, cwd=workspace, env=env)
     if rc:
         return rc

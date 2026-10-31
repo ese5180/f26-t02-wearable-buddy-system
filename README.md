@@ -10,11 +10,12 @@
 |---|---|---|
 | Teammate setup, build, provisioning, wireless demo, OTA and troubleshooting / 队友完整复现 | [操作文档](docs/zh/GETTING_STARTED.md) | [Reproduction guide](docs/en/GETTING_STARTED.md) |
 | Module interfaces, threads, radio formats, update chain and limits / 固件解释 | [固件解释](docs/zh/FIRMWARE.md) | [Firmware explanation](docs/en/FIRMWARE.md) |
+| Optional SparkFun LSM6DSO / 可选 IMU | [IMU 接入](docs/zh/IMU_LSM6DSO.md) | [IMU integration](docs/en/IMU_LSM6DSO.md) |
 | Observed build and hardware results / 实测结果 | [Validation record](evidence/validation.md) | [Current build metadata](evidence/current-builds.json) |
 
-Current source: **1.1.16**, modularized from the validated 1.1.15 baseline. Both roles passed BLE OTA and self-confirmation; SOS, missing/query/recovery and a fresh watchdog rollback also passed. The branch is `codex/buddyguard-wireless-fota`; clone that branch while changes are under review.
+Current source: **1.1.18**, adding optional LSM6DSO motion sensing to the validated modular 1.1.16 baseline. Both roles passed BLE OTA and self-confirmation; real hand motion produced STILL/MOVING/STILL locally and over LoRa. See the dated validation records. The branch is `codex/buddyguard-wireless-fota`; clone that branch while changes are under review.
 
-当前源码 **1.1.16**，基于已验证 1.1.15 拆分模块。两端 BLE 更新／自确认、SOS、失联查询／恢复及本次 watchdog 回滚均已通过，详见验证记录。审核期间请克隆 `codex/buddyguard-wireless-fota` 分支。
+当前源码 **1.1.18**，在已验证的模块化 1.1.16 基础上增加可选 LSM6DSO 采样。两端 BLE 更新／自确认、真实晃动的 STILL／MOVING／STILL 及 LoRa 传输均已验证，详见日期对应记录。审核期间请克隆 `codex/buddyguard-wireless-fota` 分支。
 
 ## Repository layout / 目录
 
@@ -25,7 +26,8 @@ firmware/
   src/roster/         counselor presence state / 辅导员名单
   src/radio/          LoRa event worker / 无线消息与重试
   src/drivers/        Wio-SX1262 hardware / 硬件配置与收发
-  src/protocol/       portable wire codec / 纯 C 协议
+  src/sensors/        optional IMU worker / 可选传感器采样
+  src/protocol/       wire codec and motion classifier / 协议与运动分类
   src/platform/       watchdog and image health / 看门狗与镜像确认
   src/console/        USB shell / 串口命令
   include/            service interfaces / 模块接口
@@ -46,9 +48,9 @@ Use workspace/source/build/key paths **without spaces**. The pinned board is `xi
 
 ## Scope / 当前范围
 
-The bench uses one tag and one counselor. Implemented: BLE presence/roster, LoRa STATUS/SOS/ACK/QUERY/REPLY, serial controls and signed BLE test updates. Planned product features — child-to-child pairing, IMU/clasp/motor/GNSS/battery readings and Wi-Fi/cloud — are **not implemented** here. Motion and clasp report UNKNOWN; battery reports unavailable. LoRa QUERY has no automatic retry and frames arriving during ACK waits can be lost. No location/distance estimate is produced.
+The bench uses one tag and one counselor. Implemented: BLE presence/roster, LoRa STATUS/SOS/ACK/QUERY/REPLY, serial controls, signed BLE test updates and optional SparkFun LSM6DSO sensing (`--imu` on tags). Planned child-to-child pairing, clasp/motor/GNSS/battery readings and Wi-Fi/cloud are **not implemented** here. Motion is UNKNOWN without valid enabled sensing; clasp is UNKNOWN and battery unavailable. LoRa QUERY has no automatic retry and frames arriving during ACK waits can be lost. No location/distance estimate is produced.
 
-目前实测为一标签＋一辅导员。已实现 BLE 名单、LoRa 消息、串口控制与签名更新；儿童配对、外设测量及 Wi-Fi／云尚未接入。QUERY 暂无自动重试，等待 ACK 可能丢失其他帧，不输出位置／距离。
+目前实测为一标签＋一辅导员。已实现 BLE 名单、LoRa 消息、串口控制、签名更新和可选 LSM6DSO 运动采样（标签 `--imu`）；儿童配对、其余外设及 Wi-Fi／云尚未接入。QUERY 暂无自动重试，等待 ACK 可能丢失其他帧，不输出位置／距离。
 
 MCUboot authenticates signed application images. Hardware secure-boot eFuses/flash encryption are not enabled; BLE SMP is unpaired, radio business frames are unauthenticated, and identifiers are static. Shared signing keys do not prevent selecting the wrong role image. This is a laboratory prototype, not validated child-safety equipment.
 

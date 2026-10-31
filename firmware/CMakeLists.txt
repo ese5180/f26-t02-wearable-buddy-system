@@ -7,6 +7,8 @@ target_sources(app PRIVATE
   src/console/commands.c
   src/platform/health.c
   src/protocol/wire.c
+  src/protocol/motion.c
+  src/sensors/imu.c
   src/drivers/wio_sx1262.c
   src/radio/link.c
   src/roster/roster.c

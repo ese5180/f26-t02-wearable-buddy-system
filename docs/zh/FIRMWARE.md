@@ -1,8 +1,10 @@
 # BuddyGuard：固件解释文档
 
+[可选 SparkFun LSM6DSO 接入文档](IMU_LSM6DSO.md)
+
 [English](../en/FIRMWARE.md) · [队友复现操作文档](GETTING_STARTED.md)
 
-本文对应模块化后的 **1.1.16** 源码。无线协议仍为版本 1，与此前验证的 1.1.15 兼容。具体安装／烧录命令见操作文档；这里解释模块职责、运行机制及限制。
+本文对应模块化后的 **1.1.18** 源码。无线协议仍为版本 1，与此前验证的 1.1.15 兼容。具体安装／烧录命令见操作文档；这里解释模块职责、运行机制及限制。
 
 ## 模块划分
 
@@ -13,6 +15,8 @@
 | `src/roster/roster.c` / `include/roster.h` | 辅导员被动扫描、标签名单、失联及恢复；标签端为空实现 |
 | `src/radio/link.c` / `include/radio_link.h` | LoRa 消息队列、工作线程、序列号、ACK／重试、QUERY／REPLY |
 | `src/drivers/wio_sx1262.c` / `include/radio_driver.h` | 延迟设备初始化、射频参数、SPI 读回、串行收发 |
+| `src/sensors/imu.c` / `include/imu.h` | 可选 LSM6DSO 后台线程、地址识别、六轴快照及过期检查 |
+| `src/protocol/motion.c` / `include/motion.h` | 纯 C UNKNOWN／STILL／MOVING 状态判断 |
 | `src/protocol/wire.c` / `include/wire.h` | 不依赖 RTOS／硬件的编码和帧校验，可直接进行本机 C 测试 |
 | `src/platform/health.c` / `include/health.h` | watchdog、Flash 分区就绪检查、延迟确认新镜像 |
 | `src/console/commands.c` | USB shell 到各服务 API 的命令适配 |
@@ -58,7 +62,7 @@ LoRa 工作线程栈 3072 字节、优先级 5，请求队列容量 8，radio �
 
 ## 无线帧格式
 
-下列多字节字段均为小端。当前不发送孩子姓名、坐标或真实传感器测量值。
+下列多字节字段均为小端。不发送孩子姓名或坐标。LoRa 可携带运动分类，原始六轴读数只在本机日志查看。
 
 ### BLE manufacturer data：8 字节
 
@@ -85,7 +89,7 @@ LoRa 工作线程栈 3072 字节、优先级 5，请求队列容量 8，radio �
 | 4 | 1 | 来源／目标标签 ID1–3 |
 | 5 | 1 | flags，目前为 0 |
 | 6 | 2 | LoRa 序号，与 BLE 序号独立 |
-| 8 | 1 | motion，0=UNKNOWN |
+| 8 | 1 | motion：0 UNKNOWN、1 STILL、2 MOVING |
 | 9 | 1 | clasp，0=UNKNOWN |
 | 10 | 2 | 电池，`FFFF`=unavailable |
 
@@ -140,8 +144,8 @@ sysbuild 同时构建 MCUboot 和应用。MCUboot 使用 ECDSA-P256、primary �
 
 ## 已实现范围与限制
 
-已实现：双板 BLE presence／名单、LoRa STATUS／SOS／ACK／QUERY／REPLY、串口演示、BLE 签名试运行更新、中断续传、拒绝错误镜像、watchdog 回滚。具体在哪个版本上做过哪些实测，以[有日期的验证记录](../../evidence/validation.md)为准。
+已实现：可选 SparkFun LSM6DSO 采样与运动状态（使用 `--imu`，见接入文档）；双板 BLE presence／名单、LoRa STATUS／SOS／ACK／QUERY／REPLY、串口演示、BLE 签名试运行更新、中断续传、拒绝错误镜像、watchdog 回滚。具体在哪个版本上做过哪些实测，以[有日期的验证记录](../../evidence/validation.md)为准。
 
-待做：儿童之间配对；三标签完整并发；IMU、搭扣、振动、电量、GNSS；Wi-Fi／云；户外范围／碰撞测试；QUERY 自动重试和 ACK 等待期间接收缓存；业务帧认证／防重放；管理授权；轮换 session ID。**当前 ID 是静态的**，没有 GPS 不意味着无线标识私密。传感器必须输出真实测量或 UNKNOWN，不能在真实报警里插入伪造值。
+待做：儿童之间配对；三标签完整并发；搭扣、振动、电量、GNSS；Wi-Fi／云；户外范围／碰撞测试；QUERY 自动重试和 ACK 等待期间接收缓存；业务帧认证／防重放；管理授权；轮换 session ID。**当前 ID 是静态的**，没有 GPS 不意味着无线标识私密。传感器必须输出真实测量或 UNKNOWN，不能在真实报警里插入伪造值。
 
 扩展时把传感器硬件放在独立驱动／服务，由协议发送方读取状态快照；含义改变时升级协议版本。不要在 shell 直接访问 SPI、阻塞 BLE 回调或让第二个线程同时操作 LoRa。成为儿童安全设备之前还需定义并验证安全、配对及距离／覆盖要求。

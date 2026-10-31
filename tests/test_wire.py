@@ -8,6 +8,16 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 
 class WireTests(unittest.TestCase):
+    def test_motion_gravity_hold_stale_and_clock_wrap(self):
+        compiler = shutil.which('cc')
+        self.assertIsNotNone(compiler)
+        with tempfile.TemporaryDirectory() as directory:
+            binary = str(Path(directory) / 'motion-tests')
+            subprocess.run([compiler, '-std=c11', '-Wall', '-Wextra', '-Werror',
+                '-I', str(ROOT / 'firmware/include'), str(ROOT / 'firmware/src/protocol/motion.c'),
+                str(ROOT / 'tests/motion_vectors.c'), '-o', binary], check=True)
+            subprocess.run([binary], check=True)
+
     def test_on_air_vectors_and_rejection(self):
         compiler = shutil.which('cc')
         self.assertIsNotNone(compiler, 'Install the host C compiler (Xcode command-line tools on macOS).')

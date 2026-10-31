@@ -6,6 +6,7 @@
 #include "radio_link.h"
 #include "radio_driver.h"
 #include "wire.h"
+#include "imu.h"
 
 LOG_MODULE_REGISTER(bg_lora, LOG_LEVEL_INF);
 
@@ -21,6 +22,7 @@ static uint8_t last_type[4];
 static void make_frame(uint8_t *frame, uint8_t type, uint8_t tag, uint16_t seq)
 {
 	bg_radio_frame_encode(frame, type, tag, seq);
+	frame[8] = bg_imu_motion();
 }
 
 static bool valid(const uint8_t *frame, int size)
@@ -92,8 +94,8 @@ static void worker(void *a, void *b, void *c)
 			if (!duplicate) {
 				last_sequence[tag] = seq;
 				last_type[tag] = type;
-				LOG_INF("RX tag=T%02u type=%u seq=%u rssi=%d snr=%d motion=UNKNOWN battery=unavailable",
-					tag, type, seq, rssi, snr);
+				LOG_INF("RX tag=T%02u type=%u seq=%u rssi=%d snr=%d motion=%s battery=unavailable",
+					tag, type, seq, rssi, snr, bg_motion_name(frame[8]));
 				if (type == SOS) {
 					LOG_WRN("ACTION: counselor check tag T%02u, SOS received", tag);
 				}

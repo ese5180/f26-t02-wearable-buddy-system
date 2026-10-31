@@ -1,5 +1,7 @@
 # BuddyGuard：队友复现操作文档
 
+[可选 SparkFun LSM6DSO 接入文档](IMU_LSM6DSO.md)
+
 [English](../en/GETTING_STARTED.md) · [固件解释](FIRMWARE.md) · [验证记录](../../evidence/validation.md)
 
 适用硬件：**XIAO ESP32S3＋Wio-SX1262 B2B 套装**。本流程复现当前 Zephyr＋MCUboot 的 BLE、LoRa 和签名更新演示。先用 **1 个标签 T01＋1 个辅导员端 C01**；代码支持 T01–T03，但尚未完成四设备整套验证。当前不需要外接 IMU、GPS、电池、马达或屏幕，USB 负责供电。
@@ -148,14 +150,14 @@ Mac 弹窗时允许终端／宿主进程访问蓝牙。**同一个串口只允�
 
 QUERY 与标签 STATUS 发送碰撞时可能无回复；关闭辅导员串口监视器后，在 C01 上运行 `bg query 1` 重试。目前没有自动 QUERY 重试。SOS 入队成功也不代表已送达，要看辅导员接收和标签 ACK。
 
-这里的 heartbeat 是**通信心跳**，不是生理脉搏。`heartbeat off` 仅停 BLE 广播，LoRa 继续工作。演示不输出距离或位置；motion/clasp 为 UNKNOWN，电量为 unavailable。
+这里的 heartbeat 是**通信心跳**，不是生理脉搏。`heartbeat off` 仅停 BLE 广播，LoRa 继续工作。演示不输出距离或位置；未启用 `--imu` 时 motion 为 UNKNOWN；可选 IMU 文档说明真实采样。clasp 仍 UNKNOWN，电量 unavailable。
 
 ## 8. BLE 签名固件更新
 
-给候选镜像使用独立版本／构建目录，例如 `--version 1.1.17`，必须保持**目标板相同角色和 ID**。版本覆盖使用隔离源码副本，不修改仓库 VERSION。标签候选构建示例：
+给候选镜像使用独立版本／构建目录，例如 `--version 1.1.19`，必须保持**目标板相同角色和 ID**。版本覆盖使用隔离源码副本，不修改仓库 VERSION。标签候选构建示例：
 
 ```sh
-"$BG_WS/.venv/bin/python" scripts/build.py --workspace "$BG_WS" --key "$BG_KEY" --build-dir "$BG_WS/build-bg-tag1-candidate" --role tag --tag-id 1 --version 1.1.17
+"$BG_WS/.venv/bin/python" scripts/build.py --workspace "$BG_WS" --key "$BG_KEY" --build-dir "$BG_WS/build-bg-tag1-candidate" --role tag --tag-id 1 --version 1.1.19
 .venv/bin/python tools/bg_serial.py --port "$TAG_PORT" command bg maintenance 300
 # 先等约 4 秒，让辅导员收到 maintenance 标志，再开始连接：
 .venv/bin/python tools/bg_ble.py --name BG-T01 images

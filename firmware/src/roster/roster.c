@@ -47,9 +47,20 @@ static void received(const bt_addr_le_t *addr, int8_t rssi, uint8_t type,
 
 int bg_roster_start(void)
 {
-	int rc = bt_le_scan_start(BT_LE_SCAN_PASSIVE, received);
+	/* Presence requires every fresh sequence, not discovery of each address
+	 * once. The convenience macro enables controller duplicate filtering,
+	 * which can suppress changing manufacturer payloads on this controller.
+	 * Keep radio scan timing unchanged; deduplicate by sequence in our parser.
+	 */
+	const struct bt_le_scan_param parameters = {
+		.type = BT_LE_SCAN_TYPE_PASSIVE,
+		.options = BT_LE_SCAN_OPT_NONE,
+		.interval = BT_GAP_SCAN_FAST_INTERVAL,
+		.window = BT_GAP_SCAN_FAST_WINDOW,
+	};
+	int rc = bt_le_scan_start(&parameters, received);
 	if (rc == 0) {
-		LOG_INF("Counselor BLE roster started: demo timeout=%u ms; maintenance grace=%u s",
+		LOG_INF("Counselor BLE roster started: controller duplicate filtering OFF; demo timeout=%u ms; maintenance grace=%u s",
 			CONFIG_BUDDYGUARD_PRESENCE_TIMEOUT_MS,
 			CONFIG_BUDDYGUARD_MAINTENANCE_GRACE_SECONDS);
 	}

@@ -8,6 +8,15 @@ config BUDDYGUARD_COUNSELOR
 	bool "Build the counselor receiver role"
 	default n
 
+config BUDDYGUARD_IMU
+	bool "Optional SparkFun LSM6DSO on the tag I2C bus"
+	depends on !BUDDYGUARD_COUNSELOR
+	select SENSOR
+	select I2C
+	help
+	  Poll a deferred LSM6DSO at address 0x6b or 0x6a. Missing or stale
+	  measurements produce UNKNOWN and do not block the wireless service.
+
 config BUDDYGUARD_PRESENCE_TIMEOUT_MS
 	int "BLE presence timeout for the laboratory demo"
 	range 4000 120000

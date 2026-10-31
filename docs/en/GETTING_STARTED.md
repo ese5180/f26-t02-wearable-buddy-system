@@ -1,5 +1,7 @@
 # BuddyGuard: teammate reproduction guide
 
+[Optional SparkFun LSM6DSO / IMU guide](IMU_LSM6DSO.md)
+
 [中文](../zh/GETTING_STARTED.md) · [Firmware explanation](FIRMWARE.md) · [Validation record](../../evidence/validation.md)
 
 Target: XIAO ESP32S3 + Wio-SX1262 **B2B kit**, using Zephyr and MCUboot. This guide covers the current BLE/LoRa/signed-update bench prototype. Start with **one tag (T01) + one counselor (C01)**. The software accepts T01–T03, but a complete four-device kit has not been validated. No sensor breakout, GPS, battery or display is required for this demo; USB supplies power.
@@ -142,14 +144,14 @@ In the first terminal (the tag port is free):
 
 Expected counselor sequence: periodic `RX ... type=1` STATUS; SOS `type=3` and `ACTION`; after about 8–10 seconds, `BLE MISSING` → `QUERY` → `RX ... type=5`; then `RECOVERED` on fresh BLE. LoRa replies do **not** clear BLE-missing status. If a query collides with periodic tag TX, retry `bg query 1` on C01 **after closing its serial monitor**. QUERY has no automatic retry yet. A queued SOS is not proof of delivery; inspect counselor reception and tag ACK.
 
-`heartbeat off` simulates loss of **communication heartbeat**, not pulse. It leaves LoRa running. This demo does not measure child separation or location. All motion/clasp fields remain UNKNOWN; battery is unavailable.
+`heartbeat off` simulates loss of **communication heartbeat**, not pulse. It leaves LoRa running. This demo does not measure child separation or location. Motion is UNKNOWN without `--imu`; the optional LSM6DSO guide describes real motion sensing. Clasp remains UNKNOWN and battery unavailable.
 
 ## 8. Signed update over BLE
 
-Use a distinct candidate version/build directory, e.g. `--version 1.1.17`, adding the **same role/ID as the target**. Version override copies source into an isolated generated directory; it does not edit the checkout's VERSION. Open maintenance, let the counselor receive its maintenance flag (wait about 4 seconds), then update:
+Use a distinct candidate version/build directory, e.g. `--version 1.1.19`, adding the **same role/ID as the target**. Version override copies source into an isolated generated directory; it does not edit the checkout's VERSION. Open maintenance, let the counselor receive its maintenance flag (wait about 4 seconds), then update:
 
 ```sh
-"$BG_WS/.venv/bin/python" scripts/build.py --workspace "$BG_WS" --key "$BG_KEY" --build-dir "$BG_WS/build-bg-tag1-candidate" --role tag --tag-id 1 --version 1.1.17
+"$BG_WS/.venv/bin/python" scripts/build.py --workspace "$BG_WS" --key "$BG_KEY" --build-dir "$BG_WS/build-bg-tag1-candidate" --role tag --tag-id 1 --version 1.1.19
 .venv/bin/python tools/bg_serial.py --port "$TAG_PORT" command bg maintenance 300
 # Wait about 4 seconds before connecting:
 .venv/bin/python tools/bg_ble.py --name BG-T01 images

@@ -1,8 +1,10 @@
 # BuddyGuard firmware explanation
 
+[Optional SparkFun LSM6DSO / IMU guide](IMU_LSM6DSO.md)
+
 [中文](../zh/FIRMWARE.md) · [Reproduction guide](GETTING_STARTED.md)
 
-This describes the modular **1.1.16** source. The on-air protocol remains version 1 and compatible with the previously validated 1.1.15 bench firmware. Build/flash/update commands belong in the reproduction guide; this document explains ownership, data flow and constraints.
+This describes the modular **1.1.18** source. The on-air protocol remains version 1 and compatible with the previously validated 1.1.15 bench firmware. Build/flash/update commands belong in the reproduction guide; this document explains ownership, data flow and constraints.
 
 ## Module map
 
@@ -13,6 +15,8 @@ This describes the modular **1.1.16** source. The on-air protocol remains versio
 | `src/roster/roster.c` / `include/roster.h` | Counselor passive scanner and per-tag presence/loss/recovery state; no-op on tags |
 | `src/radio/link.c` / `include/radio_link.h` | LoRa event queue, worker, sequences, retries/ACK, role-specific QUERY/REPLY |
 | `src/drivers/wio_sx1262.c` / `include/radio_driver.h` | Deferred device initialization, PHY settings, SPI readback and serialized RX/TX |
+| `src/sensors/imu.c` / `include/imu.h` | Optional LSM6DSO worker, address detection, six-axis snapshot and freshness |
+| `src/protocol/motion.c` / `include/motion.h` | Pure C UNKNOWN/STILL/MOVING classifier |
 | `src/protocol/wire.c` / `include/wire.h` | Hardware-independent encoding and frame validation; shared by firmware and native tests |
 | `src/platform/health.c` / `include/health.h` | Watchdog, flash-slot readiness and delayed MCUboot confirmation |
 | `src/console/commands.c` | USB shell adapter calling service APIs |
@@ -58,7 +62,7 @@ If the latest tag frame has its maintenance flag set, the roster uses 600 second
 
 ## On-air formats
 
-All multibyte payload numbers below use little endian. No child names, coordinates or real sensor measurements are included.
+All multibyte payload numbers below use little endian. No child names or coordinates are included. LoRa carries an optional motion classification; raw six-axis readings stay in local logs.
 
 ### BLE manufacturer data (8 bytes)
 
@@ -83,7 +87,7 @@ The legacy advertising payload totals 31 bytes: flags, SMP service UUID and manu
 | 4 | 1 | Target/source tag ID1–3 |
 | 5 | 1 | Flags, currently 0 |
 | 6 | 2 | Radio sequence, independent of BLE sequence |
-| 8 | 1 | Motion, 0 = UNKNOWN |
+| 8 | 1 | Motion: 0 UNKNOWN, 1 STILL, 2 MOVING |
 | 9 | 1 | Clasp, 0 = UNKNOWN |
 | 10 | 2 | Battery, `FFFF` = unavailable |
 
@@ -134,8 +138,8 @@ Signature checking provides application-image authenticity relative to this lab 
 
 ## Implemented scope and limits
 
-Implemented: two-board BLE presence/roster; LoRa STATUS/SOS/ACK/QUERY/REPLY; serial demo controls; signed BLE test updates, interruption/resume, rejection and watchdog revert. Consult [the dated validation record](../../evidence/validation.md) for exactly which version/test was observed.
+Implemented: optional SparkFun LSM6DSO sensing with `--imu` (see linked IMU guide); two-board BLE presence/roster; LoRa STATUS/SOS/ACK/QUERY/REPLY; serial demo controls; signed BLE test updates, interruption/resume, rejection and watchdog revert. Consult [the dated validation record](../../evidence/validation.md) for exactly which version/test was observed.
 
-Pending: actual buddy pairing; full three-tag concurrent operation; IMU, clasp, vibration, battery and GNSS integration; Wi-Fi/cloud; field range and collision testing; robust query retry and receive deferral; authenticated/replay-resistant business frames; authorized management; rotating session IDs. IDs are currently static. Absence of GPS does not make radio identifiers private. Sensors must report real values or UNKNOWN; do not insert simulated data into a real alert.
+Pending: actual buddy pairing; full three-tag concurrent operation; clasp, vibration, battery and GNSS integration; Wi-Fi/cloud; field range and collision testing; robust query retry and receive deferral; authenticated/replay-resistant business frames; authorized management; rotating session IDs. IDs are currently static. Absence of GPS does not make radio identifiers private. Sensors must report real values or UNKNOWN; do not insert simulated data into a real alert.
 
 To extend the firmware, keep sensor hardware in a dedicated driver/service and expose a snapshot to the protocol producer; version the protocol when its meaning changes. Do not place SPI access in shell callbacks, block BLE callbacks, or make a second thread operate the LoRa device. Add security/pairing/range requirements before presenting the prototype as child-safety equipment.

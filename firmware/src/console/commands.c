@@ -8,8 +8,20 @@
 #include <zephyr/sys/reboot.h>
 #include "presence.h"
 #include "radio_link.h"
+#include "imu.h"
 static int cmd_bg(const struct shell *shell, size_t argc, char **argv)
 {
+	if (!strcmp(argv[1], "imu") && argc == 2) {
+		struct bg_imu_snapshot s = bg_imu_get();
+		shell_print(shell, "imu enabled=%u available=%u address=0x%02x whoami=0x%02x motion=%s samples=%u age_ms=%lld error=%d",
+			s.enabled, s.available, s.address, s.whoami, bg_motion_name(s.motion),
+			s.samples, s.samples ? (long long)(k_uptime_get() - s.sampled_ms) : -1LL,
+			s.last_error);
+		shell_print(shell, "accel_mg=(%d,%d,%d) gyro_mrad_s=(%d,%d,%d)",
+			s.accel_mg[0], s.accel_mg[1], s.accel_mg[2], s.gyro_mrad_s[0],
+			s.gyro_mrad_s[1], s.gyro_mrad_s[2]);
+		return 0;
+	}
 	if (!strcmp(argv[1], "status") && argc == 2) {
 		struct bg_presence_status s = bg_presence_status();
 		shell_print(shell, "version=%s role=%s tag=%u sequence=%u connected=%ld maintenance=%u confirmed=%u",
@@ -53,7 +65,7 @@ static int cmd_bg(const struct shell *shell, size_t argc, char **argv)
 		}
 		return bg_radio_query(tag);
 	}
-	shell_error(shell, "bg status | maintenance <0..600> | heartbeat <on|off> | sos | query <1..3> | reboot");
+	shell_error(shell, "bg status | imu | maintenance <0..600> | heartbeat <on|off> | sos | query <1..3> | reboot");
 	return -EINVAL;
 }
 

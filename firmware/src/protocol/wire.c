@@ -24,7 +24,7 @@ bool bg_presence_decode(const uint8_t *data, size_t size, struct bg_presence_fra
 void bg_radio_frame_encode(uint8_t out[BG_RADIO_FRAME_SIZE], uint8_t type,
 						  uint8_t tag, uint16_t sequence)
 {
-	/* Motion/clasp UNKNOWN; battery 0xffff means unavailable. */
+	/* Default motion/clasp UNKNOWN; link fills fresh optional motion. Battery unavailable. */
 	const uint8_t frame[] = {'B', 'G', 1, type, tag, 0, (uint8_t)sequence,
 		(uint8_t)(sequence >> 8), 0, 0, 0xff, 0xff};
 	memcpy(out, frame, sizeof(frame));

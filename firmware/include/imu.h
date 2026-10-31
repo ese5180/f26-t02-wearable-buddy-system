@@ -1,0 +1,21 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+#ifndef BUDDYGUARD_IMU_H
+#define BUDDYGUARD_IMU_H
+#include <stdbool.h>
+#include <stdint.h>
+#include "motion.h"
+
+struct bg_imu_snapshot {
+	bool enabled, available;
+	uint8_t address, whoami;
+	enum bg_motion motion;
+	int32_t accel_mg[3], gyro_mrad_s[3];
+	uint32_t samples;
+	int64_t sampled_ms;
+	int last_error;
+};
+/* Optional service: a missing IMU never blocks main or image confirmation. */
+void bg_imu_start(void);
+struct bg_imu_snapshot bg_imu_get(void);
+enum bg_motion bg_imu_motion(void);
+#endif

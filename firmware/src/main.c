@@ -5,6 +5,7 @@
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include "health.h"
+#include "imu.h"
 #include "presence.h"
 #include "radio_link.h"
 #include "roster.h"
@@ -33,6 +34,7 @@ int main(void)
 			k_sleep(K_SECONDS(1));
 		}
 	}
+	bg_imu_start();
 	bg_health_begin();
 	for (;;) {
 		bg_roster_poll();
