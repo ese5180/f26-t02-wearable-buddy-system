@@ -41,7 +41,7 @@ python3.12 -m venv .venv
 
 两个 Python 环境用途不同：**工作区 `.venv`** 提供 west/esptool/imgtool，负责构建和首次烧录；**仓库 `.venv`** 提供 BLE、串口工具。后续请使用示例中的显式路径，不能假设激活一个环境就包含全部依赖。
 
-`west.yml` 固定 Zephyr 为 `f80761e49401497b5ee64ee9732dc2791055ec52`，版本显示 4.4.99，是固定开发版本而非正式 release。`west update` 同时解析其模块版本。ESP32 蓝牙配置会检查整个 hal_espressif 的 blob 集合，因此不要只下载 ESP32S3 的部分 blob。**正常固件不需要修改 Zephyr 源码**；`patches/` 是历史诊断材料，不要应用它。
+`west.yml` 固定 Zephyr 为 `f80761e49401497b5ee64ee9732dc2791055ec52`，版本显示 4.4.99，是固定开发版本而非正式 release。`west update` 同时解析其模块版本。ESP32 蓝牙配置会检查整个 hal_espressif 的 blob 集合，因此不要只下载 ESP32S3 的部分 blob。**正常 BLE／LoRa 固件不需要修改 Zephyr 源码**；可选 UART recovery 会自动应用一条 MCUboot Kconfig 默认值修复，见 [UART 恢复文档](UART_RECOVERY.md)。`patches/` 内另一个软件 SPI 补丁是历史诊断材料，不要应用它。
 
 复用已有工作区时，把 `BG_WS` 改成其路径并核对版本，不要重复 `west init`。SDK 安装需要网络和磁盘空间。主机依赖参考 [Zephyr 安装指南](https://docs.zephyrproject.org/latest/develop/getting_started/index.html)，板卡参考 [XIAO ESP32S3 文档](https://docs.zephyrproject.org/latest/boards/seeed/xiao_esp32s3/doc/index.html)；遇到新版示例差异时，以本仓库固定的版本为准。
 

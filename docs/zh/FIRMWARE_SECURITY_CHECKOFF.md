@@ -2,7 +2,7 @@
 
 [English 提交版](../en/FIRMWARE_SECURITY_CHECKOFF.md) · [GitHub 代码分支](https://github.com/ese5180/f26-t02-wearable-buddy-system/tree/codex/buddyguard-wireless-fota) · [PR #1](https://github.com/ese5180/f26-t02-wearable-buddy-system/pull/1)
 
-截至 **2026-10-31**：正常 BLE 签名 FOTA 已实现并实测；当前标签1.1.17（含 IMU），辅导员1.1.18。UART recovery 目前只是**临时工程编译验证，未烧录、未串口实测**。外部 Flash 的课程口径见下文。
+截至 **2026-10-31**：正常 BLE 签名 FOTA 已实现并实测；标签上次验证为1.1.17（含 IMU），辅导员现在为1.1.19。**C01 已安装并实测 MCUboot UART recovery**，包括正确签名上传、错误密钥签名拒绝，以及没有正常应用时的有效镜像恢复。外部 Flash 的课程口径见下文。
 
 ## 3.5.1 启动与更新流程
 
@@ -41,15 +41,16 @@ flowchart TD
 
 | 部件 | 版本 | 未签名应用／引导程序 | 签名应用 |
 |---|---|---:|---:|
-| MCUboot | 当前部署配置 | 46,672 B，45.58 KiB | 非应用镜像 |
+| T01 MCUboot | 原 BLE 配置 | 46,672 B，45.58 KiB | 非应用镜像 |
+| C01 MCUboot | 启用 UART recovery | 63,728 B，62.23 KiB | 非应用镜像 |
 | 儿童标签 T01，含 LSM6DSO | 1.1.17 | 436,660 B，426.43 KiB | 436,812 B，426.57 KiB |
-| 辅导员 C01 | 1.1.18 | 435,428 B，425.22 KiB | 435,578 B，425.37 KiB |
+| 辅导员 C01 | 1.1.19 | 435,412 B，425.21 KiB | 435,564 B，425.36 KiB |
 
 Bootloader 预留64 KiB；每个应用槽1,376,256 B（1,344 KiB），含 header／trailer／swap 开销。BLE 上传 `zephyr.signed.bin`，首次 USB 安装另含独立 MCUboot 文件。
 
 ## 下载由谁处理？
 
-正常 FOTA **由应用处理下载**：Zephyr MCUmgr image-management 接收 BLE SMP 数据并写入 secondary。MCUboot 负责启动时验证、激活、试运行／回滚及跳转，不负责当前 BLE 下载。Extra credit 若启用，则会新增由 MCUboot 自己运行的 UART SMP 下载入口。
+正常 FOTA **由应用处理下载**：Zephyr MCUmgr image-management 接收 BLE SMP 数据并写入 secondary。MCUboot 负责启动时验证、激活、试运行／回滚及跳转，不负责当前 BLE 下载。已实现的 Extra credit 则由 MCUboot 自己运行 UART SMP 下载入口，在应用启动前或没有有效应用时恢复。
 
 ## 为什么选 BLE？
 
@@ -82,7 +83,7 @@ Wi-Fi 可能更快，但当前还没有整合网络／更新服务。LoRa 当前
 | 下载中断 | secondary 暂存，完成前不激活；客户端按同一文件 SHA 续传 | 20%即87,258 B停止，旧应用保留，随后从该偏移续传 |
 | swap 中复位 | MCUboot 记录交换进度、重启后处理 | 算法已配置；未做 swap 中主动断电实测 |
 
-详见[有日期的实测记录](../../evidence/validation.md)和[回滚回归](../../evidence/modularization-20261030.md)。安全负例发生在表内历史版本，IMU 接入后没有重复全部负例；当前安装版本已验证正常 BLE 更新、自确认和镜像状态。**上传成功或 `bootable` 字段不等于签名被接受，必须复位后核对实际运行版本与 confirmed。**
+详见[有日期的实测记录](../../evidence/validation.md)和[回滚回归](../../evidence/modularization-20261030.md)。BLE 安全负例发生在表内历史版本；标签1.1.17与辅导员1.1.18已验证 BLE 更新、自确认与镜像状态。本次辅导员1.1.19改经 UART 安装，另外实测错误密钥拒绝与恢复，见下文。**上传成功或 `bootable` 字段不等于签名被接受，必须复位后核对实际运行版本与 confirmed。**
 
 ## 配置与密钥
 
@@ -95,53 +96,24 @@ Wi-Fi 可能更快，但当前还没有整合网络／更新服务。LoRa 当前
 
 密钥为 Team2 独有生成，不是 MCUboot 示例密钥，私钥不上传。当前未开启 ESP 硬件 Secure Boot eFuse 或 Flash 加密；已完成的是 MCUboot 应用签名验证，物理 USB 替换引导程序仍属于未锁定路径。管理授权、反降级策略和业务消息认证另待实现。
 
-## Extra credit：评估结论
+## Extra credit：UART 恢复实测结果
 
-**建议做，可行性较高，但尚未完成。**你们已有 USB 转 TTL 模块；我在独立临时副本里保留原密钥与分区，启用 UART recovery 并完成编译，没有改写两块板。
+**C01 上已实现并完成演示。**完整命令见 [UART 操作流程](UART_RECOVERY.md)，结果见[日期对应验证](../../evidence/uart-recovery-20261031.md)与[结构化记录](../../evidence/uart-recovery-20261031-summary.json)。
 
-| 条件 | 结果 |
+| 项目 | 实测结果 |
 |---|---|
-| 串口模块 | 已有；仍需确认 TX／RX 逻辑电平确为3.3V |
-| UART 引脚 | TX=D6/GPIO43，RX=D7/GPIO44；与当前 LoRa、IMU 不冲突 |
-| recovery 版 MCUboot | **60,624 B，59.20 KiB** |
-| 原分区是否够大 | 64 KiB，剩 **4,912 B**，编译容量通过 |
-| 主机工具 | 当前 Python 环境已有 `SMPSerialTransport` |
-| UART 实际上传／错误签名验证 | **尚未做** |
-| 当前已安装 serial recovery | **未启用** |
+| 完整备份、只换 bootloader |8 MiB 备份通过；bootloader 读回匹配，0x10000及之后全部内容保留 |
+| 最终 bootloader |63,728 B，原64 KiB分区剩1,808 B |
+| 真实 UART |CP2102、1152008N1；D6 TX/GPIO43、D7 RX/GPIO44；XIAO 单独 USB 供电 |
+| 正确团队签名 |1.1.19经 MCUboot UART 上传，实际启动为COUNSELOR，confirmed1 |
+| 错误密钥签名 |1.3.1通过其测试公钥验证、被团队公钥拒绝；完整 UART 上传后，MCUboot 验证排除 primary，复位不执行它 |
+| 无有效应用恢复 |错误镜像复位约33秒后仍能查询 MCUboot，只列出有效 secondary，超过正常入口窗口 |
+| 最终恢复 |在没有正常应用／BLE 的状态下再经 UART 上传正确1.1.19；启动、BLE active/confirmed、LoRa SPI0x1424均通过 |
 
-临时验证新增的 MCUboot 配置如下，仅作评估，不是当前部署配置：
+核心文件：[recovery 配置](../../firmware/conf/mcuboot-serial.conf)、[UART overlay](../../firmware/conf/mcuboot-serial.overlay)、[带备份检查的 bootloader 安装脚本](../../scripts/install_recovery_bootloader.py)、[UART 主机工具](../../tools/bg_uart_recovery.py)。固定版本的 ESP32 Xtensa 单线程配置收到了 UART 字节，却没有处理接收中断；构建脚本自动应用一条 [MCUboot Kconfig 默认值修复](../../patches/mcuboot-esp32-uart-threading.patch)，启用多线程。单在配置片段写隐藏符号没有生效。不启用 recovery 的普通构建保留原线程默认值；最终脚本还在新的构建目录完成了签名构建验证。
 
-```conf
-CONFIG_SERIAL=y
-CONFIG_MCUBOOT_SERIAL=y
-CONFIG_BOOT_SERIAL_UART=y
-CONFIG_BOOT_SERIAL_ENTRANCE_GPIO=n
-CONFIG_BOOT_SERIAL_WAIT_FOR_DFU=y
-CONFIG_BOOT_SERIAL_WAIT_FOR_DFU_TIMEOUT=3000
-CONFIG_BOOT_SERIAL_NO_APPLICATION=y
-# 保留原有 CONFIG_BOOT_VALIDATE_SLOT0=y 和团队 ECDSA-P256 信任根
-```
+恢复流程：复位→ESP ROM→MCUboot 验证镜像并检查恢复入口→窗口内收到 SMP 命令或没有有效应用时保持 UART 服务→直接把签名应用写入 primary→复位重新验签→有效则启动应用，无效则继续恢复。
 
-MCUboot overlay 将恢复入口指向真实 UART0，USB 日志单独保留：
+[MCUboot UART 默认写 primary](https://docs.mcuboot.com/serial_recovery.html)，可能覆盖原应用，不能沿用 BLE secondary 暂存／test-swap 的保护承诺。本次正确恢复镜像启动时已经 confirmed，不能把它描述为重新完成了一轮延迟确认或故障回滚。`BOOT_VALIDATE_SLOT0` 负责签名约束，`BOOT_SERIAL_NO_APPLICATION` 保证无应用时仍可恢复。ESP ROM USB 烧录和应用 shell 不等于这个加分功能。
 
-```dts
-/ {
-    chosen {
-        zephyr,uart-mcumgr = &uart0;
-    };
-};
-```
-
-预期接线：模块 TX→XIAO D7/RX，模块 RX←XIAO D6/TX，GND↔GND。板子继续 USB 供电，模块 VCC、DTR／RTS 先不接。不要通过按住 BOOT/GPIO0 复位来进 MCUboot recovery，那会选择 ESP ROM 下载器；这里用 MCUboot 自己的3秒等待窗口。
-
-建议实机实施／验收顺序：
-
-1. 先给一块板做当前整片备份，保留已知正常镜像与原签名密钥。
-2. 通过物理 USB 单独更新 MCUboot，保留应用槽和分区。当前 BLE OTA 只更新应用，不能替换引导程序；不要用带 erase-all 的首次安装脚本完成这一步。
-3. 复位后在3秒窗口内用匹配的 UART SMP 客户端进入恢复，先查询镜像，证明入口在应用启动前运行。
-4. UART 上传正确签名应用，复位检查新版本与自确认，演示独立于 BLE 应用的恢复路径。
-5. 演示错误签名或损坏镜像不会执行，再恢复正确签名应用并检查 BLE／LoRa／IMU。
-
-[MCUboot 官方恢复说明](https://docs.mcuboot.com/serial_recovery.html)规定默认上传目标是 **primary**。因此最简 UART recovery 可能覆盖旧 primary，不能沿用正常 BLE secondary 暂存的“下载期间保留旧 primary”承诺。无有效应用时保持恢复模式，保留 primary 验证；签名是否接受要看复位启动结果。若改成写 secondary，还要专门设计槽号选择及激活，不在这次编译评估中。
-
-现有 esptool／ESP ROM USB 首次刷机、应用 `bg` 串口 shell 都不等于这项 extra credit。只有 MCUboot 层的 UART 签名恢复和拒绝测试实机通过后，才应声明 extra credit 已完成。
+本轮仅连接 C01 与 TTL 模块，没有重跑两板 LoRa／IMU；之前的标签、传感器和无线验证单独保留。串口访问身份认证、硬件 secure-boot eFuse、Flash 加密及防降级尚未实现。没有独立测量此无品牌线的逻辑电压；队友复现请使用有明确3.3V逻辑规格的适配器。

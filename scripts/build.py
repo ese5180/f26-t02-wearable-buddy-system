@@ -14,6 +14,19 @@ BOARD = 'xiao_esp32s3/esp32s3/procpu'
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def prepare_serial_recovery(workspace):
+    """Apply the pinned MCUboot UART interrupt prerequisite, idempotently."""
+    module = workspace / 'bootloader/mcuboot'
+    patch = ROOT / 'patches/mcuboot-esp32-uart-threading.patch'
+    command = ['git', '-C', str(module), 'apply']
+    if subprocess.run(command + ['--reverse', '--check', str(patch)], capture_output=True).returncode == 0:
+        return
+    check = subprocess.run(command + ['--check', str(patch)], capture_output=True, text=True)
+    if check.returncode:
+        raise RuntimeError('MCUboot UART prerequisite cannot be applied; preserve local edits and inspect: ' + check.stderr)
+    subprocess.run(command + [str(patch)], check=True)
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--build-dir', required=True, type=Path)
@@ -23,6 +36,7 @@ def main():
     p.add_argument('--counselor', action='store_true', help='Compatibility alias for --role counselor')
     p.add_argument('--tag-id', type=int, choices=range(1, 4), default=None)
     p.add_argument('--imu', action='store_true', help='Tag only: enable SparkFun LSM6DSO on I2C D4/D5')
+    p.add_argument('--serial-recovery', action='store_true', help='Build MCUboot with UART0 recovery (requires separate USB bootloader installation)')
     p.add_argument('--fault', action='store_true', help='Rollback test ONLY: stop feeding WDT before confirmation')
     p.add_argument('--version', help='Isolated major.minor.patch override; does not edit source VERSION')
     args = p.parse_args()
@@ -53,7 +67,10 @@ def main():
     actual = subprocess.check_output(['git', '-C', str(workspace / 'zephyr'), 'rev-parse', 'HEAD'], text=True).strip()
     if actual != pinned:
         p.error(f'Zephyr HEAD {actual} differs from west.yml {pinned}; run west update in the documented workspace.')
-    profile = {'board': BOARD, 'role': role, 'tag_id': tag, 'fault': args.fault, 'imu': args.imu, 'key': str(key)}
+    if args.serial_recovery:
+        prepare_serial_recovery(workspace)
+    profile = {'board': BOARD, 'role': role, 'tag_id': tag, 'fault': args.fault, 'imu': args.imu,
+               'serial_recovery': args.serial_recovery, 'key': str(key)}
     marker = build.with_name(build.name + '.buddyguard.json')
     if marker.exists() and json.loads(marker.read_text()) != profile:
         p.error('Build directory belongs to another role/ID/key/fault profile. Choose a new build directory.')
@@ -92,6 +109,12 @@ def main():
     cmd = [str(west), 'build', '-b', BOARD, '--sysbuild', str(application), '-d', str(build), '--',
            '-DSB_CONFIG_BOOT_SIGNATURE_KEY_FILE="' + str(key) + '"', '-DEXTRA_CONF_FILE=' + str(config),
            '-Dfirmware_EXTRA_DTC_OVERLAY_FILE=' + (str(application / 'conf/lsm6dso.overlay') if args.imu else '')]
+    boot_confs = [str(application / 'sysbuild/mcuboot.conf')]
+    if args.serial_recovery:
+        boot_confs.append(str(application / 'conf/mcuboot-serial.conf'))
+    cmd.extend(['-Dmcuboot_EXTRA_CONF_FILE=' + ';'.join(boot_confs),
+                '-Dmcuboot_EXTRA_DTC_OVERLAY_FILE=' +
+                (str(application / 'conf/mcuboot-serial.overlay') if args.serial_recovery else '')])
     rc = subprocess.call(cmd, cwd=workspace, env=env)
     if rc:
         return rc
@@ -105,6 +128,19 @@ def main():
         image=str(image), signed_bytes=image.stat().st_size,
         sha256=hashlib.sha256(image.read_bytes()).hexdigest(),
         public_key_sha256=hashlib.sha256(public).hexdigest())
+    boot = build / 'mcuboot/zephyr/zephyr.bin'
+    boot_config = (build / 'mcuboot/zephyr/.config').read_text()
+    if args.serial_recovery and not all(flag in boot_config for flag in
+            ('CONFIG_MCUBOOT_SERIAL=y', 'CONFIG_BOOT_SERIAL_UART=y', 'CONFIG_BOOT_VALIDATE_SLOT0=y',
+             'CONFIG_MULTITHREADING=y')):
+        raise RuntimeError('Recovery/primary verification flags missing from MCUboot output')
+    if boot.stat().st_size > 0x10000:
+        raise RuntimeError('MCUboot exceeds the unchanged 64 KiB boot partition; do not flash')
+    report.update(bootloader_bytes=boot.stat().st_size,
+                  bootloader_sha256=hashlib.sha256(boot.read_bytes()).hexdigest())
+    if args.serial_recovery:
+        report['recovery_patch_sha256'] = hashlib.sha256(
+            (ROOT / 'patches/mcuboot-esp32-uart-threading.patch').read_bytes()).hexdigest()
     (build / 'buddyguard-build.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report, indent=2))
     return 0

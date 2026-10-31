@@ -1,8 +1,8 @@
 # BuddyGuard — ESE 5180 Team 2
 
-**BLE presence + LoRa P2P + signed BLE firmware updates**, on the XIAO ESP32S3 / Wio-SX1262 B2B kit.
+**BLE presence + LoRa P2P + signed BLE updates + MCUboot UART recovery**, on the XIAO ESP32S3 / Wio-SX1262 B2B kit.
 
-**营地标签与辅导员监测原型**：BLE 通信心跳、LoRa P2P 查询／告警、MCUboot 签名 BLE 更新。
+**营地标签与辅导员监测原型**：BLE 通信心跳、LoRa P2P 查询／告警、MCUboot 签名 BLE 更新及 UART 恢复。
 
 ## Start here / 文档入口
 
@@ -10,13 +10,18 @@
 |---|---|---|
 | Teammate setup, build, provisioning, wireless demo, OTA and troubleshooting / 队友完整复现 | [操作文档](docs/zh/GETTING_STARTED.md) | [Reproduction guide](docs/en/GETTING_STARTED.md) |
 | Module interfaces, threads, radio formats, update chain and limits / 固件解释 | [固件解释](docs/zh/FIRMWARE.md) | [Firmware explanation](docs/en/FIRMWARE.md) |
-| Firmware security checkoff + UART extra credit / 安全作业回答与加分评估 | [中文回答](docs/zh/FIRMWARE_SECURITY_CHECKOFF.md) | [English answer](docs/en/FIRMWARE_SECURITY_CHECKOFF.md) |
+| Firmware security checkoff + UART extra credit / 安全作业回答与加分实现 | [中文回答](docs/zh/FIRMWARE_SECURITY_CHECKOFF.md) | [English answer](docs/en/FIRMWARE_SECURITY_CHECKOFF.md) |
+| MCUboot UART recovery / 串口恢复加分实现 | [恢复操作](docs/zh/UART_RECOVERY.md) | [UART recovery](docs/en/UART_RECOVERY.md) |
 | Optional SparkFun LSM6DSO / 可选 IMU | [IMU 接入](docs/zh/IMU_LSM6DSO.md) | [IMU integration](docs/en/IMU_LSM6DSO.md) |
 | Observed build and hardware results / 实测结果 | [Validation record](evidence/validation.md) | [Current build metadata](evidence/current-builds.json) |
 
-Current source: **1.1.18**, adding optional LSM6DSO motion sensing to the validated modular 1.1.16 baseline. Both roles passed BLE OTA and self-confirmation; real hand motion produced STILL/MOVING/STILL locally and over LoRa. See the dated validation records. The branch is `codex/buddyguard-wireless-fota`; clone that branch while changes are under review.
+Current source: **1.1.18** (C01 recovery demonstration uses isolated version **1.1.19**), adding optional LSM6DSO motion sensing to the validated modular 1.1.16 baseline. Both roles passed BLE OTA and self-confirmation; real hand motion produced STILL/MOVING/STILL locally and over LoRa. See the dated validation records. The branch is `codex/buddyguard-wireless-fota`; clone that branch while changes are under review.
 
-当前源码 **1.1.18**，在已验证的模块化 1.1.16 基础上增加可选 LSM6DSO 采样。两端 BLE 更新／自确认、真实晃动的 STILL／MOVING／STILL 及 LoRa 传输均已验证，详见日期对应记录。审核期间请克隆 `codex/buddyguard-wireless-fota` 分支。
+当前源码 **1.1.18**（C01 恢复演示使用独立版本 **1.1.19**），在已验证的模块化 1.1.16 基础上增加可选 LSM6DSO 采样。两端 BLE 更新／自确认、真实晃动的 STILL／MOVING／STILL 及 LoRa 传输均已验证，详见日期对应记录。审核期间请克隆 `codex/buddyguard-wireless-fota` 分支。
+
+C01 additionally passed MCUboot UART valid-image upload, wrong-key rejection and restoration to1.1.19; [dated UART evidence](evidence/uart-recovery-20261031.md). T01 was not reconnected for that test.
+
+C01 另完成 MCUboot UART 有效签名上传、错误密钥签名拒绝及1.1.19恢复，见[实测记录](evidence/uart-recovery-20261031.md)；本轮未接回 T01。
 
 ## Repository layout / 目录
 
@@ -71,8 +76,8 @@ Do not commit private keys, full-flash backups, credentials, `.venv`, build dire
 - [Pre-refactor README / 重构前记录](docs/archive/README-before-modularization.md)
 - [Earlier concept / 旧概念归档](docs/archive/README-before-buddyguard.md)
 
-Root `README.pdf` and `image/` are original course-history artifacts, not generated copies of the current firmware documentation. `patches/` is a historical software-SPI diagnostic; the current hardware-SPI build needs no patch.
+Root `README.pdf` and `image/` are original course-history artifacts, not generated copies of the current firmware documentation. The ordinary hardware-SPI build needs no patch. Optional UART recovery applies the tracked MCUboot threading prerequisite automatically; the older software-SPI diagnostic patch remains historical.
 
-根目录 `README.pdf`、`image/` 为早期课程材料，不是当前文档导出；`patches/` 仅供历史诊断参考。
+根目录 `README.pdf`、`image/` 为早期课程材料，不是当前文档导出；普通硬件 SPI 不需补丁；可选 UART 恢复由脚本自动应用 MCUboot 线程修复，旧软件 SPI 补丁仍仅供历史诊断参考。
 
 Team Jet2Holiday: Siwei Lei, Rico Zhuang, Yunzhe Deng, Yubin Guan.

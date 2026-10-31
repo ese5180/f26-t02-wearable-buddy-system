@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-31",
+  "hardware_tested": true,
+  "board": "xiao_esp32s3/esp32s3/procpu",
+  "device": "C01",
+  "source_base_commit": "4fdc5ef251f99864bad50922052e8f7a268a844e",
+  "zephyr_revision": "f80761e49401497b5ee64ee9732dc2791055ec52",
+  "mcuboot_revision": "7ad67106c3253d03ae4bd8ab48e6bdf7bc46f43e",
+  "bootloader_bytes": 63728,
+  "bootloader_sha256": "0fa4e54cc987f563ada36c5cf819285d9e0babd9a8ad7cc1fb50c576a139743e",
+  "boot_partition_bytes": 65536,
+  "remaining_boot_bytes": 1808,
+  "recovery_patch": "patches/mcuboot-esp32-uart-threading.patch",
+  "recovery_patch_sha256": "4ea3fa5d8466d0914718c426da752e39d5edb7fa61f92780a8ddb912ffb1b1ee",
+  "public_key_sha256": "243b7509cec77ffaa1167f1d817836e3a5f3bfc3e3627b15dba457003eecba28",
+  "uart": "UART0: TX=D6/GPIO43 RX=D7/GPIO44; 115200 8N1",
+  "adapter": "CP2102; tested cable green TX, white RX, black GND; red disconnected; XIAO USB-powered. Logic voltage was not independently measured.",
+  "backup_and_bootloader_install": {
+    "bootloader_matches": true,
+    "remaining_flash_preserved": true,
+    "original_sha256": "936c1fcdbad166b1dd9afab84988a30b997edfd957bfaa712c53c04fd967f4c7",
+    "installed_sha256": "1eade9dfb5c3c625ab71df68b615ca127de4c745491263c581347db407e13796",
+    "bootloader_sha256": "0fa4e54cc987f563ada36c5cf819285d9e0babd9a8ad7cc1fb50c576a139743e",
+    "bootloader_bytes": 63728
+  },
+  "good_image": {
+    "version": "1.1.19",
+    "role": "COUNSELOR",
+    "unsigned_bytes": 435412,
+    "signed_bytes": 435564,
+    "signed_file_sha256": "23b5a87054a3743ce012d37a64a6d096fd206e24474516b9d38cd8b851dee37a",
+    "image_digest": "63b9ba9bf1f0b1e236081bf047e89d068c9b8668dd52691bcded4ed8c11ab8fe",
+    "uart_uploaded": true,
+    "booted": true,
+    "confirmed": true
+  },
+  "wrong_key_image": {
+    "version": "1.3.1",
+    "signed_bytes": 435563,
+    "signed_file_sha256": "b7e5f903124b2700f313bf51894e5077e02804e86aa3998f7e7b33c379f29109",
+    "image_digest": "9d1d7ebf6d28b0fc414549b4e3e13d8e7d76ea7f9698b640fefa26cf7057a673",
+    "valid_under_its_own_test_root": true,
+    "rejected_by_team_public_key_offline": true,
+    "uart_upload_completed": true,
+    "omitted_from_mcuboot_valid_image_list": true,
+    "candidate_did_not_boot": true,
+    "recovery_responded_after_reset_approx_seconds": 33.0
+  },
+  "restoration": {
+    "valid_image_uart_uploaded": true,
+    "application_booted": "1.1.19 COUNSELOR",
+    "ble_smp_active_confirmed": true,
+    "sx1262_spi_readback": "0x1424",
+    "two_device_lora_and_imu_retested_this_run": false,
+    "reason": "Only C01 and the TTL adapter were connected; previous T01/IMU validation remains separately dated.",
+    "final_maintenance": 0,
+    "final_connected": 0,
+    "final_confirmed": 1,
+    "final_advertising_mode": "presence"
+  },
+  "host_tests_passed": 12,
+  "limits": [
+    "UART writes primary directly; no BLE-style trial/revert guarantee for recovery",
+    "Physical UART access is unauthenticated",
+    "Hardware secure-boot eFuses and Flash encryption disabled",
+    "No anti-downgrade policy",
+    "Full Flash and private keys excluded from Git"
+  ],
+  "fresh_directory_build": {
+    "bootloader_bytes": 63728,
+    "bootloader_sha256": "e39d44a155c79f0d9ecc87fe5de6cf12b67d073b3c931bc2affd2b24d8536453",
+    "signed_bytes": 435563,
+    "sha256": "c1b92ef830fd667ad3243b1b4f8a4c4d31c555b40f55c641659c301b0ab12d73",
+    "recovery_patch_sha256": "4ea3fa5d8466d0914718c426da752e39d5edb7fa61f92780a8ddb912ffb1b1ee",
+    "flashed": false
+  }
+}

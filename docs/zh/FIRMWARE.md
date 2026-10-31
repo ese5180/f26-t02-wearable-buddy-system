@@ -151,3 +151,7 @@ sysbuild 同时构建 MCUboot 和应用。MCUboot 使用 ECDSA-P256、primary �
 待做：儿童之间配对；三标签完整并发；搭扣、振动、电量、GNSS；Wi-Fi／云；户外范围／碰撞测试；QUERY 自动重试和 ACK 等待期间接收缓存；业务帧认证／防重放；管理授权；轮换 session ID。**当前 ID 是静态的**，没有 GPS 不意味着无线标识私密。传感器必须输出真实测量或 UNKNOWN，不能在真实报警里插入伪造值。
 
 扩展时把传感器硬件放在独立驱动／服务，由协议发送方读取状态快照；含义改变时升级协议版本。不要在 shell 直接访问 SPI、阻塞 BLE 回调或让第二个线程同时操作 LoRa。成为儿童安全设备之前还需定义并验证安全、配对及距离／覆盖要求。
+
+## 可选 MCUboot UART 恢复
+
+`--serial-recovery` 在 bootloader 内增加 UART0 SMP 服务（D6 TX/GPIO43，D7 RX/GPIO44）。固定 MCUboot 版本需要由构建脚本自动应用的线程默认值修复；最终 bootloader 为63,728字节，保留原分区与团队公钥。电脑工具在复位时快速探测，再给槽位哈希查询较长超时。此路径直接写 primary，不走 BLE test 激活，上传中断也不能保证原 primary 应用保留。详见[完整操作流程](UART_RECOVERY.md)与日期对应证据。

@@ -1,10 +1,12 @@
 # Hardware validation — 29–31 October 2026
 
-**Latest / IMU stage (2026-10-31):** real LSM6DSO six-axis data and STILL/MOVING/STILL over LoRa verified. Tag1.1.17 and counselor1.1.18 active/confirmed. Counselor scan duplicate filtering corrected; 186 seconds without unintended loss, then deliberate loss/query/recovery passed. [IMU validation / IMU 验证](imu-validation-20261031.md).
+**Latest / UART recovery (2026-10-31):** C01 MCUboot UART valid/wrong-key uploads, rejection, no-application recovery and restoration to1.1.19 passed. [UART evidence / 串口恢复验证](uart-recovery-20261031.md). T01 was not connected for this run.
+
+**Previous / IMU stage (2026-10-31):** real LSM6DSO six-axis data and STILL/MOVING/STILL over LoRa verified. Tag1.1.17 and counselor1.1.18 active/confirmed. Counselor scan duplicate filtering corrected; 186 seconds without unintended loss, then deliberate loss/query/recovery passed. [IMU validation / IMU 验证](imu-validation-20261031.md).
 
 **Previous modular baseline (2026-10-30):** [1.1.16 OTA/wireless/watchdog validation](modularization-20261030.md).
 
-These are observations from two physical XIAO ESP32S3 + Wio-SX1262 B2B kits on the development Mac. Each board was backed up and provisioned once over USB. Subsequent firmware changes were transferred over BLE SMP; USB supplied power and logs. Private keys, full flash backups and raw captures are excluded from Git.
+These are observations from two physical XIAO ESP32S3 + Wio-SX1262 B2B kits on the development Mac. Each board was backed up and provisioned once over USB. Subsequent normal application changes used BLE SMP; the later dated UART recovery section additionally records a bootloader-only USB update and MCUboot UART application uploads. USB otherwise supplied power and logs. Private keys, full flash backups and raw captures are excluded from Git.
 
 ## Secure update results
 

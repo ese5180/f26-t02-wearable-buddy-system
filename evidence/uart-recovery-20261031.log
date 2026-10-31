@@ -1,0 +1,95 @@
+MCUboot UART recovery — C01 — 2026-10-31
+
+Bootloader-only installation readback:
+{
+  "bootloader_matches": true,
+  "remaining_flash_preserved": true,
+  "original_sha256": "936c1fcdbad166b1dd9afab84988a30b997edfd957bfaa712c53c04fd967f4c7",
+  "installed_sha256": "1eade9dfb5c3c625ab71df68b615ca127de4c745491263c581347db407e13796",
+  "bootloader_sha256": "0fa4e54cc987f563ada36c5cf819285d9e0babd9a8ad7cc1fb50c576a139743e",
+  "bootloader_bytes": 63728
+}
+
+Initial MCUboot UART image list:
+Waiting for MCUboot UART recovery. Reset the target into its 3-second window if needed.
+{"version": 1, "sequence": 1, "images": [{"slot": 0, "version": "1.1.18", "image": null, "hash": "77f51e232faa9fb57bbf78b5fa1324e95013599d6400a1b263193e5fd268610b", "bootable": null, "pending": null, "confirmed": null, "active": null, "permanent": null}, {"slot": 1, "version": "1.1.17", "image": null, "hash": "0d5aec2d9379db3fd593d9798b155f040b3c89273f119caead87e32b1d12c3dd", "bootable": null, "pending": null, "confirmed": null, "active": null, "permanent": null}], "splitStatus": null}
+{"event": "recovery_connected", "port": "/dev/cu.usbserial-0001", "max_unencoded_size": 341}
+
+Good Team2 signed1.1.19 UART upload:
+Image was correctly validated
+Image version: 1.1.19+0
+Image digest: 63b9ba9bf1f0b1e236081bf047e89d068c9b8668dd52691bcded4ed8c11ab8fe
+
+Waiting for MCUboot UART recovery. Reset the target into its 3-second window if needed.
+{"version": 1, "sequence": 1, "images": [{"slot": 0, "version": "1.1.18", "image": null, "hash": "77f51e232faa9fb57bbf78b5fa1324e95013599d6400a1b263193e5fd268610b", "bootable": null, "pending": null, "confirmed": null, "active": null, "permanent": null}, {"slot": 1, "version": "1.1.17", "image": null, "hash": "0d5aec2d9379db3fd593d9798b155f040b3c89273f119caead87e32b1d12c3dd", "bootable": null, "pending": null, "confirmed": null, "active": null, "permanent": null}], "splitStatus": null}
+{"event": "recovery_connected", "port": "/dev/cu.usbserial-0001", "max_unencoded_size": 341}
+{"event": "upload_start", "target": "PRIMARY", "bytes": 435564}
+{"event": "upload", "bytes": 435564, "total": 435564, "percent": 100}
+{"event": "upload_complete", "note": "Signature acceptance must be checked at boot."}
+{"version": 1, "sequence": 121, "images": [{"slot": 0, "version": "1.1.19", "image": null, "hash": "63b9ba9bf1f0b1e236081bf047e89d068c9b8668dd52691bcded4ed8c11ab8fe", "bootable": null, "pending": null, "confirmed": null, "active": null, "permanent": null}, {"slot": 1, "version": "1.1.17", "image": null, "hash": "0d5aec2d9379db3fd593d9798b155f040b3c89273f119caead87e32b1d12c3dd", "bootable": null, "pending": null, "confirmed": null, "active": null, "permanent": null}], "splitStatus": null}
+{"version": 1, "sequence": 122, "rc": 0, "rsn": null}
+{"event": "reset_requested", "note": "Check USB boot logs and the running application version."}
+
+Wrong-root1.3.1 UART upload and rejection:
+No signature found for the given key
+
+NEGATIVE TEST: deliberately overwriting primary with an invalid candidate; retain a valid recovery image.
+Waiting for MCUboot UART recovery. Reset the target into its 3-second window if needed.
+{"version": 1, "sequence": 42, "images": [{"slot": 0, "version": "1.1.19", "image": null, "hash": "63b9ba9bf1f0b1e236081bf047e89d068c9b8668dd52691bcded4ed8c11ab8fe", "bootable": null, "pending": null, "confirmed": null, "active": null, "permanent": null}, {"slot": 1, "version": "1.1.17", "image": null, "hash": "0d5aec2d9379db3fd593d9798b155f040b3c89273f119caead87e32b1d12c3dd", "bootable": null, "pending": null, "confirmed": null, "active": null, "permanent": null}], "splitStatus": null}
+{"event": "recovery_connected", "port": "/dev/cu.usbserial-0001", "max_unencoded_size": 341}
+{"event": "upload_start", "target": "PRIMARY", "bytes": 435563}
+{"event": "upload", "bytes": 435563, "total": 435563, "percent": 100}
+{"event": "upload_complete", "note": "Signature acceptance must be checked at boot."}
+{"version": 1, "sequence": 162, "images": [{"slot": 1, "version": "1.1.17", "image": null, "hash": "0d5aec2d9379db3fd593d9798b155f040b3c89273f119caead87e32b1d12c3dd", "bootable": null, "pending": null, "confirmed": null, "active": null, "permanent": null}], "splitStatus": null}
+{"version": 1, "sequence": 163, "rc": 0, "rsn": null}
+{"event": "reset_requested", "note": "Check USB boot logs and the running application version."}
+
+Recovery query about33 seconds after bad-image reset:
+Waiting for MCUboot UART recovery. Reset the target into its 3-second window if needed.
+{"version": 1, "sequence": 1, "images": [{"slot": 1, "version": "1.1.17", "image": null, "hash": "0d5aec2d9379db3fd593d9798b155f040b3c89273f119caead87e32b1d12c3dd", "bootable": null, "pending": null, "confirmed": null, "active": null, "permanent": null}], "splitStatus": null}
+{"event": "recovery_connected", "port": "/dev/cu.usbserial-0001", "max_unencoded_size": 341}
+
+Good1.1.19 restored through UART:
+Image was correctly validated
+Image version: 1.1.19+0
+Image digest: 63b9ba9bf1f0b1e236081bf047e89d068c9b8668dd52691bcded4ed8c11ab8fe
+
+Waiting for MCUboot UART recovery. Reset the target into its 3-second window if needed.
+{"version": 1, "sequence": 1, "images": [{"slot": 1, "version": "1.1.17", "image": null, "hash": "0d5aec2d9379db3fd593d9798b155f040b3c89273f119caead87e32b1d12c3dd", "bootable": null, "pending": null, "confirmed": null, "active": null, "permanent": null}], "splitStatus": null}
+{"event": "recovery_connected", "port": "/dev/cu.usbserial-0001", "max_unencoded_size": 341}
+{"event": "upload_start", "target": "PRIMARY", "bytes": 435564}
+{"event": "upload", "bytes": 435564, "total": 435564, "percent": 100}
+{"event": "upload_complete", "note": "Signature acceptance must be checked at boot."}
+{"version": 1, "sequence": 121, "images": [{"slot": 0, "version": "1.1.19", "image": null, "hash": "63b9ba9bf1f0b1e236081bf047e89d068c9b8668dd52691bcded4ed8c11ab8fe", "bootable": null, "pending": null, "confirmed": null, "active": null, "permanent": null}, {"slot": 1, "version": "1.1.17", "image": null, "hash": "0d5aec2d9379db3fd593d9798b155f040b3c89273f119caead87e32b1d12c3dd", "bootable": null, "pending": null, "confirmed": null, "active": null, "permanent": null}], "splitStatus": null}
+{"version": 1, "sequence": 122, "rc": 0, "rsn": null}
+{"event": "reset_requested", "note": "Check USB boot logs and the running application version."}
+
+Restored BLE image state:
+{"version": 1, "sequence": 1, "images": [{"slot": 0, "version": "1.1.19", "image": null, "hash": "63b9ba9bf1f0b1e236081bf047e89d068c9b8668dd52691bcded4ed8c11ab8fe", "bootable": true, "pending": false, "confirmed": true, "active": true, "permanent": false}, {"slot": 1, "version": "1.1.17", "image": null, "hash": "0d5aec2d9379db3fd593d9798b155f040b3c89273f119caead87e32b1d12c3dd", "bootable": true, "pending": false, "confirmed": false, "active": false, "permanent": false}], "splitStatus": 0}
+Disconnected from FBA8FEA0-5EF3-7334-D98F-FB7B51715400
+
+First good-image boot:
+[00:00:04.000,000] <inf> buddyguard: BuddyGuard version=1.1.19 role=COUNSELOR tag=200 confirmed=1
+[00:00:04.084,000] <inf> bg_wio: SX1262 SPI readback: private sync word=0x1424 (expected 0x1424)
+[00:00:04.084,000] <inf> bg_wio: Wio-SX1262 ready: 915 MHz SF7 BW125 CR4/5 power=4 dBm role=COUNSELOR
+[00:00:04.118,000] <inf> bg_roster: Counselor BLE roster started: controller duplicate filtering OFF; demo timeout=8000 ms; maintenance grace=600 s
+[00:00:04.119,000] <inf> bg_presence: Advertising started: maintenance/SMP
+
+Final restored application:
+[00:00:04.000,000] <inf> buddyguard: BuddyGuard version=1.1.19 role=COUNSELOR tag=200 confirmed=1
+[00:00:04.085,000] <inf> bg_wio: SX1262 SPI readback: private sync word=0x1424 (expected 0x1424)
+[00:00:04.085,000] <inf> bg_wio: Wio-SX1262 ready: 915 MHz SF7 BW125 CR4/5 power=4 dBm role=COUNSELOR
+[00:00:04.119,000] <inf> bg_roster: Counselor BLE roster started: controller duplicate filtering OFF; demo timeout=8000 ms; maintenance grace=600 s
+[00:00:04.120,000] <inf> bg_presence: Advertising started: maintenance/SMP
+[00:00:06.122,000] <inf> bg_presence: Advertising started: maintenance/SMP
+
+Bad-image reset capture: MCUboot banner present; no BuddyGuard1.3.1/application banner or app loader jump. Post-reset UART query returned only valid secondary1.1.17. Exact raw captures remain local; this is distinct from a transfer timeout.
+
+
+Final USB status:
+
+uart:~$ bg status
+version=1.1.19 role=COUNSELOR tag=200 sequence=64 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:02:10.185,000] <inf> bg_presence: Advertising started: presence
+uart:~$ [00:02:10.185,000] <inf> buddyguard: Presence seq=64 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$

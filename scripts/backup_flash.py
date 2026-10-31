@@ -15,6 +15,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--port', required=True)
     p.add_argument('--output-dir', required=True, type=Path)
+    p.add_argument('--baud', type=int, default=115200)
     args = p.parse_args()
     root = Path(__file__).resolve().parents[1]
     directory = args.output_dir.expanduser().resolve()
@@ -28,7 +29,7 @@ def main():
     directory.mkdir(parents=True)
     image = directory / 'original-flash-8mb.bin'
     command = [sys.executable, '-m', 'esptool', '--chip', 'esp32s3', '--port', args.port,
-               '--before', 'usb-reset', '--after', 'watchdog-reset', '--baud', '460800',
+               '--before', 'usb-reset', '--after', 'watchdog-reset', '--baud', str(args.baud),
                '--connect-attempts', '2', 'read-flash', '0', '0x800000', str(image), '--no-progress']
     result = subprocess.run(command, capture_output=True, text=True, timeout=240)
     log = result.stdout + result.stderr

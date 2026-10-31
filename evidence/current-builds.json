@@ -18,17 +18,20 @@
     },
     {
       "role": "counselor",
-      "version": "1.1.18",
+      "version": "1.1.19",
       "imu_enabled": false,
-      "artifact": "buddyguard-counselor-1.1.18.signed.bin",
-      "signed_bytes": 435578,
-      "signed_file_sha256": "e6dd33bbb0fc16ad6d63dcc6e31f937cda466b09b774d140fe4a0aff0600cfe0",
-      "image_digest": "77f51e232faa9fb57bbf78b5fa1324e95013599d6400a1b263193e5fd268610b",
-      "unsigned_bytes": 435428,
-      "unsigned_sha256": "ae8831269388c5a5b0568ba7abafea2d9c92b20d7b542563a1fccd7ce890849b",
-      "bootloader_bytes": 46672
+      "artifact": "buddyguard-counselor-1.1.19.signed.bin",
+      "signed_bytes": 435564,
+      "signed_file_sha256": "23b5a87054a3743ce012d37a64a6d096fd206e24474516b9d38cd8b851dee37a",
+      "image_digest": "63b9ba9bf1f0b1e236081bf047e89d068c9b8668dd52691bcded4ed8c11ab8fe",
+      "unsigned_bytes": 435412,
+      "unsigned_sha256": "42659bf2635d8ca99e4d2fd6ff0de2bf37163d5678e24465f6831d56fa5fbe14",
+      "bootloader_bytes": 63728,
+      "bootloader_sha256": "0fa4e54cc987f563ada36c5cf819285d9e0babd9a8ad7cc1fb50c576a139743e",
+      "serial_recovery": true
     }
   ],
   "public_key_sha256": "243b7509cec77ffaa1167f1d817836e3a5f3bfc3e3627b15dba457003eecba28",
-  "status": "Tag 1.1.17 with LSM6DSO and counselor 1.1.18 active/confirmed. Real hand motion and LoRa STILL/MOVING/STILL verified on v17 pair; v18 scan fix observed over 3 minutes without unintended missing alarms, followed by intentional loss/query/recovery. Heartbeat restored; both maintenance windows closed."
+  "status": "T01 last verified1.1.17 with LSM6DSO; not connected during UART tests. C01 restored to1.1.19 after valid/wrong-key UART recovery tests; actual boot, BLE active/confirmed and SX1262 readback verified. Final maintenance closure recorded in UART evidence.",
+  "uart_recovery_evidence": "uart-recovery-20261031-summary.json"
 }

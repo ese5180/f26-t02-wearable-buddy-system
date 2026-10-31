@@ -145,3 +145,7 @@ Implemented: optional SparkFun LSM6DSO sensing with `--imu` (see linked IMU guid
 Pending: actual buddy pairing; full three-tag concurrent operation; clasp, vibration, battery and GNSS integration; Wi-Fi/cloud; field range and collision testing; robust query retry and receive deferral; authenticated/replay-resistant business frames; authorized management; rotating session IDs. IDs are currently static. Absence of GPS does not make radio identifiers private. Sensors must report real values or UNKNOWN; do not insert simulated data into a real alert.
 
 To extend the firmware, keep sensor hardware in a dedicated driver/service and expose a snapshot to the protocol producer; version the protocol when its meaning changes. Do not place SPI access in shell callbacks, block BLE callbacks, or make a second thread operate the LoRa device. Add security/pairing/range requirements before presenting the prototype as child-safety equipment.
+
+## Optional MCUboot UART recovery
+
+`--serial-recovery` adds a separate bootloader-level SMP server on UART0 (D6 TX/GPIO43, D7 RX/GPIO44). The pinned MCUboot Kconfig needs the automatically applied threading prerequisite; the resulting bootloader is63,728 bytes and retains the existing partitions/team public root. The host probes frequently during reset entry, then allows longer image-hash replies. It writes primary directly, so it does not use BLE test activation or preserve that primary during an interrupted transfer. See the [complete UART procedure](UART_RECOVERY.md) and dated evidence.

@@ -2,7 +2,7 @@
 
 [中文](../zh/FIRMWARE_SECURITY_CHECKOFF.md) · [Repository](https://github.com/ese5180/f26-t02-wearable-buddy-system/tree/codex/buddyguard-wireless-fota) · [PR #1](https://github.com/ese5180/f26-t02-wearable-buddy-system/pull/1)
 
-Status on **2026-10-31**: normal signed BLE FOTA is implemented and hardware-tested. The installed devices are T01 1.1.17 (LSM6DSO enabled) and C01 1.1.18. UART recovery is a **compile-tested feasibility configuration only**, not installed or demonstrated. The course's interpretation of external storage is identified below.
+Status on **2026-10-31**: normal signed BLE FOTA is implemented and hardware-tested. T01 was last verified at1.1.17 (LSM6DSO enabled); C01 now runs1.1.19. **MCUboot UART recovery is installed and hardware-tested on C01**, including valid signed upload, wrong-key rejection and restoration without a working application. The course's interpretation of external storage is identified below.
 
 ## 3.5.1 Bootloading process
 
@@ -41,9 +41,10 @@ These are **binary file sizes**, not RAM usage or allocated partition sizes. Mea
 
 | Component | Version | Unsigned application / bootloader bytes | Signed application bytes |
 |---|---|---:|---:|
-| MCUboot | Existing deployed configuration | 46,672 (45.58 KiB) | Not an application image |
+| MCUboot on T01 | Existing BLE configuration | 46,672 (45.58 KiB) | Not an application image |
+| MCUboot on C01 | UART recovery enabled | 63,728 (62.23 KiB) | Not an application image |
 | T01 tag with LSM6DSO | 1.1.17 | 436,660 (426.43 KiB) | 436,812 (426.57 KiB) |
-| C01 counselor | 1.1.18 | 435,428 (425.22 KiB) | 435,578 (425.37 KiB) |
+| C01 counselor | 1.1.19 | 435,412 (425.21 KiB) | 435,564 (425.36 KiB) |
 
 The bootloader partition is 65,536 bytes (64 KiB). Each application slot is 1,376,256 bytes (1,344 KiB), including header/trailer/swap overhead. The signed file is the application artifact sent over BLE; initial USB provisioning also installs the separate MCUboot binary.
 
@@ -51,7 +52,7 @@ The bootloader partition is 65,536 bytes (64 KiB). Each application slot is 1,37
 
 **The Zephyr application downloads normal FOTA images.** Its MCUmgr image-management server receives BLE SMP requests and writes the secondary Flash slot. MCUboot handles boot-time validation, activation, test/revert and transfer of control. It does not implement the current BLE download path.
 
-The proposed extra-credit path differs: MCUboot itself would run an SMP server over UART, allowing recovery before the application starts.
+The implemented extra-credit path differs: MCUboot itself runs an SMP server over UART, allowing recovery before the application starts or when no valid application exists.
 
 ## Wireless transport and rationale
 
@@ -84,7 +85,7 @@ We have not added a second independent Flash module. If the course means Flash e
 | Interrupted download | Secondary-slot staging; no test request until completion; SHA-based client resume | Transfer stopped at87,258 bytes (20%); old primary stayed confirmed; same-file upload resumed at that offset |
 | Reset during a swap | MCUboot's move-swap status/progress handling | Enabled by the configured algorithm; deliberate power-cut-during-swap was not hardware-tested |
 
-See [dated validation](../../evidence/validation.md) and [v1.1.16 watchdog regression](../../evidence/modularization-20261030.md). Negative cases were tested on the recorded earlier versions; they were not repeated after the optional IMU addition. Recent valid BLE upgrades and confirmation are recorded for the currently installed versions. Upload success or an SMP `bootable` field alone is not proof that a signature was accepted: reset and verify the actual active version and confirmation state.
+See [dated validation](../../evidence/validation.md) and [v1.1.16 watchdog regression](../../evidence/modularization-20261030.md). The BLE negative cases were tested on the recorded earlier versions; UART wrong-key rejection was additionally tested on C01 as recorded below. Valid BLE upgrades and confirmation were recorded for T01 1.1.17 and C01 1.1.18; C01 1.1.19 was subsequently installed and tested through UART as documented below. Upload success or an SMP `bootable` field alone is not proof that a signature was accepted: reset and verify the actual active version and confirmation state.
 
 ## Configuration and signing identity
 
@@ -99,53 +100,32 @@ Key files in the repository:
 
 The signing identity is uniquely generated for Team2, rather than MCUboot's distributed example key. Private material stays outside Git. ESP hardware Secure Boot eFuses and Flash encryption are not enabled, so this is application-signature enforcement by MCUboot, not a physically locked boot chain. Management authorization, anti-downgrade policy and authenticated supervision messages are separate pending work.
 
-## Extra-credit UART serial recovery: assessment
+## Extra-credit UART serial recovery: hardware result
 
-**Recommendation: feasible and worth attempting; not yet completed.** The team has a USB-to-TTL adapter. A throwaway copy of the project was built with UART recovery enabled, retaining the same signature settings, partitions and primary validation. It was not flashed to either device.
+**Implemented and demonstrated on C01.** The complete [UART recovery runbook](UART_RECOVERY.md), [dated validation](../../evidence/uart-recovery-20261031.md) and [machine-readable results](../../evidence/uart-recovery-20261031-summary.json) describe the commands and observed evidence.
 
-| Feasibility check | Result |
+| Check | Observed result |
 |---|---|
-| Required adapter | Team reports a USB-to-TTL module; verify its TX/RX logic really is3.3V |
-| True UART pins | UART0 TX=D6/GPIO43, RX=D7/GPIO44; not used by current LoRa or IMU mappings |
-| Compiled recovery bootloader | **60,624 bytes (59.20 KiB)** |
-| Existing bootloader partition | 65,536 bytes; **4,912 bytes remain** |
-| Existing host library | `SMPSerialTransport` is available in the host environment |
-| Hardware UART upload and bad-signature test | **Not performed** |
-| Current deployed `CONFIG_MCUBOOT_SERIAL` | **Disabled** |
+| Full backup and isolated bootloader update |8 MiB backed up; bootloader readback matched; all bytes at/above 0x10000 unchanged |
+| Bootloader size |63,728 bytes, leaving 1,808 bytes in the original 64 KiB allocation |
+| True UART transport |CP2102→UART0,115200 8N1, D6 TX/GPIO43 and D7 RX/GPIO44; XIAO powered separately by USB |
+| Valid team-signed application |1.1.19 uploaded through MCUboot UART, then actually booted as COUNSELOR; confirmed1 |
+| Wrong-key application |1.3.1 validates under its own test key, fails team-root verification; UART upload completed but primary was excluded by MCUboot validation and did not execute after reset |
+| No-application recovery |MCUboot still responded about 33 seconds after bad-image reset, beyond the normal entry window; only the valid secondary was listed |
+| Final restoration |Good 1.1.19 uploaded again over UART with no working application/BLE required; boot, BLE active/confirmed and LoRa SPI 0x1424 verified |
 
-Proposed MCUboot-only additions, used for the feasibility build:
+The final configuration is in [mcuboot-serial.conf](../../firmware/conf/mcuboot-serial.conf), [UART overlay](../../firmware/conf/mcuboot-serial.overlay), the guarded [bootloader installer](../../scripts/install_recovery_bootloader.py) and [UART host tool](../../tools/bg_uart_recovery.py). The pinned ESP32 Xtensa single-thread configuration received bytes but did not service the interrupt-driven adapter; a narrow [MCUboot Kconfig prerequisite](../../patches/mcuboot-esp32-uart-threading.patch), applied automatically by `build.py --serial-recovery`, enables multithreading. Merely setting the hidden symbol in a config fragment did not enable it. Ordinary BLE/LoRa builds retain their threading default. A second fresh build verified the final scripted recovery configuration.
 
-```conf
-CONFIG_SERIAL=y
-CONFIG_MCUBOOT_SERIAL=y
-CONFIG_BOOT_SERIAL_UART=y
-CONFIG_BOOT_SERIAL_ENTRANCE_GPIO=n
-CONFIG_BOOT_SERIAL_WAIT_FOR_DFU=y
-CONFIG_BOOT_SERIAL_WAIT_FOR_DFU_TIMEOUT=3000
-CONFIG_BOOT_SERIAL_NO_APPLICATION=y
-# Retain CONFIG_BOOT_VALIDATE_SLOT0=y and the existing ECDSA-P256 root.
+```mermaid
+flowchart TD
+    RESET["Reset: ESP ROM loads MCUboot"] --> CHECK["MCUboot validates images and checks recovery entry"]
+    CHECK -->|"SMP command during entry window, or no bootable primary"| UART["MCUboot UART SMP server"]
+    UART --> DOWNLOAD["Download signed application directly to primary"]
+    DOWNLOAD --> RESET
+    CHECK -->|"No recovery request; valid primary"| RUN["Run application"]
+    CHECK -->|"Invalid primary"| UART
 ```
 
-The MCUboot overlay routes management to UART0 while keeping USB logging separate:
+The default [MCUboot UART target is primary](https://docs.mcuboot.com/serial_recovery.html). This recovery mode can overwrite the old application and does not provide BLE secondary staging/test-swap protection. The valid recovery boot in this run was already confirmed; do not count it as a new delayed-confirmation or faulty-image rollback test. `BOOT_VALIDATE_SLOT0` enforces signatures; `BOOT_SERIAL_NO_APPLICATION` keeps recovery available after invalid application installation. ESP ROM USB flashing and the application shell are not this feature.
 
-```dts
-/ {
-    chosen {
-        zephyr,uart-mcumgr = &uart0;
-    };
-};
-```
-
-Proposed wiring, with XIAO powered by USB: adapter TX→XIAO D7/RX, adapter RX←XIAO D6/TX, GND↔GND. Leave adapter VCC and DTR/RTS disconnected initially. Do not hold BOOT/GPIO0 during reset to enter MCUboot: that selects the ESP ROM loader. The three-second MCUboot wait window avoids requiring another entrance button.
-
-Implementation/checkoff sequence:
-
-1. Back up one board's current full Flash and preserve its known-good artifacts/key.
-2. Install the new MCUboot image through physical USB while preserving application slots and the partition map. Normal application BLE OTA cannot replace the bootloader; do not use the erase-all first-provisioning script for this step.
-3. Reset, enter the MCUboot UART wait window with a matching serial SMP client, and query/list images before the application starts.
-4. Upload a correctly signed application through UART, reset, and verify its active version and application confirmation. Demonstrate recovery independently of a working BLE application.
-5. Show that a corrupted or wrongly signed candidate is not executed; then restore the valid signed application and recheck BLE/LoRa/IMU.
-
-[MCUboot serial-recovery documentation](https://docs.mcuboot.com/serial_recovery.html) describes SMP recovery and its default upload target: **the primary slot**. This proposed minimal recovery path may overwrite the existing primary; it does not inherit BLE staging's guarantee of retaining that primary during download. `BOOT_SERIAL_NO_APPLICATION` keeps recovery available when there is no bootable application, and primary validation must stay enabled. Upload acceptance alone is not a signature test; check the actual boot result. A secondary-slot UART workflow is possible but needs explicit slot selection and activation design beyond this feasibility build.
-
-Existing esptool/ESP ROM USB provisioning and the application `bg` shell are not this extra-credit feature. Extra credit should be claimed only after the MCUboot-level UART signed-image recovery and rejection tests pass on hardware.
+Only C01 plus the TTL adapter were connected during this test; two-device LoRa/IMU behavior was not re-tested. Earlier tag/sensor/radio evidence remains separately dated. Physical UART authorization, secure-boot eFuses, Flash encryption and anti-downgrade remain outside the implemented scope. The cable's logic voltage was not independently measured; use a documented3.3V UART adapter for reproduction.

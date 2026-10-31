@@ -1,0 +1,12 @@
+diff --git a/boot/zephyr/Kconfig b/boot/zephyr/Kconfig
+index 228bb5bd..39102560 100644
+--- a/boot/zephyr/Kconfig
++++ b/boot/zephyr/Kconfig
+@@ -1499,6 +1499,7 @@ comment "Zephyr configuration options"
+ # it to n here. Otherwise, having it on by default makes the most
+ # hardware work.
+ config MULTITHREADING
++	default y if SOC_FAMILY_ESPRESSIF_ESP32 && MCUBOOT_SERIAL
+ 	default y if BOOT_SERIAL_CDC_ACM #usb driver requires MULTITHREADING
+ 	default y if BOOT_USB_DFU_GPIO || BOOT_USB_DFU_WAIT
+ 	default n if SOC_FAMILY_NORDIC_NRF
