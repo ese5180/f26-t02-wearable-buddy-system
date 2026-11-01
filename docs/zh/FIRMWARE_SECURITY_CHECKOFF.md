@@ -2,7 +2,7 @@
 
 [English 提交版](../en/FIRMWARE_SECURITY_CHECKOFF.md) · [GitHub 代码分支](https://github.com/ese5180/f26-t02-wearable-buddy-system/tree/codex/buddyguard-wireless-fota) · [PR #1](https://github.com/ese5180/f26-t02-wearable-buddy-system/pull/1)
 
-截至 **2026-10-31**：正常 BLE 签名 FOTA 已实现并实测；标签上次验证为1.1.17（含 IMU），辅导员现在为1.1.19。**C01 已安装并实测 MCUboot UART recovery**，包括正确签名上传、错误密钥签名拒绝，以及没有正常应用时的有效镜像恢复。外部 Flash 的课程口径见下文。
+截至 **2026-10-31**：T01与C01均运行 active/confirmed1.1.20。**已在C01既有UART recovery bootloader上重测BLE FOTA**：正常升级、错误签名／损坏拒绝、同文件续传和有效签名故障镜像watchdog回滚通过，见[最新实测](../../evidence/wireless-fota-v1120-20261031.md)。此前UART签名恢复在1.1.19上完成；本轮没有连接外接TTL线。
 
 ## 3.5.1 启动与更新流程
 
@@ -43,8 +43,8 @@ flowchart TD
 |---|---|---:|---:|
 | T01 MCUboot | 原 BLE 配置 | 46,672 B，45.58 KiB | 非应用镜像 |
 | C01 MCUboot | 启用 UART recovery | 63,728 B，62.23 KiB | 非应用镜像 |
-| 儿童标签 T01，含 LSM6DSO | 1.1.17 | 436,660 B，426.43 KiB | 436,812 B，426.57 KiB |
-| 辅导员 C01 | 1.1.19 | 435,412 B，425.21 KiB | 435,564 B，425.36 KiB |
+| 儿童标签 T01，含 LSM6DSO | 1.1.20 | 436,948 B，426.71 KiB | 437,099 B，426.85 KiB |
+| 辅导员 C01 | 1.1.20 | 435,748 B，425.54 KiB | 435,899 B，425.68 KiB |
 
 Bootloader 预留64 KiB；每个应用槽1,376,256 B（1,344 KiB），含 header／trailer／swap 开销。BLE 上传 `zephyr.signed.bin`，首次 USB 安装另含独立 MCUboot 文件。
 
@@ -77,13 +77,13 @@ Wi-Fi 可能更快，但当前还没有整合网络／更新服务。LoRa 当前
 
 | 失败类型 | 已启用机制 | 已有实测 |
 |---|---|---|
-| 错误签名／密钥 | MCUboot 使用团队公钥做 ECDSA-P256 验证 | 1.3.0 完整上传后启动拒绝，原 confirmed1.1.0 保留 |
-| 下载镜像损坏 | 启动前哈希与签名验证 | 损坏1.4.0 上传后未启动，原 confirmed1.1.1 保留 |
-| 签名有效但试运行代码故障 | test boot、延迟确认、8秒 watchdog、move-swap 回滚 | 1.2.1 真实启动故障后回滚 confirmed1.1.16 |
-| 下载中断 | secondary 暂存，完成前不激活；客户端按同一文件 SHA 续传 | 20%即87,258 B停止，旧应用保留，随后从该偏移续传 |
+| 错误签名／密钥 | MCUboot 使用团队公钥做 ECDSA-P256 验证 | 1.3.2完整上传／test／复位后拒绝，原confirmed1.1.20及digest保留 |
+| 下载镜像损坏 | 启动前哈希与签名验证 | 损坏1.4.1完整上传后未启动，原confirmed1.1.20保留 |
+| 签名有效但试运行代码故障 | test boot、延迟确认、8秒 watchdog、move-swap 回滚 | 1.2.2实际未确认启动故障后回滚confirmed1.1.20 |
+| 下载中断 | secondary 暂存，完成前不激活；客户端按同一文件 SHA 续传 | 签名故障1.2.2在87,258 B暂停，原1.1.20保留，同文件从该偏移续传 |
 | swap 中复位 | MCUboot 记录交换进度、重启后处理 | 算法已配置；未做 swap 中主动断电实测 |
 
-详见[有日期的实测记录](../../evidence/validation.md)和[回滚回归](../../evidence/modularization-20261030.md)。BLE 安全负例发生在表内历史版本；标签1.1.17与辅导员1.1.18已验证 BLE 更新、自确认与镜像状态。本次辅导员1.1.19改经 UART 安装，另外实测错误密钥拒绝与恢复，见下文。**上传成功或 `bootable` 字段不等于签名被接受，必须复位后核对实际运行版本与 confirmed。**
+历史测试保存在[日期对应记录](../../evidence/validation.md)。[1.1.20回归](../../evidence/wireless-fota-v1120-20261031.md)另在当前C01 bootloader上完成错误签名1.3.2、损坏1.4.1拒绝，有效签名故障1.2.2回滚到1.1.20，以及从87,258字节同文件续传；两端正常BLE更新／自确认通过。**上传成功或bootable字段不能代替复位后的active版本与digest核对。**
 
 ## 配置与密钥
 
@@ -97,6 +97,8 @@ Wi-Fi 可能更快，但当前还没有整合网络／更新服务。LoRa 当前
 密钥为 Team2 独有生成，不是 MCUboot 示例密钥，私钥不上传。当前未开启 ESP 硬件 Secure Boot eFuse 或 Flash 加密；已完成的是 MCUboot 应用签名验证，物理 USB 替换引导程序仍属于未锁定路径。管理授权、反降级策略和业务消息认证另待实现。
 
 ## Extra credit：UART 恢复实测结果
+
+本节保留同日较早的1.1.19 UART实测；后续1.1.20 BLE回归保留该bootloader，没有重新测试外接UART。
 
 **C01 上已实现并完成演示。**完整命令见 [UART 操作流程](UART_RECOVERY.md)，结果见[日期对应验证](../../evidence/uart-recovery-20261031.md)与[结构化记录](../../evidence/uart-recovery-20261031-summary.json)。
 

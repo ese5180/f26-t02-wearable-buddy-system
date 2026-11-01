@@ -96,7 +96,7 @@ async def erase_secondary(address):
         show_response(before)
         primary = confirmed_primary_for_cleanup(before.images)
         if not any(item.slot == 1 for item in before.images):
-            print(json.dumps({'event': 'secondary_already_empty'}), flush=True)
+            print(json.dumps({'event': 'no_secondary_image_listed'}), flush=True)
             return
         try:
             show_response(await client.request(image_management.ImageErase(slot=1), timeout_s=60))
@@ -112,7 +112,7 @@ async def erase_secondary(address):
         if current.hash != primary.hash or current.version != primary.version or \
                 any(item.slot == 1 for item in after.images):
             raise RuntimeError('Secondary cleanup verification failed')
-        print(json.dumps({'event': 'secondary_erased', 'primary_version': current.version}), flush=True)
+        print(json.dumps({'event': 'secondary_candidate_removed', 'primary_version': current.version}), flush=True)
 
 
 async def manage(args):
@@ -197,7 +197,7 @@ def main():
     scanning = sub.add_parser('scan')
     scanning.add_argument('--seconds', type=float, default=10.0)
     sub.add_parser('images')
-    sub.add_parser('erase-secondary', help='Erase only inactive slot1 after confirmed-primary checks')
+    sub.add_parser('erase-secondary', help='Remove a listed inactive slot1 image after confirmed-primary checks')
     sub.add_parser('reset')
     testing = sub.add_parser('test')
     testing.add_argument('--hash', required=True)

@@ -1,0 +1,204 @@
+BuddyGuard1.1.20 — selected observed evidence — 2026-10-31
+
+Counselor BLE update:
+{"event": "upload_start", "bytes": 435899, "packet_limit": 244}
+{"event": "upload", "bytes": 87258, "total": 435899, "percent": 20}
+{"event": "upload", "bytes": 435899, "total": 435899, "percent": 100}
+{"event": "upload_complete", "elapsed_seconds": 210.95}
+{"version": 1, "sequence": 204, "images": [{"slot": 0, "version": "1.1.19", "image": null, "hash": "63b9ba9bf1f0b1e236081bf047e89d068c9b8668dd52691bcded4ed8c11ab8fe", "bootable": true, "pending": false, "confirmed": true, "active": true, "permanent": false}, {"slot": 1, "version": "1.1.20", "image": null, "hash": "311c12537f7bc222333fafd79ea85fdb513fb3b6d89b08cec4a5876b928516ec", "bootable": true, "pending": false, "confirmed": false, "active": false, "permanent": false}], "splitStatus": 0}
+{"version": 1, "sequence": 205, "images": [{"slot": 0, "version": "1.1.19", "image": null, "hash": "63b9ba9bf1f0b1e236081bf047e89d068c9b8668dd52691bcded4ed8c11ab8fe", "bootable": true, "pending": false, "confirmed": true, "active": true, "permanent": false}, {"slot": 1, "version": "1.1.20", "image": null, "hash": "311c12537f7bc222333fafd79ea85fdb513fb3b6d89b08cec4a5876b928516ec", "bootable": true, "pending": true, "confirmed": false, "active": false, "permanent": false}], "splitStatus": 0}
+{"version": 1, "sequence": 206}
+{"event": "test_upgrade_requested", "note": "Device self-test must confirm; verify serial and image state."}
+Disconnected from FBA8FEA0-5EF3-7334-D98F-FB7B51715400
+
+Tag BLE update:
+{"event": "upload_start", "bytes": 437099, "packet_limit": 244}
+{"event": "upload", "bytes": 437099, "total": 437099, "percent": 100}
+{"event": "upload_complete", "elapsed_seconds": 218.51}
+{"version": 1, "sequence": 210, "images": [{"slot": 0, "version": "1.1.17", "image": null, "hash": "ec4093e9459253f2053e0e7a499721208c19ee835fa927612a659983cc92d493", "bootable": true, "pending": false, "confirmed": true, "active": true, "permanent": false}, {"slot": 1, "version": "1.1.20", "image": null, "hash": "ab59bcf2bd3e12accad96b2c225bad0bb2a7bb613424b85d5634eb11abbce286", "bootable": true, "pending": false, "confirmed": false, "active": false, "permanent": false}], "splitStatus": 0}
+{"version": 1, "sequence": 211, "images": [{"slot": 0, "version": "1.1.17", "image": null, "hash": "ec4093e9459253f2053e0e7a499721208c19ee835fa927612a659983cc92d493", "bootable": true, "pending": false, "confirmed": true, "active": true, "permanent": false}, {"slot": 1, "version": "1.1.20", "image": null, "hash": "ab59bcf2bd3e12accad96b2c225bad0bb2a7bb613424b85d5634eb11abbce286", "bootable": true, "pending": true, "confirmed": false, "active": false, "permanent": false}], "splitStatus": 0}
+{"version": 1, "sequence": 212}
+{"event": "test_upgrade_requested", "note": "Device self-test must confirm; verify serial and image state."}
+Disconnected from 6B1F056B-F0CD-6857-6E43-51B9E980FEF8
+
+Wrong-key candidate and rejection:
+{"event": "upload_start", "bytes": 435899, "packet_limit": 244}
+{"event": "upload", "bytes": 87258, "total": 435899, "percent": 20}
+{"event": "upload", "bytes": 435899, "total": 435899, "percent": 100}
+{"event": "upload_complete", "elapsed_seconds": 216.73}
+{"version": 1, "sequence": 204, "images": [{"slot": 0, "version": "1.1.20", "image": null, "hash": "311c12537f7bc222333fafd79ea85fdb513fb3b6d89b08cec4a5876b928516ec", "bootable": true, "pending": false, "confirmed": true, "active": true, "permanent": false}, {"slot": 1, "version": "1.3.2", "image": null, "hash": "5eb0f41abd8371b969554813dea94c94625bc5fb6f995d998174fc07925b5314", "bootable": true, "pending": false, "confirmed": false, "active": false, "permanent": false}], "splitStatus": 0}
+{"version": 1, "sequence": 205, "images": [{"slot": 0, "version": "1.1.20", "image": null, "hash": "311c12537f7bc222333fafd79ea85fdb513fb3b6d89b08cec4a5876b928516ec", "bootable": true, "pending": false, "confirmed": true, "active": true, "permanent": false}, {"slot": 1, "version": "1.3.2", "image": null, "hash": "5eb0f41abd8371b969554813dea94c94625bc5fb6f995d998174fc07925b5314", "bootable": true, "pending": true, "confirmed": false, "active": false, "permanent": false}], "splitStatus": 0}
+{"version": 1, "sequence": 206}
+{"event": "test_upgrade_requested", "note": "Device self-test must confirm; verify serial and image state."}
+Disconnected from FBA8FEA0-5EF3-7334-D98F-FB7B51715400
+
+Correct primary after wrong key:
+{"version": 1, "sequence": 1, "images": [{"slot": 0, "version": "1.1.20", "image": null, "hash": "311c12537f7bc222333fafd79ea85fdb513fb3b6d89b08cec4a5876b928516ec", "bootable": true, "pending": false, "confirmed": true, "active": true, "permanent": false}], "splitStatus": 0}
+Disconnected from FBA8FEA0-5EF3-7334-D98F-FB7B51715400
+
+Corrupted candidate:
+{"event": "upload_start", "bytes": 435882, "packet_limit": 244}
+{"event": "upload", "bytes": 87258, "total": 435882, "percent": 20}
+{"event": "upload", "bytes": 435882, "total": 435882, "percent": 100}
+{"event": "upload_complete", "elapsed_seconds": 222.62}
+{"version": 1, "sequence": 204, "images": [{"slot": 0, "version": "1.1.20", "image": null, "hash": "311c12537f7bc222333fafd79ea85fdb513fb3b6d89b08cec4a5876b928516ec", "bootable": true, "pending": false, "confirmed": true, "active": true, "permanent": false}, {"slot": 1, "version": "1.4.1", "image": null, "hash": "a0eb7373650e70b6b5825978fb748fec44b39eb7f5f7648b533008cdc3352bc4", "bootable": true, "pending": false, "confirmed": false, "active": false, "permanent": false}], "splitStatus": 0}
+{"version": 1, "sequence": 205, "images": [{"slot": 0, "version": "1.1.20", "image": null, "hash": "311c12537f7bc222333fafd79ea85fdb513fb3b6d89b08cec4a5876b928516ec", "bootable": true, "pending": false, "confirmed": true, "active": true, "permanent": false}, {"slot": 1, "version": "1.4.1", "image": null, "hash": "a0eb7373650e70b6b5825978fb748fec44b39eb7f5f7648b533008cdc3352bc4", "bootable": true, "pending": true, "confirmed": false, "active": false, "permanent": false}], "splitStatus": 0}
+{"version": 1, "sequence": 206}
+{"event": "test_upgrade_requested", "note": "Device self-test must confirm; verify serial and image state."}
+Disconnected from FBA8FEA0-5EF3-7334-D98F-FB7B51715400
+
+Correct primary after corruption:
+{"version": 1, "sequence": 1, "images": [{"slot": 0, "version": "1.1.20", "image": null, "hash": "311c12537f7bc222333fafd79ea85fdb513fb3b6d89b08cec4a5876b928516ec", "bootable": true, "pending": false, "confirmed": true, "active": true, "permanent": false}], "splitStatus": 0}
+Disconnected from FBA8FEA0-5EF3-7334-D98F-FB7B51715400
+
+Controlled upload interruption:
+{"event": "upload_start", "bytes": 435963, "packet_limit": 244}
+{"event": "upload", "bytes": 87258, "total": 435963, "percent": 20}
+{"event": "intentional_upload_interruption", "bytes": 87258}
+Disconnected from FBA8FEA0-5EF3-7334-D98F-FB7B51715400
+
+Same-file fault resumption:
+{"event": "upload_start", "bytes": 435963, "packet_limit": 244}
+{"event": "upload", "bytes": 87258, "total": 435963, "percent": 20}
+{"event": "upload", "bytes": 435963, "total": 435963, "percent": 100}
+{"event": "upload_complete", "elapsed_seconds": 170.78}
+{"version": 1, "sequence": 65, "images": [{"slot": 0, "version": "1.1.20", "image": null, "hash": "311c12537f7bc222333fafd79ea85fdb513fb3b6d89b08cec4a5876b928516ec", "bootable": true, "pending": false, "confirmed": true, "active": true, "permanent": false}, {"slot": 1, "version": "1.2.2", "image": null, "hash": "766b292ab4e99515c6c7aedb710fda6d4240908464bb4314e1219117c2fb7ab2", "bootable": true, "pending": false, "confirmed": false, "active": false, "permanent": false}], "splitStatus": 0}
+{"version": 1, "sequence": 66, "images": [{"slot": 0, "version": "1.1.20", "image": null, "hash": "311c12537f7bc222333fafd79ea85fdb513fb3b6d89b08cec4a5876b928516ec", "bootable": true, "pending": false, "confirmed": true, "active": true, "permanent": false}, {"slot": 1, "version": "1.2.2", "image": null, "hash": "766b292ab4e99515c6c7aedb710fda6d4240908464bb4314e1219117c2fb7ab2", "bootable": true, "pending": true, "confirmed": false, "active": false, "permanent": false}], "splitStatus": 0}
+{"version": 1, "sequence": 67}
+{"event": "test_upgrade_requested", "note": "Device self-test must confirm; verify serial and image state."}
+Disconnected from FBA8FEA0-5EF3-7334-D98F-FB7B51715400
+
+Correct primary after rollback:
+{"version": 1, "sequence": 1, "images": [{"slot": 0, "version": "1.1.20", "image": null, "hash": "311c12537f7bc222333fafd79ea85fdb513fb3b6d89b08cec4a5876b928516ec", "bootable": true, "pending": false, "confirmed": true, "active": true, "permanent": false}, {"slot": 1, "version": "1.2.2", "image": null, "hash": "766b292ab4e99515c6c7aedb710fda6d4240908464bb4314e1219117c2fb7ab2", "bootable": true, "pending": false, "confirmed": false, "active": false, "permanent": false}], "splitStatus": 0}
+Disconnected from FBA8FEA0-5EF3-7334-D98F-FB7B51715400
+
+Readback after erase ACK loss:
+{"version": 1, "sequence": 1, "images": [{"slot": 0, "version": "1.1.20", "image": null, "hash": "311c12537f7bc222333fafd79ea85fdb513fb3b6d89b08cec4a5876b928516ec", "bootable": true, "pending": false, "confirmed": true, "active": true, "permanent": false}], "splitStatus": 0}
+Disconnected from FBA8FEA0-5EF3-7334-D98F-FB7B51715400
+
+Idempotent cleanup:
+{"version": 1, "sequence": 1, "images": [{"slot": 0, "version": "1.1.20", "image": null, "hash": "311c12537f7bc222333fafd79ea85fdb513fb3b6d89b08cec4a5876b928516ec", "bootable": true, "pending": false, "confirmed": true, "active": true, "permanent": false}], "splitStatus": 0}
+{"event": "secondary_already_empty"}
+Disconnected from FBA8FEA0-5EF3-7334-D98F-FB7B51715400
+
+Final tag image state:
+{"version": 1, "sequence": 1, "images": [{"slot": 0, "version": "1.1.20", "image": null, "hash": "ab59bcf2bd3e12accad96b2c225bad0bb2a7bb613424b85d5634eb11abbce286", "bootable": true, "pending": false, "confirmed": true, "active": true, "permanent": false}, {"slot": 1, "version": "1.1.17", "image": null, "hash": "ec4093e9459253f2053e0e7a499721208c19ee835fa927612a659983cc92d493", "bootable": true, "pending": false, "confirmed": false, "active": false, "permanent": false}], "splitStatus": 0}
+Disconnected from 6B1F056B-F0CD-6857-6E43-51B9E980FEF8
+
+Selected device events (multiple planned boots; uptime restarts):
+[00:00:04.000,000] <inf> buddyguard: BuddyGuard version=1.1.20 role=COUNSELOR tag=200 confirmed=0
+radio tx_attempts=1 completed=0 exhausted=0 rx=1 interleaved=0 duplicates=0 queries=0 replies=0 queue_drops=0
+[00:00:19.253,000] <inf> bg_lora: QUERY complete tag=T01 type=4 seq=1 attempt=1 rssi=-22 snr=13
+[00:00:20.128,000] <inf> bg_health: Image health check complete; confirm result=0
+[00:01:01.889,000] <inf> bg_lora: Dispatch while waiting tag=T01 type=3 seq=179
+[00:01:01.889,000] <wrn> bg_lora: ACTION: counselor check tag T01, SOS received
+[00:01:07.380,000] <wrn> bg_lora: Delivery unconfirmed tag=T02 type=4 seq=2 after 3 attempts
+[00:01:10.540,000] <inf> bg_lora: Dispatch while waiting tag=T01 type=1 seq=180
+[00:01:13.632,000] <wrn> bg_lora: Delivery unconfirmed tag=T03 type=4 seq=3 after 3 attempts
+[00:05:46.281,000] <wrn> bg_roster: BLE MISSING tag=T01 age_ms=8619; requesting LoRa status
+[00:05:48.488,000] <inf> bg_lora: QUERY complete tag=T01 type=4 seq=4 attempt=2 rssi=-23 snr=13
+[00:05:54.283,000] <inf> bg_roster: RECOVERED tag=T01 seq=50 maintenance=0
+radio tx_attempts=9 completed=2 exhausted=2 rx=35 interleaved=2 duplicates=1 queries=0 replies=2 queue_drops=0
+[00:00:04.000,000] <inf> buddyguard: BuddyGuard version=1.1.20 role=COUNSELOR tag=200 confirmed=1
+[00:01:57.945,000] <inf> bg_lora: Dispatch while waiting tag=T01 type=3 seq=38
+[00:01:57.945,000] <wrn> bg_lora: ACTION: counselor check tag T01, SOS received
+[00:02:00.974,000] <inf> bg_lora: Dispatch while waiting tag=T01 type=1 seq=39
+[00:02:02.558,000] <wrn> bg_lora: Delivery unconfirmed tag=T02 type=4 seq=1 after 3 attempts
+[00:00:04.000,000] <inf> buddyguard: BuddyGuard version=1.1.20 role=COUNSELOR tag=200 confirmed=1
+[00:00:04.000,000] <inf> buddyguard: BuddyGuard version=1.2.2 role=COUNSELOR tag=200 confirmed=0
+[00:00:04.116,000] <err> buddyguard: FAULT INJECTION: unconfirmed image will stop feeding the watchdog
+rst:0x7 (TG0WDT_SYS_RST),boot:0x2a (SPI_FAST_FLASH_BOOT)
+[00:00:04.000,000] <inf> buddyguard: BuddyGuard version=1.1.20 role=COUNSELOR tag=200 confirmed=1
+radio tx_attempts=0 completed=0 exhausted=0 rx=34 interleaved=0 duplicates=0 queries=0 replies=0 queue_drops=0
+[00:05:46.628,000] <inf> bg_lora: Dispatch while waiting tag=T01 type=3 seq=115
+[00:05:46.628,000] <wrn> bg_lora: ACTION: counselor check tag T01, SOS received
+[00:05:47.677,000] <inf> bg_lora: QUERY complete tag=T01 type=4 seq=1 attempt=2 rssi=-21 snr=12
+[00:06:01.871,000] <inf> bg_lora: Dispatch while waiting tag=T01 type=3 seq=118
+[00:06:01.871,000] <wrn> bg_lora: ACTION: counselor check tag T01, SOS received
+[00:06:06.277,000] <wrn> bg_lora: Delivery unconfirmed tag=T02 type=4 seq=2 after 3 attempts
+[00:06:06.621,000] <inf> bg_lora: QUERY complete tag=T01 type=4 seq=3 attempt=1 rssi=-21 snr=12
+[00:06:15.851,000] <inf> bg_lora: QUERY complete tag=T01 type=4 seq=4 attempt=1 rssi=-21 snr=12
+[00:06:30.708,000] <inf> bg_lora: Dispatch while waiting tag=T01 type=3 seq=122
+[00:06:30.708,000] <wrn> bg_lora: ACTION: counselor check tag T01, SOS received
+[00:06:30.851,000] <inf> bg_lora: QUERY complete tag=T01 type=4 seq=5 attempt=1 rssi=-21 snr=12
+[00:06:45.746,000] <inf> bg_lora: QUERY complete tag=T01 type=4 seq=6 attempt=1 rssi=-21 snr=12
+[00:07:00.746,000] <inf> bg_lora: QUERY complete tag=T01 type=4 seq=7 attempt=1 rssi=-21 snr=12
+[00:07:15.755,000] <inf> bg_lora: Dispatch while waiting tag=T01 type=3 seq=127
+[00:07:15.755,000] <wrn> bg_lora: ACTION: counselor check tag T01, SOS received
+[00:07:15.897,000] <inf> bg_lora: QUERY complete tag=T01 type=4 seq=8 attempt=1 rssi=-21 snr=12
+[00:07:32.305,000] <inf> bg_lora: Dispatch while waiting tag=T01 type=1 seq=129
+[00:07:32.733,000] <inf> bg_lora: QUERY complete tag=T01 type=4 seq=9 attempt=2 rssi=-21 snr=13
+[00:07:45.751,000] <inf> bg_lora: QUERY complete tag=T01 type=4 seq=10 attempt=1 rssi=-21 snr=12
+[00:08:01.915,000] <inf> bg_lora: Dispatch while waiting tag=T01 type=3 seq=132
+[00:08:01.915,000] <wrn> bg_lora: ACTION: counselor check tag T01, SOS received
+[00:08:02.057,000] <inf> bg_lora: Dispatch while waiting tag=T01 type=1 seq=133
+[00:08:02.689,000] <inf> bg_lora: QUERY complete tag=T01 type=4 seq=11 attempt=2 rssi=-20 snr=13
+[00:08:15.859,000] <inf> bg_lora: QUERY complete tag=T01 type=4 seq=12 attempt=1 rssi=-21 snr=12
+[00:08:30.795,000] <inf> bg_lora: QUERY complete tag=T01 type=4 seq=13 attempt=1 rssi=-21 snr=12
+[00:08:46.865,000] <inf> bg_lora: Dispatch while waiting tag=T01 type=3 seq=138
+[00:08:46.865,000] <wrn> bg_lora: ACTION: counselor check tag T01, SOS received
+[00:08:47.723,000] <inf> bg_lora: QUERY complete tag=T01 type=4 seq=14 attempt=2 rssi=-21 snr=13
+[00:09:00.875,000] <inf> bg_lora: QUERY complete tag=T01 type=4 seq=15 attempt=1 rssi=-21 snr=13
+[00:09:15.748,000] <inf> bg_lora: QUERY complete tag=T01 type=4 seq=16 attempt=1 rssi=-19 snr=13
+[00:09:32.567,000] <inf> bg_lora: Dispatch while waiting tag=T01 type=3 seq=143
+[00:09:32.567,000] <wrn> bg_lora: ACTION: counselor check tag T01, SOS received
+[00:09:33.655,000] <inf> bg_lora: Dispatch while waiting tag=T01 type=1 seq=144
+[00:09:34.716,000] <inf> bg_lora: QUERY complete tag=T01 type=4 seq=17 attempt=3 rssi=-21 snr=12
+[00:09:45.752,000] <inf> bg_lora: QUERY complete tag=T01 type=4 seq=18 attempt=1 rssi=-21 snr=13
+[00:10:02.930,000] <inf> bg_lora: QUERY complete tag=T01 type=4 seq=19 attempt=2 rssi=-21 snr=12
+[00:10:17.627,000] <inf> bg_lora: Dispatch while waiting tag=T01 type=3 seq=149
+[00:10:17.627,000] <wrn> bg_lora: ACTION: counselor check tag T01, SOS received
+[00:10:18.055,000] <inf> bg_lora: QUERY complete tag=T01 type=4 seq=20 attempt=2 rssi=-21 snr=13
+[00:10:30.847,000] <inf> bg_lora: QUERY complete tag=T01 type=4 seq=21 attempt=1 rssi=-21 snr=12
+radio tx_attempts=31 completed=20 exhausted=1 rx=92 interleaved=11 duplicates=0 queries=0 replies=20 queue_drops=0
+
+Tag startup / sensor / final status:
+[00:00:04.000,000] <inf> buddyguard: BuddyGuard version=1.1.20 role=TAG tag=1 confirmed=0
+[00:00:04.117,000] <inf> bg_imu: LSM6DSO detected: I2C address=0x6b WHO_AM_I=0x6c
+[00:00:20.125,000] <inf> bg_health: Image health check complete; confirm result=0
+version=1.1.20 role=TAG tag=1 sequence=52 connected=0 maintenance=0 confirmed=1
+imu enabled=1 available=1 address=0x6b whoami=0x6c motion=STILL samples=2439 age_ms=30 error=0
+radio tx_attempts=15 completed=11 exhausted=0 rx=12 interleaved=0 duplicates=0 queries=1 replies=0 queue_drops=0
+imu enabled=1 available=1 address=0x6b whoami=0x6c motion=STILL samples=8815 age_ms=9 error=0
+radio tx_attempts=156 completed=110 exhausted=5 rx=113 interleaved=0 duplicates=0 queries=1 replies=0 queue_drops=0
+version=1.1.20 role=TAG tag=1 sequence=570 connected=0 maintenance=0 confirmed=1
+radio tx_attempts=235 completed=168 exhausted=5 rx=193 interleaved=0 duplicates=0 queries=21 replies=0 queue_drops=0
+version=1.1.20 role=TAG tag=1 sequence=721 connected=0 maintenance=0 confirmed=1
+imu enabled=1 available=1 address=0x6b whoami=0x6c motion=STILL samples=34078 age_ms=3 error=0
+
+Five-minute normal-operation results:
+{
+  "duration_seconds": 302.353,
+  "queries_issued": 20,
+  "queries_completed": 20,
+  "queries_exhausted": 0,
+  "sos_issued": 8,
+  "sos_actions_received": 8,
+  "absent_tag_queries_issued": 1,
+  "counselor_counter_delta": {
+    "tx_attempts": 31,
+    "completed": 20,
+    "exhausted": 1,
+    "rx": 58,
+    "interleaved": 11,
+    "duplicates": 0,
+    "queries": 0,
+    "replies": 20,
+    "queue_drops": 0
+  },
+  "tag_counter_delta": {
+    "tx_attempts": 79,
+    "completed": 58,
+    "exhausted": 0,
+    "rx": 80,
+    "interleaved": 0,
+    "duplicates": 0,
+    "queries": 20,
+    "replies": 0,
+    "queue_drops": 0
+  },
+  "unexpected_resets": 0,
+  "unexpected_ble_missing": 0,
+  "queue_drops": 0,
+  "thirty_minute_uninterrupted_test_performed": false
+}

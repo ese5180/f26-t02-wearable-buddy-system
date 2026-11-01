@@ -142,16 +142,16 @@ In the first terminal (the tag port is free):
 .venv/bin/python tools/bg_serial.py --port "$TAG_PORT" command bg heartbeat on
 ```
 
-Expected counselor sequence: periodic `RX ... type=1` STATUS; SOS `type=3` and `ACTION`; after about 8–10 seconds, `BLE MISSING` → `QUERY` → `RX ... type=5`; then `RECOVERED` on fresh BLE. LoRa replies do **not** clear BLE-missing status. If a query collides with periodic tag TX, retry `bg query 1` on C01 **after closing its serial monitor**. QUERY has no automatic retry yet. A queued SOS is not proof of delivery; inspect counselor reception and tag ACK.
+Expected counselor sequence: periodic `RX ... type=1` STATUS; SOS `type=3` and `ACTION`; after about 8–10 seconds, `BLE MISSING` → `QUERY` → `RX ... type=5`; then `RECOVERED` on fresh BLE. LoRa replies do **not** clear BLE-missing status. Version1.1.20 retries QUERY up to three sends and continues processing other packets while waiting. If all attempts expire, report the unconfirmed result; an operator may start another query. With a monitor running, send commands using `command --no-read`. See [wireless reliability](WIRELESS_RELIABILITY.md). A queued SOS is not proof of delivery; inspect counselor reception and tag ACK.
 
 `heartbeat off` simulates loss of **communication heartbeat**, not pulse. It leaves LoRa running. This demo does not measure child separation or location. Motion is UNKNOWN without `--imu`; the optional LSM6DSO guide describes real motion sensing. Clasp remains UNKNOWN and battery unavailable.
 
 ## 8. Signed update over BLE
 
-Use a distinct candidate version/build directory, e.g. `--version 1.1.19`, adding the **same role/ID as the target**. Version override copies source into an isolated generated directory; it does not edit the checkout's VERSION. Open maintenance, let the counselor receive its maintenance flag (wait about 4 seconds), then update:
+Use a distinct candidate version/build directory, e.g. `--version 1.1.21`, adding the **same role/ID as the target**. Version override copies source into an isolated generated directory; it does not edit the checkout's VERSION. Open maintenance, let the counselor receive its maintenance flag (wait about 4 seconds), then update:
 
 ```sh
-"$BG_WS/.venv/bin/python" scripts/build.py --workspace "$BG_WS" --key "$BG_KEY" --build-dir "$BG_WS/build-bg-tag1-candidate" --role tag --tag-id 1 --version 1.1.19
+"$BG_WS/.venv/bin/python" scripts/build.py --workspace "$BG_WS" --key "$BG_KEY" --build-dir "$BG_WS/build-bg-tag1-candidate" --role tag --tag-id 1 --imu --version 1.1.21
 .venv/bin/python tools/bg_serial.py --port "$TAG_PORT" command bg maintenance 300
 # Wait about 4 seconds before connecting:
 .venv/bin/python tools/bg_ble.py --name BG-T01 images
@@ -165,7 +165,7 @@ A tag's advertisements pause while a BLE SMP client is connected. If C01 last sa
 Optional reproduction of secure-update checks:
 
 1. **Interruption/resume:** run `upload IMAGE --stop-at 20`, verify the old image remains confirmed, then `update IMAGE` with exactly the same file. Expect a nonzero resumed offset.
-2. **Watchdog rollback:** first confirm a known-good image. Build another version in a separate directory with `--fault --version 1.2.1` and the correct role/ID. Update it. Expect the fault banner, WDT reset and restoration of the previously confirmed image. Never use a fault build as a release.
+2. **Watchdog rollback:** first confirm a known-good image. Build another version in a separate directory with `--fault --version 1.2.2` and the correct role/ID. Update it. Expect the fault banner, WDT reset and restoration of the previously confirmed image. Never use a fault build as a release.
 3. **Wrong key/corruption:** historical completed BLE rejection tests are in the validation record. To repeat, use a separate external test key or a copied image with corrupted signed data; verify the old confirmed version after reboot. Never replace the trusted team key or its known-good artifacts.
 
 ## 9. Troubleshooting and handoff

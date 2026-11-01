@@ -4,7 +4,7 @@
 
 [中文](../zh/FIRMWARE.md) · [Reproduction guide](GETTING_STARTED.md)
 
-This describes the modular **1.1.18** source. The on-air protocol remains version 1 and compatible with the previously validated 1.1.15 bench firmware. Build/flash/update commands belong in the reproduction guide; this document explains ownership, data flow and constraints.
+This describes the modular **1.1.20** source. The on-air protocol remains version 1 and compatible with the previously validated 1.1.15 bench firmware. Build/flash/update commands belong in the reproduction guide; this document explains ownership, data flow and constraints.
 
 ## Module map
 
@@ -14,6 +14,8 @@ This describes the modular **1.1.18** source. The on-air protocol remains versio
 | `src/ble/presence.c` / `include/presence.h` | BLE stack, advertising data, connection lifecycle, heartbeat and maintenance admission |
 | `src/roster/roster.c` / `include/roster.h` | Counselor passive scanner and per-tag presence/loss/recovery state; no-op on tags |
 | `src/radio/link.c` / `include/radio_link.h` | LoRa event queue, worker, sequences, retries/ACK, role-specific QUERY/REPLY |
+| `src/radio/exchange.c` / `include/radio_exchange.h` | Pure transaction deadline/retry/response matching |
+| `src/radio/history.c` / `include/radio_history.h` | Bounded recent business-event duplicate history |
 | `src/drivers/wio_sx1262.c` / `include/radio_driver.h` | Deferred device initialization, PHY settings, SPI readback and serialized RX/TX |
 | `src/sensors/imu.c` / `include/imu.h` | Optional LSM6DSO worker, address detection, six-axis snapshot and freshness |
 | `src/protocol/motion.c` / `include/motion.h` | Pure C UNKNOWN/STILL/MOVING classifier |
@@ -87,15 +89,17 @@ The legacy advertising payload totals 31 bytes: flags, SMP service UUID and manu
 | 2 | 1 | Protocol = 1 |
 | 3 | 1 | STATUS=1, ACK=2, SOS=3, QUERY=4, REPLY=5 |
 | 4 | 1 | Target/source tag ID1–3 |
-| 5 | 1 | Flags, currently 0 |
+| 5 | 1 | ACK: optional acknowledged message type; legacy0 accepted. Other messages:0 |
 | 6 | 2 | Radio sequence, independent of BLE sequence |
 | 8 | 1 | Motion: 0 UNKNOWN, 1 STILL, 2 MOVING |
 | 9 | 1 | Clasp, 0 = UNKNOWN |
 | 10 | 2 | Battery, `FFFF` = unavailable |
 
-Validation checks exact size/magic/protocol, known type and ID range; it does not authenticate senders, prevent replay or validate every sensor/flag value. STATUS starts about three seconds after worker startup, then ten seconds after the preceding send completes. STATUS/SOS/REPLY get up to three attempts with a 600 ms ACK wait and deterministic 100–220 ms backoff. Matching requires ACK type, same tag and same radio sequence. TX errors return without further retries.
+Validation checks exact size/magic/protocol, known type and ID range; it does not authenticate senders or prevent replay. STATUS first becomes due about three seconds after worker startup and then ten seconds after the preceding STATUS starts, subject to queued transactions. STATUS/SOS/REPLY expect ACK within600 ms; QUERY expects matching REPLY within1500 ms. All have at most three attempts with the same sequence and deterministic tag/sequence backoff. Driver-send errors also consume an attempt and remain bounded.
 
-C01 remembers only the last `(sequence,type)` per tag to suppress consecutive duplicate event logs, but ACKs duplicates again. A tag replies to a QUERY addressed to its own ID, reusing the query sequence. QUERY itself is sent once without ACK/retry tracking. Frames other than the awaited ACK are consumed during ACK waits and are not deferred; collisions can therefore lose queries/events. This is a documented follow-up task, not solved by modularization.
+`exchange.c` holds one transaction; it never sleeps or calls hardware. `link.c` continues dispatching all valid packets while waiting/backing off, using the established200 ms receive window. Timeouts can have one window of scheduling delay. Other STATUS/SOS frames are reported and ACKed while a query waits. A tag can defer one query response while its current transmission completes; duplicate query retries coalesce. `history.c` retains the last16 `(tag,type,sequence)` identities; duplicates are still ACKed but do not repeat business logs. This bounded cache is not replay protection. New nonzero ACK byte5 values disambiguate message type; zero-valued legacy ACKs are accepted for rolling upgrades with weaker type matching.
+
+See [wireless reliability and reproduction](WIRELESS_RELIABILITY.md) for exact flow, tests and `bg radio` counters. The radio remains half-duplex: local TX cannot simultaneously receive, and losses can still occur. Finite retry exhaustion is reported rather than interpreted as proof of a child's state.
 
 ## Hardware and radio settings
 
@@ -130,19 +134,20 @@ Signature checking provides application-image authenticity relative to this lab 
 | Command | Meaning |
 |---|---|
 | `bg status` | Version, role, ID, BLE sequence, connection, maintenance and confirmation |
+| `bg radio` | Transaction completion/exhaustion, interleaved RX, duplicate and queue counters |
 | `bg maintenance 0..600` | Set management connection admission deadline |
 | `bg heartbeat on/off` | Enable/stop BLE presence only; LoRa remains active |
 | `bg sos` | Tag: enqueue SOS |
 | `bg query 1..3` | Counselor: enqueue one status query |
 | `bg reboot` | Cold reset |
 
-`tools/bg_serial.py` operates USB shell/logging. `tools/bg_ble.py` handles discovery, SMP images/upload/test/reset and the combined update flow, capped at 244-byte packets by default. `scripts/backup_flash.py` creates external full-flash backups; `flash_initial.py` performs destructive initial provisioning; `build.py` pins workspace/role/signing inputs and verifies the output. Native tests compile `wire.c` with the host compiler; Python tests also check the host BLE decoder. Build reports and hardware evidence complement tests; they do not replace RF testing.
+`tools/bg_serial.py` operates USB shell/logging; use `command --no-read` when a monitor already owns RX. `tools/bg_ble.py` handles discovery, SMP images/upload/test/reset/guarded-secondary-cleanup and the combined update flow, capped at 244-byte packets by default. `scripts/backup_flash.py` creates external full-flash backups; `flash_initial.py` performs destructive initial provisioning; `build.py` pins workspace/role/signing inputs and verifies the output. Native tests compile the actual wire, motion, transaction and history policies with the host compiler; Python tests also check the host BLE decoder. Build reports and hardware evidence complement tests; they do not replace RF testing.
 
 ## Implemented scope and limits
 
 Implemented: optional SparkFun LSM6DSO sensing with `--imu` (see linked IMU guide); two-board BLE presence/roster; LoRa STATUS/SOS/ACK/QUERY/REPLY; serial demo controls; signed BLE test updates, interruption/resume, rejection and watchdog revert. Consult [the dated validation record](../../evidence/validation.md) for exactly which version/test was observed.
 
-Pending: actual buddy pairing; full three-tag concurrent operation; clasp, vibration, battery and GNSS integration; Wi-Fi/cloud; field range and collision testing; robust query retry and receive deferral; authenticated/replay-resistant business frames; authorized management; rotating session IDs. IDs are currently static. Absence of GPS does not make radio identifiers private. Sensors must report real values or UNKNOWN; do not insert simulated data into a real alert.
+Pending: actual buddy pairing; full three-tag concurrent operation; clasp, vibration, battery and GNSS integration; Wi-Fi/cloud; field range and collision testing; authenticated/replay-resistant business frames; authorized management; rotating session IDs. IDs are currently static. Absence of GPS does not make radio identifiers private. Sensors must report real values or UNKNOWN; do not insert simulated data into a real alert.
 
 To extend the firmware, keep sensor hardware in a dedicated driver/service and expose a snapshot to the protocol producer; version the protocol when its meaning changes. Do not place SPI access in shell callbacks, block BLE callbacks, or make a second thread operate the LoRa device. Add security/pairing/range requirements before presenting the prototype as child-safety equipment.
 

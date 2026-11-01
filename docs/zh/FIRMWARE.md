@@ -4,7 +4,7 @@
 
 [English](../en/FIRMWARE.md) · [队友复现操作文档](GETTING_STARTED.md)
 
-本文对应模块化后的 **1.1.18** 源码。无线协议仍为版本 1，与此前验证的 1.1.15 兼容。具体安装／烧录命令见操作文档；这里解释模块职责、运行机制及限制。
+本文对应模块化后的 **1.1.20** 源码。无线协议仍为版本 1，与此前验证的 1.1.15 兼容。具体安装／烧录命令见操作文档；这里解释模块职责、运行机制及限制。
 
 ## 模块划分
 
@@ -14,6 +14,8 @@
 | `src/ble/presence.c` / `include/presence.h` | BLE 初始化、广播、连接生命周期、心跳开关和维护接入窗口 |
 | `src/roster/roster.c` / `include/roster.h` | 辅导员被动扫描、标签名单、失联及恢复；标签端为空实现 |
 | `src/radio/link.c` / `include/radio_link.h` | LoRa 消息队列、工作线程、序列号、ACK／重试、QUERY／REPLY |
+| `src/radio/exchange.c` / `include/radio_exchange.h` | 无硬件依赖的事务期限、重试和完成匹配 |
+| `src/radio/history.c` / `include/radio_history.h` | 最近业务消息的有限去重记录 |
 | `src/drivers/wio_sx1262.c` / `include/radio_driver.h` | 延迟设备初始化、射频参数、SPI 读回、串行收发 |
 | `src/sensors/imu.c` / `include/imu.h` | 可选 LSM6DSO 后台线程、地址识别、六轴快照及过期检查 |
 | `src/protocol/motion.c` / `include/motion.h` | 纯 C UNKNOWN／STILL／MOVING 状态判断 |
@@ -89,15 +91,17 @@ LoRa 工作线程栈 3072 字节、优先级 5，请求队列容量 8，radio �
 | 2 | 1 | 协议版本 1 |
 | 3 | 1 | STATUS=1、ACK=2、SOS=3、QUERY=4、REPLY=5 |
 | 4 | 1 | 来源／目标标签 ID1–3 |
-| 5 | 1 | flags，目前为 0 |
+| 5 | 1 | ACK 可填写原消息类型；兼容旧0值。其他消息为0 |
 | 6 | 2 | LoRa 序号，与 BLE 序号独立 |
 | 8 | 1 | motion：0 UNKNOWN、1 STILL、2 MOVING |
 | 9 | 1 | clasp，0=UNKNOWN |
 | 10 | 2 | 电池，`FFFF`=unavailable |
 
-校验只检查长度、magic、协议、类型和 ID；不认证发送方、不防重放，也不完整校验所有 sensor／flags 值。工作线程启动约 3 秒后发首个 STATUS，之后上次发送完成约 10 秒再发。STATUS／SOS／REPLY 最多尝试三次，每次等 ACK 600 ms，失败后按序号确定 100–220 ms 退避。ACK 必须匹配类型、标签和 LoRa 序号；底层 TX 错误直接返回。
+校验只检查长度、magic、协议、类型和 ID，不认证发送方或防重放。首个 STATUS 约在工作线程启动3秒后到期，之后距前一个 STATUS 开始约10秒，排队事务可能延迟它。STATUS／SOS／REPLY 等 ACK600 ms，QUERY 等同标签同序号的 REPLY1500 ms；均最多发送3次，重试保留序号，并用标签／序号决定短退避。发送驱动错误也消耗一次尝试，保证有限重试。
 
-C01 每个标签只记住上次 `(sequence,type)`，抑制连续重复事件日志，但重复帧仍重新 ACK。标签收到发给自己的 QUERY 后，以同一查询序号回复 REPLY。**QUERY 本身只发一次，没有自动超时重试。**等待 ACK 时收到的其他帧会被消耗，尚未缓存处理，因此碰撞可能丢查询／事件。模块化保留这些限制，未宣称解决可靠性。
+`exchange.c` 只维护一个事务，不休眠、不调用硬件；`link.c` 在等待／退避时仍使用原200 ms接收窗口分发每个有效帧，超时决策可能延迟一个窗口。辅导员等待查询时仍处理并确认 STATUS／SOS。标签可暂存一个查询回复，现有事务完成后发出；相同查询的重传会合并。`history.c` 保存最近16个 `(tag,type,sequence)`，重复业务消息仍 ACK，但不重复记录事件。该有限历史不是安全防重放；新 ACK 的非零byte5可区分原消息类型，旧0值 ACK 为滚动升级保留较弱兼容匹配。
+
+完整流程、测试和 `bg radio` 计数见[无线可靠性与复现](WIRELESS_RELIABILITY.md)。LoRa 仍是半双工，发送时不能同时接收，重试后也可能失败。未确认只表示通信未确认，不能直接推断儿童状态。
 
 ## 硬件与射频配置
 
@@ -133,6 +137,7 @@ sysbuild 同时构建 MCUboot 和应用。MCUboot 使用 ECDSA-P256、primary �
 
 | 命令 | 作用 |
 |---|---|
+| `bg radio` | 事务完成／耗尽、交错收包、重复帧和队列计数 |
 | `bg status` | 版本、角色、ID、BLE 序号、连接、维护、确认状态 |
 | `bg maintenance 0..600` | 设定管理接入截止时间 |
 | `bg heartbeat on/off` | 开关 BLE presence，LoRa 不停 |
@@ -140,15 +145,15 @@ sysbuild 同时构建 MCUboot 和应用。MCUboot 使用 ECDSA-P256、primary �
 | `bg query 1..3` | 辅导员：排队一次查询 |
 | `bg reboot` | 冷复位 |
 
-`tools/bg_serial.py` 负责 USB 命令／日志；`tools/bg_ble.py` 负责 BLE 发现、SMP images/upload/test/reset/update，默认 244 字节包。`scripts/backup_flash.py` 建立外部整片备份，`flash_initial.py` 擦除后首次安装，`build.py` 固定工作区／角色／签名参数并验证产物。
+`tools/bg_serial.py` 负责 USB 命令／日志（独立 monitor 已运行时，用 `command --no-read` 发命令）；`tools/bg_ble.py` 负责 BLE 发现、SMP images/upload/test/reset/update及受保护的secondary清理，默认 244 字节包。`scripts/backup_flash.py` 建立外部整片备份，`flash_initial.py` 擦除后首次安装，`build.py` 固定工作区／角色／签名参数并验证产物。
 
-本机测试用 C 编译器直接编译 `wire.c`，另有 Python BLE 解码测试。测试、构建报告和实板证据互补，不能替代射频现场测试。
+本机测试用 C 编译器直接编译 wire、motion、exchange、history 的实际策略源码，另有 Python BLE 解码测试。测试、构建报告和实板证据互补，不能替代射频现场测试。
 
 ## 已实现范围与限制
 
 已实现：可选 SparkFun LSM6DSO 采样与运动状态（使用 `--imu`，见接入文档）；双板 BLE presence／名单、LoRa STATUS／SOS／ACK／QUERY／REPLY、串口演示、BLE 签名试运行更新、中断续传、拒绝错误镜像、watchdog 回滚。具体在哪个版本上做过哪些实测，以[有日期的验证记录](../../evidence/validation.md)为准。
 
-待做：儿童之间配对；三标签完整并发；搭扣、振动、电量、GNSS；Wi-Fi／云；户外范围／碰撞测试；QUERY 自动重试和 ACK 等待期间接收缓存；业务帧认证／防重放；管理授权；轮换 session ID。**当前 ID 是静态的**，没有 GPS 不意味着无线标识私密。传感器必须输出真实测量或 UNKNOWN，不能在真实报警里插入伪造值。
+待做：儿童之间配对；三标签完整并发；搭扣、振动、电量、GNSS；Wi-Fi／云；户外范围／碰撞测试；业务帧认证／防重放；管理授权；轮换 session ID。**当前 ID 是静态的**，没有 GPS 不意味着无线标识私密。传感器必须输出真实测量或 UNKNOWN，不能在真实报警里插入伪造值。
 
 扩展时把传感器硬件放在独立驱动／服务，由协议发送方读取状态快照；含义改变时升级协议版本。不要在 shell 直接访问 SPI、阻塞 BLE 回调或让第二个线程同时操作 LoRa。成为儿童安全设备之前还需定义并验证安全、配对及距离／覆盖要求。
 

@@ -1,0 +1,200 @@
+{
+  "date": "2026-10-31",
+  "firmware_implementation_commit": "0c3a612",
+  "host_cleanup_commit": "93b9199",
+  "test_spec_commit": "78918e8",
+  "board": "xiao_esp32s3/esp32s3/procpu",
+  "zephyr_revision": "f80761e49401497b5ee64ee9732dc2791055ec52",
+  "test_count": 18,
+  "bootloaders_reflashed": false,
+  "external_ttl_uart_connected": false,
+  "image_transport": "BLE SMP",
+  "native_usb_usage": "Power, shell commands and log capture",
+  "installed_counselor_bootloader_bytes": 63728,
+  "installed_counselor_bootloader_sha256_previous_record": "0fa4e54cc987f563ada36c5cf819285d9e0babd9a8ad7cc1fb50c576a139743e",
+  "installed_tag_bootloader_bytes": 46672,
+  "reports": {
+    "counselor": {
+      "signed_bytes": 435899,
+      "unsigned_bytes": 435748,
+      "signed_file_sha256": "d6e3a736dd2fffed7b869b1a77f9f4ef9693f9c955fc88264e83287bf2135c87",
+      "public_key_sha256": "243b7509cec77ffaa1167f1d817836e3a5f3bfc3e3627b15dba457003eecba28",
+      "built_bootloader_bytes": 63728,
+      "built_bootloader_sha256": "427e028000dc2997a467888016e3a0afd49aa8d3d23b7057209ca80fea16d124"
+    },
+    "tag": {
+      "signed_bytes": 437099,
+      "unsigned_bytes": 436948,
+      "signed_file_sha256": "cc5ccdc189f5e492e1972861cd173e8f318617d64c813edcaca886aad54549ca",
+      "public_key_sha256": "243b7509cec77ffaa1167f1d817836e3a5f3bfc3e3627b15dba457003eecba28",
+      "built_bootloader_bytes": 46672,
+      "built_bootloader_sha256": "8982c43e6a4e3fc842423055fa2de8cceba5c7351f0bd64cc65ca02e5bab506e"
+    },
+    "fault": {
+      "signed_bytes": 435963,
+      "unsigned_bytes": 435812,
+      "signed_file_sha256": "bce9077f4476385c9103dbb3ecac8f7c0f2dd44500d3b339dc7192128c6cf84e",
+      "public_key_sha256": "243b7509cec77ffaa1167f1d817836e3a5f3bfc3e3627b15dba457003eecba28",
+      "built_bootloader_bytes": 46672,
+      "built_bootloader_sha256": "3b09c4b361c73e5e5d4ac55411b7d40ecb83ec4e04e866c3c14bff96501d88f7"
+    },
+    "wrong-key": {
+      "signed_bytes": 435899,
+      "unsigned_bytes": 435748,
+      "signed_file_sha256": "fdf18afe453063fca3293eb72057e12d6fe7d025d5d49e3a8305f9ffb64f3e3e",
+      "public_key_sha256": "f7f68c78441ce424dfd611118e1ac78b195fc7fe4172a1423d6e7ad2ddc2abf0",
+      "built_bootloader_bytes": 46672,
+      "built_bootloader_sha256": "b81509f618801aeff5f6643978645d0e5b9ee065a7c31d221fc55d9af9dd4730"
+    },
+    "corrupt-source": {
+      "signed_bytes": 435882,
+      "unsigned_bytes": 435732,
+      "signed_file_sha256": "396bc8b0b6d8abad272f0af9dbda9e2526a5ef150267baf697985f4aba9b1c04",
+      "public_key_sha256": "243b7509cec77ffaa1167f1d817836e3a5f3bfc3e3627b15dba457003eecba28",
+      "built_bootloader_bytes": 46672,
+      "built_bootloader_sha256": "a9ab218c68b0996c5eb62dc1f6578867a22a73d0f896bed26638aaa2c94ef6c5"
+    }
+  },
+  "normal_ble_updates": {
+    "counselor": {
+      "version": "1.1.20",
+      "elapsed_seconds": 210.95,
+      "started_unconfirmed": true,
+      "health_confirmation": true,
+      "image_digest": "311c12537f7bc222333fafd79ea85fdb513fb3b6d89b08cec4a5876b928516ec"
+    },
+    "tag": {
+      "version": "1.1.20",
+      "elapsed_seconds": 218.51,
+      "started_unconfirmed": true,
+      "health_confirmation": true,
+      "image_digest": "ab59bcf2bd3e12accad96b2c225bad0bb2a7bb613424b85d5634eb11abbce286"
+    },
+    "unintended_missing_during_tag_update": false
+  },
+  "negative_tests": {
+    "wrong_key": {
+      "version": "1.3.2",
+      "full_upload_and_test_requested": true,
+      "booted": false,
+      "confirmed_primary_preserved": true
+    },
+    "corrupted_payload": {
+      "version": "1.4.1",
+      "byte_changed": 1024,
+      "signed_bytes": 435882,
+      "clean_sha256": "396bc8b0b6d8abad272f0af9dbda9e2526a5ef150267baf697985f4aba9b1c04",
+      "corrupted_sha256": "8c3df4d6b942a44d0d2b23ee4586ef7dbcb43eb4e099c4f76e1bee8cedf9fbab",
+      "team_root_rejects": true,
+      "full_upload_and_test_requested": true,
+      "booted": false,
+      "confirmed_primary_preserved": true
+    },
+    "valid_signed_fault": {
+      "version": "1.2.2",
+      "paused_at_bytes": 87258,
+      "resumed_from_bytes": 87258,
+      "started_unconfirmed": true,
+      "watchdog_reset": true,
+      "restored_version": "1.1.20",
+      "restored_confirmed": true
+    }
+  },
+  "wireless": {
+    "missing_age_ms": 8619,
+    "automatic_query_sequence": 4,
+    "automatic_query_completed_on_attempt": 2,
+    "recovered_ble_sequence": 50,
+    "other_sos_and_status_dispatched_while_query_waited": true,
+    "absent_t02_and_t03_queries_exhausted_at_three_sends": true,
+    "real_imu_address": "0x6b",
+    "real_imu_whoami": "0x6c"
+  },
+  "initial_superseded_upload_observation": {
+    "purpose": "Interrupt upload before activation; verify old primary remains active; final corrected image will have a different SHA",
+    "pids": [
+      20888
+    ],
+    "last_progress": {
+      "event": "upload",
+      "bytes": 130839,
+      "total": 435898,
+      "percent": 30
+    },
+    "interrupted_image_sha256": "23640d314c410e6572829a4df973110571a7b40e9dbbf3efd51a88b78c876cb4",
+    "old_primary_after_cleanup": "1.1.19 active/confirmed",
+    "resume_same_image_test": false,
+    "note": "A query started before interrupted BLE client teardown produced SMP sequence mismatches. Both clients exited; a fresh sequential query verified primary unchanged. Final RX-window-corrected image has a different SHA and starts a new transfer."
+  },
+  "secondary_cleanup": {
+    "fault_candidate_cleared": true,
+    "initial_erase_ack_lost": true,
+    "separate_readback_primary_unchanged": true,
+    "subsequent_cli_reports_no_listed_candidate": true,
+    "reconnect_without_repeating_erase_unit_test": true
+  },
+  "normal_operation_soak": {
+    "duration_seconds": 302.353,
+    "queries_issued": 20,
+    "queries_completed": 20,
+    "queries_exhausted": 0,
+    "sos_issued": 8,
+    "sos_actions_received": 8,
+    "absent_tag_queries_issued": 1,
+    "counselor_counter_delta": {
+      "tx_attempts": 31,
+      "completed": 20,
+      "exhausted": 1,
+      "rx": 58,
+      "interleaved": 11,
+      "duplicates": 0,
+      "queries": 0,
+      "replies": 20,
+      "queue_drops": 0
+    },
+    "tag_counter_delta": {
+      "tx_attempts": 79,
+      "completed": 58,
+      "exhausted": 0,
+      "rx": 80,
+      "interleaved": 0,
+      "duplicates": 0,
+      "queries": 20,
+      "replies": 0,
+      "queue_drops": 0
+    },
+    "unexpected_resets": 0,
+    "unexpected_ble_missing": 0,
+    "queue_drops": 0,
+    "thirty_minute_uninterrupted_test_performed": false
+  },
+  "final_state": {
+    "counselor": {
+      "version": "1.1.20",
+      "role": "COUNSELOR",
+      "tag": "200",
+      "sequence": "321",
+      "connected": "0",
+      "maintenance": "0",
+      "confirmed": "1"
+    },
+    "tag": {
+      "version": "1.1.20",
+      "role": "TAG",
+      "tag": "1",
+      "sequence": "721",
+      "connected": "0",
+      "maintenance": "0",
+      "confirmed": "1"
+    },
+    "latest_imu": "imu enabled=1 available=1 address=0x6b whoami=0x6c motion=STILL samples=34078 age_ms=3 error=0"
+  },
+  "remaining": [
+    "No cloud project/integration; user confirmed no course Memfault/nRF Cloud project yet",
+    "No three-tag concurrent validation or outdoor range/power tests",
+    "No physical UART recovery retest this run; earlier C01 UART evidence remains dated",
+    "BLE management and LoRa business frames remain unauthenticated; no anti-downgrade",
+    "Bounded history can suppress reused recent sequences after a sender reboot; session-aware protocol remains pending",
+    "Independent teammate-machine build/flash and Gradescope checkoff remain unverified"
+  ]
+}

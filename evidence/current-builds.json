@@ -2,36 +2,43 @@
   "date": "2026-10-31",
   "board": "xiao_esp32s3/esp32s3/procpu",
   "zephyr_revision": "f80761e49401497b5ee64ee9732dc2791055ec52",
-  "implementation_commit": "d9c7f99",
+  "implementation_commit": "0c3a612",
   "builds": [
     {
       "role": "tag",
-      "version": "1.1.17",
+      "version": "1.1.20",
       "imu_enabled": true,
-      "artifact": "buddyguard-tag-1.1.17.signed.bin",
-      "signed_bytes": 436812,
-      "signed_file_sha256": "1369b06364242aeccc2a6d3c080cb92e51ed1017c0707c977966fa1f009f7d1b",
-      "image_digest": "ec4093e9459253f2053e0e7a499721208c19ee835fa927612a659983cc92d493",
-      "unsigned_bytes": 436660,
-      "unsigned_sha256": "44d46d9fe44fd0348fb1088a2500e360520113d77489954f767e06d7b5b3b6d7",
-      "bootloader_bytes": 46672
+      "artifact": "buddyguard-tag-1.1.20.signed.bin",
+      "signed_bytes": 437099,
+      "signed_file_sha256": "cc5ccdc189f5e492e1972861cd173e8f318617d64c813edcaca886aad54549ca",
+      "image_digest": "ab59bcf2bd3e12accad96b2c225bad0bb2a7bb613424b85d5634eb11abbce286",
+      "unsigned_bytes": 436948,
+      "unsigned_sha256": "f9708f54a9da144367139c3f6395ee3da7968a478d53250f05523d0090c4fc48",
+      "bootloader_bytes": 46672,
+      "built_bootloader_bytes": 46672,
+      "built_bootloader_sha256": "8982c43e6a4e3fc842423055fa2de8cceba5c7351f0bd64cc65ca02e5bab506e",
+      "bootloader_reflashed_this_run": false
     },
     {
       "role": "counselor",
-      "version": "1.1.19",
+      "version": "1.1.20",
       "imu_enabled": false,
-      "artifact": "buddyguard-counselor-1.1.19.signed.bin",
-      "signed_bytes": 435564,
-      "signed_file_sha256": "23b5a87054a3743ce012d37a64a6d096fd206e24474516b9d38cd8b851dee37a",
-      "image_digest": "63b9ba9bf1f0b1e236081bf047e89d068c9b8668dd52691bcded4ed8c11ab8fe",
-      "unsigned_bytes": 435412,
-      "unsigned_sha256": "42659bf2635d8ca99e4d2fd6ff0de2bf37163d5678e24465f6831d56fa5fbe14",
+      "artifact": "buddyguard-counselor-1.1.20.signed.bin",
+      "signed_bytes": 435899,
+      "signed_file_sha256": "d6e3a736dd2fffed7b869b1a77f9f4ef9693f9c955fc88264e83287bf2135c87",
+      "image_digest": "311c12537f7bc222333fafd79ea85fdb513fb3b6d89b08cec4a5876b928516ec",
+      "unsigned_bytes": 435748,
+      "unsigned_sha256": "219b3794e1640312bb80c7b89dbb7348eaf691ec745ba1573a0833a557a663f5",
       "bootloader_bytes": 63728,
       "bootloader_sha256": "0fa4e54cc987f563ada36c5cf819285d9e0babd9a8ad7cc1fb50c576a139743e",
-      "serial_recovery": true
+      "serial_recovery": true,
+      "built_bootloader_bytes": 63728,
+      "built_bootloader_sha256": "427e028000dc2997a467888016e3a0afd49aa8d3d23b7057209ca80fea16d124",
+      "bootloader_reflashed_this_run": false
     }
   ],
   "public_key_sha256": "243b7509cec77ffaa1167f1d817836e3a5f3bfc3e3627b15dba457003eecba28",
-  "status": "T01 last verified1.1.17 with LSM6DSO; not connected during UART tests. C01 restored to1.1.19 after valid/wrong-key UART recovery tests; actual boot, BLE active/confirmed and SX1262 readback verified. Final maintenance closure recorded in UART evidence.",
-  "uart_recovery_evidence": "uart-recovery-20261031-summary.json"
+  "status": "Both roles BLE-updated to1.1.20 and self-confirmed; C01 existing recovery MCUboot passed BLE wrong-key/corruption rejection and valid-fault watchdog revert. Same-file resume from87258bytes verified. Radio interleaving/retries and five-minute normal-operation run recorded. Both maintenance windows closed, heartbeat enabled; C01 secondary cleared. Cloud project not yet available.",
+  "uart_recovery_evidence": "uart-recovery-20261031-summary.json",
+  "latest_evidence": "wireless-fota-v1120-20261031-summary.json"
 }

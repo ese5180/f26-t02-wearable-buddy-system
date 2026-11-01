@@ -148,16 +148,16 @@ Mac 弹窗时允许终端／宿主进程访问蓝牙。**同一个串口只允�
 
 辅导员应依次显示：周期 STATUS `RX ... type=1`；SOS `type=3` 和 `ACTION`；失联约 8–10 秒后 `BLE MISSING` → `QUERY` → `RX ... type=5`；恢复后 `RECOVERED`。LoRa 回复只说明 LoRa 可达，不能清除 BLE 失联状态。
 
-QUERY 与标签 STATUS 发送碰撞时可能无回复；关闭辅导员串口监视器后，在 C01 上运行 `bg query 1` 重试。目前没有自动 QUERY 重试。SOS 入队成功也不代表已送达，要看辅导员接收和标签 ACK。
+1.1.20 的 QUERY 最多发3次，并在等待时继续处理其他帧；全部超时则明确报告未确认，操作员可再发起查询。已有 monitor 时用 `command --no-read` 发命令，见[无线可靠性文档](WIRELESS_RELIABILITY.md)。SOS 入队成功也不代表已送达，要看辅导员接收和标签 ACK。
 
 这里的 heartbeat 是**通信心跳**，不是生理脉搏。`heartbeat off` 仅停 BLE 广播，LoRa 继续工作。演示不输出距离或位置；未启用 `--imu` 时 motion 为 UNKNOWN；可选 IMU 文档说明真实采样。clasp 仍 UNKNOWN，电量 unavailable。
 
 ## 8. BLE 签名固件更新
 
-给候选镜像使用独立版本／构建目录，例如 `--version 1.1.19`，必须保持**目标板相同角色和 ID**。版本覆盖使用隔离源码副本，不修改仓库 VERSION。标签候选构建示例：
+给候选镜像使用独立版本／构建目录，例如 `--version 1.1.21`，必须保持**目标板相同角色和 ID**。版本覆盖使用隔离源码副本，不修改仓库 VERSION。标签候选构建示例：
 
 ```sh
-"$BG_WS/.venv/bin/python" scripts/build.py --workspace "$BG_WS" --key "$BG_KEY" --build-dir "$BG_WS/build-bg-tag1-candidate" --role tag --tag-id 1 --version 1.1.19
+"$BG_WS/.venv/bin/python" scripts/build.py --workspace "$BG_WS" --key "$BG_KEY" --build-dir "$BG_WS/build-bg-tag1-candidate" --role tag --tag-id 1 --imu --version 1.1.21
 .venv/bin/python tools/bg_serial.py --port "$TAG_PORT" command bg maintenance 300
 # 先等约 4 秒，让辅导员收到 maintenance 标志，再开始连接：
 .venv/bin/python tools/bg_ble.py --name BG-T01 images
@@ -173,7 +173,7 @@ BLE SMP 连接期间标签暂停广播。如果辅导员最后看到维护标志
 可选安全更新复现：
 
 1. **中断续传：**`upload IMAGE --stop-at 20`，确认旧版本仍 confirmed，再用同一文件 `update IMAGE`，检查从非零偏移续传。
-2. **故障回滚：**先确认已知正常镜像。独立目录构建相同角色／ID、`--fault --version 1.2.1`，BLE 更新后应看到故障标志、WDT 复位和恢复原 confirmed 版本。故障镜像不能当正式版本。
+2. **故障回滚：**先确认已知正常镜像。独立目录构建相同角色／ID、`--fault --version 1.2.2`，BLE 更新后应看到故障标志、WDT 复位和恢复原 confirmed 版本。故障镜像不能当正式版本。
 3. **错误密钥／损坏拒绝：**历史完整 BLE 测试见验证记录。重做时用单独外部测试私钥，或复制镜像后破坏其签名覆盖数据；复位后检查旧 confirmed 版本保留。不要替换团队信任根或已知正常镜像。
 
 ## 9. 排障与交接

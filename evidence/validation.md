@@ -1,6 +1,8 @@
 # Hardware validation — 29–31 October 2026
 
-**Latest / UART recovery (2026-10-31):** C01 MCUboot UART valid/wrong-key uploads, rejection, no-application recovery and restoration to1.1.19 passed. [UART evidence / 串口恢复验证](uart-recovery-20261031.md). T01 was not connected for this run.
+**Latest / 1.1.20 BLE and radio regression (2026-10-31):** both roles BLE-updated/self-confirmed; current C01 recovery bootloader passed wrong-key/corruption rejection and valid-fault watchdog revert. Same-file resume, interleaved reception and five-minute normal-operation results recorded: [English / 中文](wireless-fota-v1120-20261031.md).
+
+**Previous / UART recovery (2026-10-31):** C01 MCUboot UART valid/wrong-key uploads, rejection, no-application recovery and restoration to1.1.19 passed. [UART evidence / 串口恢复验证](uart-recovery-20261031.md). T01 was not connected for this run.
 
 **Previous / IMU stage (2026-10-31):** real LSM6DSO six-axis data and STILL/MOVING/STILL over LoRa verified. Tag1.1.17 and counselor1.1.18 active/confirmed. Counselor scan duplicate filtering corrected; 186 seconds without unintended loss, then deliberate loss/query/recovery passed. [IMU validation / IMU 验证](imu-validation-20261031.md).
 

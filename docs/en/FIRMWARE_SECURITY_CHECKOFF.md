@@ -2,7 +2,7 @@
 
 [中文](../zh/FIRMWARE_SECURITY_CHECKOFF.md) · [Repository](https://github.com/ese5180/f26-t02-wearable-buddy-system/tree/codex/buddyguard-wireless-fota) · [PR #1](https://github.com/ese5180/f26-t02-wearable-buddy-system/pull/1)
 
-Status on **2026-10-31**: normal signed BLE FOTA is implemented and hardware-tested. T01 was last verified at1.1.17 (LSM6DSO enabled); C01 now runs1.1.19. **MCUboot UART recovery is installed and hardware-tested on C01**, including valid signed upload, wrong-key rejection and restoration without a working application. The course's interpretation of external storage is identified below.
+Status on **2026-10-31**: T01 and C01 now run active/confirmed1.1.20. **BLE FOTA was re-tested on C01's installed UART-recovery MCUboot**: valid upgrade, wrong-key/corruption rejection, same-file resume and valid-fault watchdog rollback passed. [Latest results](../../evidence/wireless-fota-v1120-20261031.md). Earlier UART signed recovery was tested on1.1.19; no external TTL cable was connected in the latest BLE run.
 
 ## 3.5.1 Bootloading process
 
@@ -43,8 +43,8 @@ These are **binary file sizes**, not RAM usage or allocated partition sizes. Mea
 |---|---|---:|---:|
 | MCUboot on T01 | Existing BLE configuration | 46,672 (45.58 KiB) | Not an application image |
 | MCUboot on C01 | UART recovery enabled | 63,728 (62.23 KiB) | Not an application image |
-| T01 tag with LSM6DSO | 1.1.17 | 436,660 (426.43 KiB) | 436,812 (426.57 KiB) |
-| C01 counselor | 1.1.19 | 435,412 (425.21 KiB) | 435,564 (425.36 KiB) |
+| T01 tag with LSM6DSO | 1.1.20 | 436,948 (426.71 KiB) | 437,099 (426.85 KiB) |
+| C01 counselor | 1.1.20 | 435,748 (425.54 KiB) | 435,899 (425.68 KiB) |
 
 The bootloader partition is 65,536 bytes (64 KiB). Each application slot is 1,376,256 bytes (1,344 KiB), including header/trailer/swap overhead. The signed file is the application artifact sent over BLE; initial USB provisioning also installs the separate MCUboot binary.
 
@@ -79,13 +79,13 @@ We have not added a second independent Flash module. If the course means Flash e
 
 | Failure | Mechanism | Observed evidence |
 |---|---|---|
-| Wrong signing key | MCUboot validates ECDSA-P256 using the team public root | Candidate1.3.0 completed BLE upload but was rejected at boot; prior confirmed1.1.0 remained active |
-| Corrupted signed download | Image hash/signature validation before activation | Corrupted1.4.0 completed upload; prior confirmed1.1.1 remained active after reset |
-| Correct signature, faulty trial code | Test boot, delayed self-confirmation, 8-second watchdog and move-swap revert | Signed1.2.1 booted, stopped feeding WDT and reverted to confirmed1.1.16 |
-| Interrupted download | Secondary-slot staging; no test request until completion; SHA-based client resume | Transfer stopped at87,258 bytes (20%); old primary stayed confirmed; same-file upload resumed at that offset |
+| Wrong signing key | MCUboot validates ECDSA-P256 using the team public root | Candidate1.3.2 completed BLE upload/test/reset; confirmed1.1.20 with its original digest remained active |
+| Corrupted signed download | Image hash/signature validation before activation | Corrupted1.4.1 completed upload/test/reset; original confirmed1.1.20 remained active |
+| Correct signature, faulty trial code | Test boot, delayed self-confirmation, 8-second watchdog and move-swap revert | Signed1.2.2 booted unconfirmed, stopped feeding WDT and reverted to confirmed1.1.20 |
+| Interrupted download | Secondary-slot staging; no test request until completion; SHA-based client resume | Transfer of signed fault1.2.2 stopped at87,258 bytes; primary1.1.20 stayed confirmed; identical-file upload resumed there |
 | Reset during a swap | MCUboot's move-swap status/progress handling | Enabled by the configured algorithm; deliberate power-cut-during-swap was not hardware-tested |
 
-See [dated validation](../../evidence/validation.md) and [v1.1.16 watchdog regression](../../evidence/modularization-20261030.md). The BLE negative cases were tested on the recorded earlier versions; UART wrong-key rejection was additionally tested on C01 as recorded below. Valid BLE upgrades and confirmation were recorded for T01 1.1.17 and C01 1.1.18; C01 1.1.19 was subsequently installed and tested through UART as documented below. Upload success or an SMP `bootable` field alone is not proof that a signature was accepted: reset and verify the actual active version and confirmation state.
+Historical tests are preserved in [dated validation](../../evidence/validation.md). The [1.1.20 regression](../../evidence/wireless-fota-v1120-20261031.md) additionally records full wrong-key1.3.2 and corrupted1.4.1 rejection, valid signed fault1.2.2 watchdog revert to1.1.20 and same-file resumption from87,258 bytes on C01's current bootloader. Both roles passed valid BLE upgrade and self-confirmation. Upload acknowledgement or a `bootable` flag alone is not proof of signature acceptance.
 
 ## Configuration and signing identity
 
@@ -101,6 +101,8 @@ Key files in the repository:
 The signing identity is uniquely generated for Team2, rather than MCUboot's distributed example key. Private material stays outside Git. ESP hardware Secure Boot eFuses and Flash encryption are not enabled, so this is application-signature enforcement by MCUboot, not a physically locked boot chain. Management authorization, anti-downgrade policy and authenticated supervision messages are separate pending work.
 
 ## Extra-credit UART serial recovery: hardware result
+
+This section records the earlier same-day1.1.19 UART experiment. The subsequent1.1.20 BLE regression retained that bootloader; it did not re-test physical UART recovery.
 
 **Implemented and demonstrated on C01.** The complete [UART recovery runbook](UART_RECOVERY.md), [dated validation](../../evidence/uart-recovery-20261031.md) and [machine-readable results](../../evidence/uart-recovery-20261031-summary.json) describe the commands and observed evidence.
 
