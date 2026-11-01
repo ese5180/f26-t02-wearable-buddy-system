@@ -1,0 +1,55 @@
+mainmenu "BuddyGuard"
+
+source "Kconfig.zephyr"
+
+menu "BuddyGuard prototype"
+
+config BUDDYGUARD_COUNSELOR
+	bool "Build the counselor receiver role"
+	default n
+
+config BUDDYGUARD_IMU
+	bool "Optional SparkFun LSM6DSO on the tag I2C bus"
+	depends on !BUDDYGUARD_COUNSELOR
+	select SENSOR
+	select I2C
+	help
+	  Poll a deferred LSM6DSO at address 0x6b or 0x6a. Missing or stale
+	  measurements produce UNKNOWN and do not block the wireless service.
+
+config BUDDYGUARD_PRESENCE_TIMEOUT_MS
+	int "BLE presence timeout for the laboratory demo"
+	range 4000 120000
+	default 8000
+
+config BUDDYGUARD_TAG_ID
+	int "Laboratory tag ID"
+	range 1 255
+	default 1
+
+config BUDDYGUARD_MAINTENANCE_GRACE_SECONDS
+	int "Roster grace for a tag whose last frame announced maintenance"
+	range 120 900
+	default 600
+	help
+	  A 244-byte BLE SMP upload takes several minutes while advertisements
+	  pause. Keep this separate from the normal missing-tag timeout, and
+	  bounded so a stalled update cannot suppress warnings indefinitely.
+
+config BUDDYGUARD_CONFIRM_AFTER_SECONDS
+	int "Healthy runtime before confirming a test image"
+	range 5 300
+	default 15
+
+config BUDDYGUARD_MAINTENANCE_SECONDS
+	int "Initial laboratory BLE maintenance window"
+	range 0 600
+	default 300
+
+config BUDDYGUARD_FAULT_ON_BOOT
+	bool "Inject an unconfirmed-image failure after watchdog setup"
+	default n
+	help
+	  Test images only: stop feeding the watchdog before image confirmation.
+
+endmenu

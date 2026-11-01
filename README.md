@@ -1,81 +1,80 @@
-# ESE5180: IoT Venture
+# BuddyGuard — ESE 5180 Team 2
 
-**Team Number: 02**
+XIAO ESP32S3 + Wio-SX1262 B2B kit · Zephyr · MCUboot · **1.1.20**
 
-**Team Name: Jet2Holiday**
+BLE communication heartbeat, counselor roster, LoRa P2P alerts/queries, signed BLE updates and optional UART recovery. The tag can use a SparkFun LSM6DSO for motion context.
 
-| Team Member Name | Email Address                  |
-| ---------------- | ------------------------------ |
-| Siwei Lei        | laialex@engineering.upenn.edu  |
-| Rico Zhuang      | zzhuan13@engineering.upenn.edu |
-| Yunzhe Deng      | deng1@engineering.upenn.edu    |
-| Yubin Guan       | guan1@engineering.upenn.edu    |
+BLE 通信心跳、辅导员名单、LoRa P2P 告警／查询、签名 BLE 更新及可选 UART 恢复；标签可接 SparkFun LSM6DSO 提供运动状态。
 
-**GitHub Repository URL: [https://github.com/yunzhedeng/ese5180-IoT-Venture.git](https://github.com/yunzhedeng/ese5180-IoT-Venture.git)**
+## Start here / 从这里开始
 
-## Concept Development
+| Purpose / 用途 | 中文 | English |
+|---|---|---|
+| Clone → environment → build → flash → demo / 队友完整复现 | [操作指南](docs/zh/GETTING_STARTED.md) | [Getting started](docs/en/GETTING_STARTED.md) |
+| Module ownership, data flow, protocol and boot chain / 理解固件 | [固件解释](docs/zh/FIRMWARE.md) | [Firmware explanation](docs/en/FIRMWARE.md) |
+| Course security questions / 安全作业回答 | [安全验收](docs/zh/FIRMWARE_SECURITY_CHECKOFF.md) | [Security checkoff](docs/en/FIRMWARE_SECURITY_CHECKOFF.md) |
+| Optional sensor wiring / 可选传感器 | [IMU 接入](docs/zh/IMU_LSM6DSO.md) | [IMU integration](docs/en/IMU_LSM6DSO.md) |
+| Optional bootloader failsafe / 可选加分功能 | [UART 恢复](docs/zh/UART_RECOVERY.md) | [UART recovery](docs/en/UART_RECOVERY.md) |
 
-### Product Function
+Read [the source map](firmware/README.md) before individual modules. A compact [validation summary / 实测摘要](docs/VALIDATION.md) distinguishes observed results from planned features.
 
-We are building a simple physical console for monitoring and approving AI agent actions. Unlike traditional macro pads, our device connects directly to AI and cloud services. Users can see agent status, review tasks, and approve sensitive actions with one press.
+先看[源码导航](firmware/README.md)，再读模块接口与实现。仓库只保留复现所需内容；历史测试程序、长日志与旧概念材料保留在维护者本地归档和 Git 历史中，不影响当前构建。
 
-### Target Market & Demographics
+## Repository / 目录
 
-**Who will be using your product?**
+```text
+firmware/       product modules, interfaces, board and MCUboot configuration
+                固件模块、接口、硬件与引导配置
+scripts/        signed builds, full backup, initial provisioning, recovery install
+                签名构建、备份、首次安装、恢复引导安装
+tools/          host-side BLE, USB shell and UART recovery clients
+                电脑端 BLE、USB 命令及 UART 恢复工具
+docs/en/ zh/    reproduction and explanation, optional guides kept separate
+                双语操作／解释文档，可选内容单列
+keys/           public verification key only / 仅公钥
+patches/        required MCUboot UART prerequisite / 必要的 UART 修复
+west.yml        pinned Zephyr and imported dependencies / 固定依赖版本
+```
 
-Our intended users are students, software developers, and productivity enthusiasts who want an affordable, compact keyboard for shortcuts and AI-assisted workflows. We would particularly target privacy-conscious users who value control over their device’s firmware, settings, and data handling.
+Native macOS remains the documented environment. Use Python 3.12, west 1.5.0, SDK 1.0.1 and the pinned Zephyr revision; keep source/workspace/build/key paths **without spaces**. USB flashing and BLE tools run on the host. No Docker setup is required.
 
-**Who will be purchasing your product?**
+目前沿用原生 macOS 环境，不新增 Docker。队友请按操作指南安装固定版本；已有板子的更新必须使用原团队签名身份，私钥通过团队私下渠道提供。私钥、整片备份、构建产物、虚拟环境和原始日志不上传。
 
-Individual users would purchase the keyboard for their own workstations, while small businesses and engineering teams could buy it for employees. University laboratories and student organizations would also be potential buyers for affordable, customizable input devices.
+## Firmware security / 固件安全
 
-**Where would you deploy your product?**
+```mermaid
+flowchart LR
+    HOST[BLE host] --> APP[Running Zephyr application]
+    APP --> SLOT[Secondary SPI NOR slot]
+    SLOT -->|test + reset| BOOT[MCUboot validation]
+    BOOT -->|valid| TRIAL[Unconfirmed trial]
+    BOOT -->|invalid| OLD[Keep confirmed image]
+    TRIAL -->|healthy at least 15 s| CONFIRM[Application confirms]
+    TRIAL -->|watchdog reset| REVERT[Revert to confirmed image]
+```
 
-We would initially launch in the United States, focusing on university campuses, home offices, and small-business workstations. After validating demand and reliability, we would expand internationally through online sales.
+| Question / 问题 | Answer / 当前实现 |
+|---|---|
+| Bootloader size / 引导大小 | T01: 46,672 B; C01 with UART recovery: 63,728 B |
+| Application size / 应用大小 | T01: 436,948 B unsigned / 437,099 B signed; C01: 435,748 / 435,899 B |
+| Download handler / 下载方 | Application receives BLE SMP; MCUboot validates and activates at boot / 应用下载，引导验签激活 |
+| Transport / 传输 | BLE for nearby maintenance without AP/cloud; LoRa for supervision / BLE 本地更新，LoRa 监督消息 |
+| Storage / 存储 | On-board external SPI NOR: primary `0x20000`, secondary `0x170000`, each `0x150000` B |
+| Failure handling / 故障处理 | Unique ECDSA-P256 signing, hash validation, secondary staging/resume, test boot, delayed confirmation, watchdog/revert |
+| Extra credit / 加分 | MCUboot UART signed recovery and invalid-signature rejection demonstrated on C01 1.1.19 |
 
-**How large is the market you’re targeting, in US dollars?**
+Sizes are recorded binary-file sizes, not partition allocation or RAM. The boot Flash is external to the MCU; no second storage module is fitted. Confirm the course's external-storage interpretation with Nick. Full answers and reproduction commands are linked above.
 
-The United States had approximately 1.7 million software developer jobs in 2025, providing a starting point for estimating our initial customer base. Assuming 10% of that population would consider a dedicated macropad at a proposed &#36;40 retail price, our initial target market would represent approximately &#36;6.8 million in hardware purchases. This is an assumption-based, one-device-per-customer estimate—not measured demand or annual market revenue.
+## Scope and next work / 范围与下一步
 
-**How much of that market do you expect to capture, in US dollars?**
+Validated on **one tag + one counselor**; T01–T03 are configurable. Child-to-child pairing, a complete three-tag deployment, clasp/motor/GNSS/battery sensing and Wi-Fi/cloud are pending. No cloud project has been created. Next steps are teammate reproduction, additional-tag/field tests and then course cloud integration.
 
-Our first-year sales target would be 1,000 units at &#36;40 each, generating &#36;40,000 in revenue, or approximately 0.6% of our estimated target market. We would test this target through preorders, campus demonstrations, and small-business pilot sales before scaling production.
+已验证一标签＋一辅导员；儿童间配对、三标签完整并发及其余外设仍待实现。运动缺失／过期报 UNKNOWN；没有测量距离或位置。下一步先完成队友独立复现及多标签／现场验证，再接课程云平台。
 
-**What competitors are already in the space?**
+MCUboot enforces application signatures. Hardware secure-boot eFuses, Flash encryption, management authorization and radio authentication are not enabled; IDs are static. This is a laboratory prototype with the limits described in the firmware guide.
 
-Our closest competitor is OpenAI and Work Louder’s Codex Micro, listed at &#36;230. Other alternatives include Elgato’s Stream Deck Neo, listed at &#36;99.99 before promotions, and Adafruit’s MacroPad RP2040 kit. Our intended advantage would be a lower-cost, ready-to-use product with local configuration and clearly documented security controls.
+MCUboot 已验证应用签名；硬件启动锁定、Flash 加密、管理授权与业务帧认证尚未启用，ID 仍为静态。目前是实验原型。
 
-### Stakeholders
+[Current BOM / 硬件清单](https://docs.google.com/spreadsheets/d/1GG7O95_0aSs89AQl4g6phD0VFDLTcqFAaMB5zflHOEA/edit?gid=2071228825#gid=2071228825) · [Course assignment / 课程题目](https://docs.google.com/document/d/1gKqiMN2WEVwAf0uwNyS8Gh1MBPQqg_3FwDCZpiu_ctY/edit)
 
-- Zapier: for workflow automation
-- Anthropic: for Claude/Claude Code power users
-- Browser Use: for browser agents and AI automation
-- YaoEdge: for AI agent monitoring and workflow control
-
-The keypad gives their users a physical, customizable interface for launching AI agents and repetitive workflows with one press.
-
-We have already spoken with the founder of YaoEdge about our product. He said he is very interested in what we are building and would be willing to invest in the company.
-
-### System-Level Diagrams
-
-![System-Level Diagram](image/README/image.png)
-
-### Security Requirements Specification
-
-- **SecRS-01** - The console shall exchange task and approval data only with an authenticated computer companion application over an encrypted BLE connection.
-- **SecRS-02** - The nRF5340 shall verify firmware signatures before execution and reject unauthorized firmware.
-- **SecRS-03** - Sensitive actions shall require an external keypad press after the action is displayed. The companion application shall reject expired or reused approvals.
-
-### Hardware Requirements Specification
-
-- **HRS-01** — Wi-Fi Connectivity: The console shall communicate directly with the backend through an nRF7002 Wi-Fi interface without a computer gateway, at a distance of 5 m from the access point in the same room with no obstructions.
-- **HRS-02** — Display: The console shall include at least one display capable of presenting the selected agent’s identity, requested action, target resource, and risk level. Scrolling or paging may be used to show complete information.
-- **HRS-03** — Physical Controls: The console shall include two separate buttons for approval and rejection and one rotary encoder for selection. The approval button shall support continuous press detection for at least  2 seconds.
-- **HRS-04** — Protected Key Storage: The console shall use an nRF5340 and provide hardware-backed isolation for its approval-signing private key. Non-secure application code shall not be able to read or export the
-
-### Software Requirements Specification
-
-- **SRS-01** — Agent Monitoring: The software shall simultaneously track at least  two agent instances, supporting Working, Approval Required, Completed, and Failed states. Under normal connectivity on the same local network, the display shall update within 2 seconds of a backend status event.
-- **SRS-02** — Physical Approval: Approval shall require a continuous button press of at least  2 seconds **. Releasing the button early or changing the selected request shall cancel confirmation. Local feedback shall appear within 500 ms after approval is completed or rejection is pressed.
-- **SRS-03** — Authorization Enforcement: Each approval shall be signed and bound to the request ID, agent identity, action, target resource, and expiration time. The backend shall permit execution only after verification, allow each authorization to be used  once , and reject invalid, mismatched, expired, or reused authorizations.
-- **SRS-04** — Audit Logging: The backend shall persist each received approval or rejection response before acknowledging completion. Each record shall contain the request ID, agent identity, action, target resource, decision, device ID, server timestamp, and validation result, and remain retrievable after a backend restart.
+Team 2: Siwei Lei, Rico Zhuang, Yunzhe Deng, Yubin Guan.

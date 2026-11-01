@@ -1,0 +1,9 @@
+manifest:
+  version: "0.13"
+  projects:
+    - name: zephyr
+      url: https://github.com/zephyrproject-rtos/zephyr
+      revision: f80761e49401497b5ee64ee9732dc2791055ec52
+      import: true
+  self:
+    path: buddyguard
