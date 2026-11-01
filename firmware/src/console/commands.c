@@ -11,6 +11,14 @@
 #include "imu.h"
 static int cmd_bg(const struct shell *shell, size_t argc, char **argv)
 {
+	if (!strcmp(argv[1], "radio") && argc == 2) {
+		struct bg_radio_stats s = bg_radio_get_stats();
+		shell_print(shell, "radio tx_attempts=%u completed=%u exhausted=%u rx=%u interleaved=%u duplicates=%u queries=%u replies=%u queue_drops=%u",
+			s.tx_attempts, s.tx_completed, s.tx_exhausted, s.rx_valid,
+			s.rx_interleaved, s.rx_duplicates, s.queries_received,
+			s.replies_received, s.queue_drops);
+		return 0;
+	}
 	if (!strcmp(argv[1], "imu") && argc == 2) {
 		struct bg_imu_snapshot s = bg_imu_get();
 		shell_print(shell, "imu enabled=%u available=%u address=0x%02x whoami=0x%02x motion=%s samples=%u age_ms=%lld error=%d",
@@ -65,7 +73,7 @@ static int cmd_bg(const struct shell *shell, size_t argc, char **argv)
 		}
 		return bg_radio_query(tag);
 	}
-	shell_error(shell, "bg status | imu | maintenance <0..600> | heartbeat <on|off> | sos | query <1..3> | reboot");
+	shell_error(shell, "bg status | radio | imu | maintenance <0..600> | heartbeat <on|off> | sos | query <1..3> | reboot");
 	return -EINVAL;
 }
 

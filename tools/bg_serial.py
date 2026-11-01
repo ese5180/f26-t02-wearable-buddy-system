@@ -18,6 +18,8 @@ def main():
     monitor.add_argument('--seconds', type=float, default=20)
     monitor.add_argument('--until', help='Stop after this text appears in new serial output')
     command = sub.add_parser('command')
+    command.add_argument('--no-read', action='store_true',
+                         help='Write only while a separate monitor owns the RX stream')
     command.add_argument('words', nargs='+')
     args = parser.parse_args()
     if args.port is None:
@@ -47,9 +49,11 @@ def main():
             log_stream.write(chunk.decode(errors='replace'))
             log_stream.flush()
     if args.operation == 'command':
-        connection.reset_input_buffer()
+        if not args.no_read:
+            connection.reset_input_buffer()
         connection.write(('\x03' + ' '.join(args.words) + '\r\n').encode())
-        seconds = 2.0
+        connection.flush()
+        seconds = 0.0 if args.no_read else 2.0
     else:
         connection.reset_input_buffer()
         seconds = args.seconds

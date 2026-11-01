@@ -88,7 +88,10 @@ void bg_roster_poll(void)
 		}
 		if (missing && !m->missing) {
 			LOG_WRN("BLE MISSING tag=T%02u age_ms=%u; requesting LoRa status", tag, age);
-			(void)bg_radio_query(tag);
+			int rc = bg_radio_query(tag);
+			if (rc) {
+				LOG_WRN("Unable to queue status query for T%02u: %d", tag, rc);
+			}
 		}
 		m->missing = missing;
 	}

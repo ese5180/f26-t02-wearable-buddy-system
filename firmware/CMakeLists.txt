@@ -11,6 +11,8 @@ target_sources(app PRIVATE
   src/sensors/imu.c
   src/drivers/wio_sx1262.c
   src/radio/link.c
+  src/radio/exchange.c
+  src/radio/history.c
   src/roster/roster.c
 )
 target_include_directories(app PRIVATE include)
