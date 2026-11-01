@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""MCUboot UART recovery only: image list, direct-primary upload, reset. No test/confirm commands."""
+"""MCUboot UART recovery only: image list, direct-primary upload, reset. No test/confirm commands.
+MCUboot 串口恢复客户端；直接写 primary，不具备 BLE 候选槽保护。
+"""
 import argparse
 import asyncio
 import json

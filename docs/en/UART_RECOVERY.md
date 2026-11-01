@@ -37,7 +37,7 @@ From the repository root:
 
 ```sh
 "$BG_WS/.venv/bin/python" scripts/build.py --workspace "$BG_WS" --key "$BG_KEY" \
-  --build-dir "$BG_BUILD" --role counselor --serial-recovery --version 1.1.19
+  --build-dir "$BG_BUILD" --role counselor --serial-recovery --version 1.1.20
 ```
 
 Use a fresh build directory when switching role, signing identity or recovery profile. `--version` creates an isolated source snapshot; it does not change `firmware/VERSION`. The helper verifies the signed application and records sizes/hashes in `buddyguard-build.json`.
@@ -127,6 +127,6 @@ Restore the good image with the command in step5, reset and verify version/healt
 
 ## Limits
 
-UART primary overwrite does not preserve BLE FOTA's secondary-slot staging guarantee. There is no UART peer authentication, no anti-downgrade policy, and ESP secure-boot eFuses/Flash encryption remain disabled. This demo proves signed application enforcement by MCUboot, not a physically locked production boot chain. Keep full Flash captures and private keys outside Git; commit only code, public verification material and curated test evidence.
+UART primary overwrite does not preserve BLE FOTA's secondary-slot staging guarantee. There is no UART peer authentication, no anti-downgrade policy, and ESP secure-boot eFuses/Flash encryption remain disabled. This demo proves signed application enforcement by MCUboot, not a physically locked production boot chain. Keep full Flash captures and private keys outside Git; keep code, public verification material and the concise validation summary in Git.
 
 Protocol reference: [MCUboot serial recovery](https://docs.mcuboot.com/serial_recovery.html).

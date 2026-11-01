@@ -8,7 +8,8 @@ enum bg_radio_exchange_action {
 };
 /* Pure retry state: no hardware, logging, sleeping or Zephyr dependencies.
  * One in-flight transaction; callers continue dispatching RX while it waits.
- * All durations must be below INT32_MAX ms for wrap-safe comparisons. */
+ * All durations must be below INT32_MAX ms for wrap-safe comparisons.
+ * 调用者持有状态并执行收发；时间间隔须小于 INT32_MAX 毫秒以支持计时回绕。 */
 struct bg_radio_exchange {
 	uint8_t frame[BG_RADIO_FRAME_SIZE];
 	uint32_t deadline_ms, timeout_ms, backoff_ms;

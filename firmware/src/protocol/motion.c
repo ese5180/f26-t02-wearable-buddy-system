@@ -1,4 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
+/* Pure motion filter; caller supplies timestamps, acceleration (mg) and gyro (mrad/s).
+ * 纯运动判断；调用者提供毫秒时间、mg 加速度与 mrad/s 角速度。
+ */
 #include <string.h>
 #include "motion.h"
 

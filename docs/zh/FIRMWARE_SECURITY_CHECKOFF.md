@@ -2,7 +2,7 @@
 
 [English 提交版](../en/FIRMWARE_SECURITY_CHECKOFF.md) · [GitHub 代码分支](https://github.com/ese5180/f26-t02-wearable-buddy-system/tree/codex/buddyguard-wireless-fota) · [PR #1](https://github.com/ese5180/f26-t02-wearable-buddy-system/pull/1)
 
-截至 **2026-10-31**：T01与C01均运行 active/confirmed1.1.20。**已在C01既有UART recovery bootloader上重测BLE FOTA**：正常升级、错误签名／损坏拒绝、同文件续传和有效签名故障镜像watchdog回滚通过，见[最新实测](../../evidence/wireless-fota-v1120-20261031.md)。此前UART签名恢复在1.1.19上完成；本轮没有连接外接TTL线。
+截至 **2026-10-31**：T01与C01均运行 active/confirmed1.1.20。**已在C01既有UART recovery bootloader上重测BLE FOTA**：正常升级、错误签名／损坏拒绝、同文件续传和有效签名故障镜像watchdog回滚通过，见[最新实测](../VALIDATION.md)。此前UART签名恢复在1.1.19上完成；本轮没有连接外接TTL线。
 
 ## 3.5.1 启动与更新流程
 
@@ -37,7 +37,7 @@ flowchart TD
 
 ## Bootloader 与应用大小
 
-下表是**实际二进制文件大小**，不是 RAM 或预留分区大小。数据来自已安装镜像的 [current-builds.json](../../evidence/current-builds.json)。
+下表是**实际二进制文件大小**，不是 RAM 或预留分区大小。已安装镜像的大小保留在[实测摘要](../VALIDATION.md)。
 
 | 部件 | 版本 | 未签名应用／引导程序 | 签名应用 |
 |---|---|---:|---:|
@@ -83,7 +83,7 @@ Wi-Fi 可能更快，但当前还没有整合网络／更新服务。LoRa 当前
 | 下载中断 | secondary 暂存，完成前不激活；客户端按同一文件 SHA 续传 | 签名故障1.2.2在87,258 B暂停，原1.1.20保留，同文件从该偏移续传 |
 | swap 中复位 | MCUboot 记录交换进度、重启后处理 | 算法已配置；未做 swap 中主动断电实测 |
 
-历史测试保存在[日期对应记录](../../evidence/validation.md)。[1.1.20回归](../../evidence/wireless-fota-v1120-20261031.md)另在当前C01 bootloader上完成错误签名1.3.2、损坏1.4.1拒绝，有效签名故障1.2.2回滚到1.1.20，以及从87,258字节同文件续传；两端正常BLE更新／自确认通过。**上传成功或bootable字段不能代替复位后的active版本与digest核对。**
+历史测试保存在[日期对应记录](../VALIDATION.md)。[1.1.20回归](../VALIDATION.md)另在当前C01 bootloader上完成错误签名1.3.2、损坏1.4.1拒绝，有效签名故障1.2.2回滚到1.1.20，以及从87,258字节同文件续传；两端正常BLE更新／自确认通过。**上传成功或bootable字段不能代替复位后的active版本与digest核对。**
 
 ## 配置与密钥
 
@@ -100,7 +100,7 @@ Wi-Fi 可能更快，但当前还没有整合网络／更新服务。LoRa 当前
 
 本节保留同日较早的1.1.19 UART实测；后续1.1.20 BLE回归保留该bootloader，没有重新测试外接UART。
 
-**C01 上已实现并完成演示。**完整命令见 [UART 操作流程](UART_RECOVERY.md)，结果见[日期对应验证](../../evidence/uart-recovery-20261031.md)与[结构化记录](../../evidence/uart-recovery-20261031-summary.json)。
+**C01 上已实现并完成演示。**完整命令见 [UART 操作流程](UART_RECOVERY.md)，结果见[日期对应验证](../VALIDATION.md)。
 
 | 项目 | 实测结果 |
 |---|---|

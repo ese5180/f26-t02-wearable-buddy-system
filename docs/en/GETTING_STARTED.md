@@ -2,7 +2,7 @@
 
 [Optional SparkFun LSM6DSO / IMU guide](IMU_LSM6DSO.md)
 
-[中文](../zh/GETTING_STARTED.md) · [Firmware explanation](FIRMWARE.md) · [Validation record](../../evidence/validation.md)
+[中文](../zh/GETTING_STARTED.md) · [Firmware explanation](FIRMWARE.md) · [Validation record](../VALIDATION.md)
 
 Target: XIAO ESP32S3 + Wio-SX1262 **B2B kit**, using Zephyr and MCUboot. This guide covers the current BLE/LoRa/signed-update bench prototype. Start with **one tag (T01) + one counselor (C01)**. The software accepts T01–T03, but a complete four-device kit has not been validated. No sensor breakout, GPS, battery or display is required for this demo; USB supplies power.
 
@@ -36,10 +36,9 @@ west sdk install --version 1.0.1 --gnu-toolchains xtensa-espressif_esp32s3_zephy
 cd buddyguard
 python3.12 -m venv .venv
 .venv/bin/python -m pip install -r requirements-host.txt
-.venv/bin/python -m unittest discover -s tests -v
 ```
 
-The **workspace `.venv`** runs west, esptool, imgtool and provisioning. The **repository `.venv`** runs BLE and serial host tools. Use the explicit executable paths below; activating one environment is not enough to provide both dependency sets. `west.yml` pins Zephyr to `f80761e49401497b5ee64ee9732dc2791055ec52` (a 4.4.99 development checkout). `west update` resolves its imported module revisions. Fetch **all** hal_espressif blobs: the Bluetooth configuration checks more than only ESP32S3 blobs. The ordinary BLE/LoRa build requires no Zephyr source patch. Optional UART recovery applies a narrow MCUboot Kconfig prerequisite automatically; see [UART recovery](UART_RECOVERY.md). The other software-SPI patch in `patches/` is historical and must not be applied.
+The **workspace `.venv`** runs west, esptool, imgtool and provisioning. The **repository `.venv`** runs BLE and serial host tools. Use the explicit executable paths below; activating one environment is not enough to provide both dependency sets. `west.yml` pins Zephyr to `f80761e49401497b5ee64ee9732dc2791055ec52` (a 4.4.99 development checkout). `west update` resolves its imported module revisions. Fetch **all** hal_espressif blobs: the Bluetooth configuration checks more than only ESP32S3 blobs. The ordinary BLE/LoRa build requires no Zephyr source patch. Optional UART recovery applies a narrow MCUboot Kconfig prerequisite automatically; see [UART recovery](UART_RECOVERY.md).
 
 If reusing an existing workspace, set `BG_WS` to it, confirm the pinned revision and supply `--workspace "$BG_WS"`. Do not run `west init` a second time. SDK installation needs internet/download time and disk space. [Zephyr's host installation guide](https://docs.zephyrproject.org/latest/develop/getting_started/index.html) and [board reference](https://docs.zephyrproject.org/latest/boards/seeed/xiao_esp32s3/doc/index.html) provide host-specific details; this repository's pinned revision takes precedence over newer examples.
 
@@ -78,6 +77,8 @@ From the repository, with `BG_WS` and `BG_KEY` set:
 ```
 
 T02/T03 use `--tag-id 2` / `--tag-id 3` and **separate build directories**. Names are BG-T01/BG-T02/BG-T03 and BG-C01; counselor ID is 200. `--counselor` is retained as an older alias. Role, observer mode, ID and fault setting are explicitly generated on every build. A profile guard rejects reuse of a directory with another role/ID/key/fault setting. Choose a new directory when it rejects one; do not manually mix generated configuration files.
+
+For a wired LSM6DSO, follow the optional IMU guide and add `--imu` to both the tag's initial build and subsequent candidates. Omit it for the two-board radio-only demo. The fault-injection option is reserved for the optional rollback demonstration, not normal builds.
 
 Outputs in each build directory:
 
@@ -130,7 +131,7 @@ Check both devices; expect the intended version, role and `confirmed=1`:
 Allow a fresh tag advertisement to reach the counselor. In a **second terminal**, set the counselor port again and start:
 
 ```sh
-.venv/bin/python tools/bg_serial.py --port "$COUNSELOR_PORT" --log evidence/raw/my-wireless-demo.log monitor --seconds 90
+.venv/bin/python tools/bg_serial.py --port "$COUNSELOR_PORT" --log local/logs/my-wireless-demo.log monitor --seconds 90
 ```
 
 In the first terminal (the tag port is free):
@@ -142,7 +143,7 @@ In the first terminal (the tag port is free):
 .venv/bin/python tools/bg_serial.py --port "$TAG_PORT" command bg heartbeat on
 ```
 
-Expected counselor sequence: periodic `RX ... type=1` STATUS; SOS `type=3` and `ACTION`; after about 8–10 seconds, `BLE MISSING` → `QUERY` → `RX ... type=5`; then `RECOVERED` on fresh BLE. LoRa replies do **not** clear BLE-missing status. Version1.1.20 retries QUERY up to three sends and continues processing other packets while waiting. If all attempts expire, report the unconfirmed result; an operator may start another query. With a monitor running, send commands using `command --no-read`. See [wireless reliability](WIRELESS_RELIABILITY.md). A queued SOS is not proof of delivery; inspect counselor reception and tag ACK.
+Expected counselor sequence: periodic `RX ... type=1` STATUS; SOS `type=3` and `ACTION`; after about 8–10 seconds, `BLE MISSING` → `QUERY` → `RX ... type=5`; then `RECOVERED` on fresh BLE. LoRa replies do **not** clear BLE-missing status. Version1.1.20 retries QUERY up to three sends and continues processing other packets while waiting. If all attempts expire, report the unconfirmed result; an operator may start another query. With a monitor running, send commands using `command --no-read`. See [the radio module explanation](FIRMWARE.md#on-air-formats). A queued SOS is not proof of delivery; inspect counselor reception and tag ACK.
 
 `heartbeat off` simulates loss of **communication heartbeat**, not pulse. It leaves LoRa running. This demo does not measure child separation or location. Motion is UNKNOWN without `--imu`; the optional LSM6DSO guide describes real motion sensing. Clasp remains UNKNOWN and battery unavailable.
 
@@ -151,7 +152,7 @@ Expected counselor sequence: periodic `RX ... type=1` STATUS; SOS `type=3` and `
 Use a distinct candidate version/build directory, e.g. `--version 1.1.21`, adding the **same role/ID as the target**. Version override copies source into an isolated generated directory; it does not edit the checkout's VERSION. Open maintenance, let the counselor receive its maintenance flag (wait about 4 seconds), then update:
 
 ```sh
-"$BG_WS/.venv/bin/python" scripts/build.py --workspace "$BG_WS" --key "$BG_KEY" --build-dir "$BG_WS/build-bg-tag1-candidate" --role tag --tag-id 1 --imu --version 1.1.21
+"$BG_WS/.venv/bin/python" scripts/build.py --workspace "$BG_WS" --key "$BG_KEY" --build-dir "$BG_WS/build-bg-tag1-candidate" --role tag --tag-id 1 --version 1.1.21
 .venv/bin/python tools/bg_serial.py --port "$TAG_PORT" command bg maintenance 300
 # Wait about 4 seconds before connecting:
 .venv/bin/python tools/bg_ble.py --name BG-T01 images

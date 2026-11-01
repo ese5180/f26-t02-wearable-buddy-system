@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
-/* Single hardware owner. Retry policy/history are pure, separately tested modules. */
+/* Single runtime radio owner: queue, scheduler and packet dispatch.
+ * 唯一运行期无线硬件使用者；重试和去重策略分别交给 exchange/history。 */
 #include <errno.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>

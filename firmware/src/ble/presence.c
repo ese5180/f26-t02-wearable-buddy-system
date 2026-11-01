@@ -1,4 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
+/* Owns BLE advertising and maintenance admission; callbacks publish lifecycle state.
+ * 管理 BLE 广播与维护窗口；连接回调只发布生命周期状态。
+ */
 #include <zephyr/bluetooth/bluetooth.h>
 #include <zephyr/bluetooth/conn.h>
 #include <zephyr/dfu/mcuboot.h>

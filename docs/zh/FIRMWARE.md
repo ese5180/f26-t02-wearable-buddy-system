@@ -6,6 +6,12 @@
 
 本文对应模块化后的 **1.1.20** 源码。无线协议仍为版本 1，与此前验证的 1.1.15 兼容。具体安装／烧录命令见操作文档；这里解释模块职责、运行机制及限制。
 
+## 推荐阅读顺序
+
+先读 `main.c` 和模块头文件，确认状态属于谁、谁能调用；再沿两条路径理解：正常业务是 **BLE → roster → 排队 LoRa QUERY → REPLY**，更新是 **BLE SMP → secondary → MCUboot → health**。协议字段、重试时序与镜像确认要细读，简单命令转发快速浏览即可；IMU 与 UART 恢复按需阅读独立指南。
+
+文件头交代职责，接口注释说明单位和调用限制，行内注释解释时序／生命周期等不直观的原因。业务实现留在所属模块，不在回调或 shell 中重复堆叠。
+
 ## 模块划分
 
 | 源文件／公开接口 | 职责 |
@@ -19,11 +25,11 @@
 | `src/drivers/wio_sx1262.c` / `include/radio_driver.h` | 延迟设备初始化、射频参数、SPI 读回、串行收发 |
 | `src/sensors/imu.c` / `include/imu.h` | 可选 LSM6DSO 后台线程、地址识别、六轴快照及过期检查 |
 | `src/protocol/motion.c` / `include/motion.h` | 纯 C UNKNOWN／STILL／MOVING 状态判断 |
-| `src/protocol/wire.c` / `include/wire.h` | 不依赖 RTOS／硬件的编码和帧校验，可直接进行本机 C 测试 |
+| `src/protocol/wire.c` / `include/wire.h` | 不依赖 RTOS／硬件的编码和帧校验 |
 | `src/platform/health.c` / `include/health.h` | watchdog、Flash 分区就绪检查、延迟确认新镜像 |
 | `src/console/commands.c` | USB shell 到各服务 API 的命令适配 |
 
-`CMakeLists.txt` 显式列出模块；`prj.conf` 开启 Zephyr 服务，`Kconfig` 定义实验参数，`app.overlay` 描述 Wio B2B 连接，`sysbuild.conf` 与 `sysbuild/mcuboot.conf` 配置签名引导。`conf/` 保留角色／故障参考配置；按操作文档构建时，`scripts/build.py` 生成的独立 profile 决定角色、ID 和故障开关。
+`CMakeLists.txt` 显式列出模块；`prj.conf` 开启 Zephyr 服务，`Kconfig` 定义实验参数，`app.overlay` 描述 Wio B2B 连接，`sysbuild.conf` 与 `sysbuild/mcuboot.conf` 配置签名引导。`conf/` 只保留可选 IMU 与 UART 恢复配置。角色、ID 和故障开关由 `scripts/build.py` 每次生成，不需要另外维护一套手写角色配置。
 
 ```mermaid
 flowchart TD
@@ -34,6 +40,10 @@ flowchart TD
     SHELL[USB shell] --> PRES
     SHELL -->|SOS / QUERY| LINK
     LINK --> DRIVER[Wio driver SPI / PHY]
+    LINK --> EXCHANGE[独立重试 / 应答匹配]
+    LINK --> HISTORY[近期去重]
+    MAIN --> IMU[可选 IMU 工作线程]
+    IMU -->|运动快照| LINK
     PRES --> WIRE[wire 协议编解码]
     ROSTER --> WIRE
     LINK --> WIRE
@@ -60,7 +70,7 @@ LoRa 工作线程栈 3072 字节、优先级 5，请求队列容量 8，radio �
 
 从未看到的标签暂不报警；首次有效帧产生 ONLINE。只有**改变的序号**更新 last-seen，重复广播不算新的心跳。正常状态超过 8000 ms 没有新帧，产生一次 BLE MISSING 并排队 LoRa QUERY。主循环两秒轮询，因此实际大约 8–10 秒检测到。恢复新 BLE 帧后输出 RECOVERED。LoRa REPLY 单独记录，不能清除 BLE 失联。
 
-1.1.18 起显式关闭扫描器的控制器去重（`BT_LE_SCAN_OPT_NONE`）。此前使用的 `BT_LE_SCAN_PASSIVE` 宏默认开启去重，1.1.17 实测中不断变化的心跳没有稳定送到应用层。应用本身按序号去重，需要接收同一地址的新数据；扫描窗口／间隔和 8 秒阈值保持不变。前后实测见日期对应的 IMU 验证记录。
+扫描器关闭控制器去重（`BT_LE_SCAN_OPT_NONE`），让同一地址中变化的心跳数据到达应用；应用自己按序号去重。
 
 最后一帧带 maintenance 标志时改用 600 秒宽限。维护接入窗口默认 300 秒，可通过 `bg maintenance 0..600` 改变；窗口截止后不再接新连接，已经连接的上传可继续。宽限减少正常 OTA 期间误报，但不是无限屏蔽，卡住或过长仍会失联。收到新的正常广播后恢复短超时。
 
@@ -101,7 +111,7 @@ LoRa 工作线程栈 3072 字节、优先级 5，请求队列容量 8，radio �
 
 `exchange.c` 只维护一个事务，不休眠、不调用硬件；`link.c` 在等待／退避时仍使用原200 ms接收窗口分发每个有效帧，超时决策可能延迟一个窗口。辅导员等待查询时仍处理并确认 STATUS／SOS。标签可暂存一个查询回复，现有事务完成后发出；相同查询的重传会合并。`history.c` 保存最近16个 `(tag,type,sequence)`，重复业务消息仍 ACK，但不重复记录事件。该有限历史不是安全防重放；新 ACK 的非零byte5可区分原消息类型，旧0值 ACK 为滚动升级保留较弱兼容匹配。
 
-完整流程、测试和 `bg radio` 计数见[无线可靠性与复现](WIRELESS_RELIABILITY.md)。LoRa 仍是半双工，发送时不能同时接收，重试后也可能失败。未确认只表示通信未确认，不能直接推断儿童状态。
+`bg radio` 显示事务完成／耗尽、交错收包、重复帧和队列丢弃计数；`tx_attempts` 只统计排队事务的发送尝试，不含立即发出的 ACK。LoRa 仍是半双工，发送时不能同时接收，重试后也可能失败。未确认只表示通信未确认，不能直接推断儿童状态。
 
 ## 硬件与射频配置
 
@@ -116,7 +126,7 @@ Devicetree 的 GPIO32–53 对应 `gpio1` 偏移 0–21，例如 GPIO41 是 `gpi
 
 射频参数：915 MHz、SF7、BW125 kHz、CR4/5、preamble8、私有网络、正常 IQ、TX4 dBm，两端必须一致。初始化读取 `0x0740..0x0741`，期望私有同步字 `0x1424`。此前 `0xffff` 与 B2B 未扣紧有关。读回正常证明 SPI 能通信，不证明天线／通信距离正常。每次发送后都会尝试切回 RX。
 
-依据：[模块 datasheet](https://files.seeedstudio.com/products/SenseCAP/Wio_SX1262/Wio-SX1262_Module_Datasheet.pdf)、[本次硬件复核记录](../REVIEW-2026-10-30.md)。
+依据：[模块 datasheet](https://files.seeedstudio.com/products/SenseCAP/Wio_SX1262/Wio-SX1262_Module_Datasheet.pdf)。
 
 ## 签名更新与存储
 
@@ -147,11 +157,11 @@ sysbuild 同时构建 MCUboot 和应用。MCUboot 使用 ECDSA-P256、primary �
 
 `tools/bg_serial.py` 负责 USB 命令／日志（独立 monitor 已运行时，用 `command --no-read` 发命令）；`tools/bg_ble.py` 负责 BLE 发现、SMP images/upload/test/reset/update及受保护的secondary清理，默认 244 字节包。`scripts/backup_flash.py` 建立外部整片备份，`flash_initial.py` 擦除后首次安装，`build.py` 固定工作区／角色／签名参数并验证产物。
 
-本机测试用 C 编译器直接编译 wire、motion、exchange、history 的实际策略源码，另有 Python BLE 解码测试。测试、构建报告和实板证据互补，不能替代射频现场测试。
+历史测试程序及长日志保留在本地归档，不纳入复现包。新环境通过构建报告和双板演示检查；实测摘要只说明此前完成的硬件验证。
 
 ## 已实现范围与限制
 
-已实现：可选 SparkFun LSM6DSO 采样与运动状态（使用 `--imu`，见接入文档）；双板 BLE presence／名单、LoRa STATUS／SOS／ACK／QUERY／REPLY、串口演示、BLE 签名试运行更新、中断续传、拒绝错误镜像、watchdog 回滚。具体在哪个版本上做过哪些实测，以[有日期的验证记录](../../evidence/validation.md)为准。
+已实现：可选 SparkFun LSM6DSO 采样与运动状态（使用 `--imu`，见接入文档）；双板 BLE presence／名单、LoRa STATUS／SOS／ACK／QUERY／REPLY、串口演示、BLE 签名试运行更新、中断续传、拒绝错误镜像、watchdog 回滚。具体在哪个版本上做过哪些实测，以[有日期的验证记录](../VALIDATION.md)为准。
 
 待做：儿童之间配对；三标签完整并发；搭扣、振动、电量、GNSS；Wi-Fi／云；户外范围／碰撞测试；业务帧认证／防重放；管理授权；轮换 session ID。**当前 ID 是静态的**，没有 GPS 不意味着无线标识私密。传感器必须输出真实测量或 UNKNOWN，不能在真实报警里插入伪造值。
 

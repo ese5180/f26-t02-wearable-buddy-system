@@ -2,7 +2,7 @@
 
 [中文](../zh/FIRMWARE_SECURITY_CHECKOFF.md) · [Repository](https://github.com/ese5180/f26-t02-wearable-buddy-system/tree/codex/buddyguard-wireless-fota) · [PR #1](https://github.com/ese5180/f26-t02-wearable-buddy-system/pull/1)
 
-Status on **2026-10-31**: T01 and C01 now run active/confirmed1.1.20. **BLE FOTA was re-tested on C01's installed UART-recovery MCUboot**: valid upgrade, wrong-key/corruption rejection, same-file resume and valid-fault watchdog rollback passed. [Latest results](../../evidence/wireless-fota-v1120-20261031.md). Earlier UART signed recovery was tested on1.1.19; no external TTL cable was connected in the latest BLE run.
+Status on **2026-10-31**: T01 and C01 now run active/confirmed1.1.20. **BLE FOTA was re-tested on C01's installed UART-recovery MCUboot**: valid upgrade, wrong-key/corruption rejection, same-file resume and valid-fault watchdog rollback passed. [Latest results](../VALIDATION.md). Earlier UART signed recovery was tested on1.1.19; no external TTL cable was connected in the latest BLE run.
 
 ## 3.5.1 Bootloading process
 
@@ -37,7 +37,7 @@ This local health gate does not prove every business function or future runtime 
 
 ## Bootloader and application sizes
 
-These are **binary file sizes**, not RAM usage or allocated partition sizes. Measurements come from the exact installed builds in [current-builds.json](../../evidence/current-builds.json).
+These are **binary file sizes**, not RAM usage or allocated partition sizes. Recorded installed-build sizes are retained in the [validation summary](../VALIDATION.md).
 
 | Component | Version | Unsigned application / bootloader bytes | Signed application bytes |
 |---|---|---:|---:|
@@ -85,7 +85,7 @@ We have not added a second independent Flash module. If the course means Flash e
 | Interrupted download | Secondary-slot staging; no test request until completion; SHA-based client resume | Transfer of signed fault1.2.2 stopped at87,258 bytes; primary1.1.20 stayed confirmed; identical-file upload resumed there |
 | Reset during a swap | MCUboot's move-swap status/progress handling | Enabled by the configured algorithm; deliberate power-cut-during-swap was not hardware-tested |
 
-Historical tests are preserved in [dated validation](../../evidence/validation.md). The [1.1.20 regression](../../evidence/wireless-fota-v1120-20261031.md) additionally records full wrong-key1.3.2 and corrupted1.4.1 rejection, valid signed fault1.2.2 watchdog revert to1.1.20 and same-file resumption from87,258 bytes on C01's current bootloader. Both roles passed valid BLE upgrade and self-confirmation. Upload acknowledgement or a `bootable` flag alone is not proof of signature acceptance.
+Historical tests are preserved in [dated validation](../VALIDATION.md). The [1.1.20 regression](../VALIDATION.md) additionally records full wrong-key1.3.2 and corrupted1.4.1 rejection, valid signed fault1.2.2 watchdog revert to1.1.20 and same-file resumption from87,258 bytes on C01's current bootloader. Both roles passed valid BLE upgrade and self-confirmation. Upload acknowledgement or a `bootable` flag alone is not proof of signature acceptance.
 
 ## Configuration and signing identity
 
@@ -104,7 +104,7 @@ The signing identity is uniquely generated for Team2, rather than MCUboot's dist
 
 This section records the earlier same-day1.1.19 UART experiment. The subsequent1.1.20 BLE regression retained that bootloader; it did not re-test physical UART recovery.
 
-**Implemented and demonstrated on C01.** The complete [UART recovery runbook](UART_RECOVERY.md), [dated validation](../../evidence/uart-recovery-20261031.md) and [machine-readable results](../../evidence/uart-recovery-20261031-summary.json) describe the commands and observed evidence.
+**Implemented and demonstrated on C01.** The complete [UART recovery runbook](UART_RECOVERY.md), [dated validation](../VALIDATION.md) and the retained validation summary describe the commands and observed evidence.
 
 | Check | Observed result |
 |---|---|

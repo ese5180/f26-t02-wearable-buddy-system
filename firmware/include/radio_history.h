@@ -8,7 +8,8 @@ struct bg_radio_history {
 	uint8_t next;
 };
 /* Validated business frames only. True means already reported; ACK it again.
- * Bounded recent history is duplicate suppression, NOT replay protection. */
+ * Bounded recent history is duplicate suppression, NOT replay protection.
+ * 只输入已校验的业务帧；重复消息仍需 ACK，此缓存不是安全防重放。 */
 bool bg_radio_history_seen(struct bg_radio_history *history,
 	const uint8_t frame[BG_RADIO_FRAME_SIZE]);
 #endif

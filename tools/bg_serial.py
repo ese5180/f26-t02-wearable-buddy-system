@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Read BuddyGuard logs or issue its USB-shell development commands."""
+"""Read BuddyGuard logs or issue its USB-shell development commands.
+USB 命令／日志客户端；已有 monitor 时使用 --no-read，避免两个读者争抢数据。
+"""
 import argparse
 from pathlib import Path
 import re

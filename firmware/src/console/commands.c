@@ -1,4 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
+/* USB shell adapter; delegates to service APIs rather than operating hardware.
+ * USB 命令适配层；调用服务接口，不直接操作硬件。
+ */
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>

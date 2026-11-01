@@ -35,7 +35,7 @@ BG_TTL=/dev/cu.usbserial-0001
 
 ```sh
 "$BG_WS/.venv/bin/python" scripts/build.py --workspace "$BG_WS" --key "$BG_KEY" \
-  --build-dir "$BG_BUILD" --role counselor --serial-recovery --version 1.1.19
+  --build-dir "$BG_BUILD" --role counselor --serial-recovery --version 1.1.20
 ```
 
 改变角色、密钥或 recovery profile 时用新的构建目录。`--version` 生成独立源码副本，不修改仓库 `firmware/VERSION`。脚本验证签名并把大小、哈希写入 `buddyguard-build.json`。

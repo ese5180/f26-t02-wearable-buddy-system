@@ -6,6 +6,12 @@
 
 This describes the modular **1.1.20** source. The on-air protocol remains version 1 and compatible with the previously validated 1.1.15 bench firmware. Build/flash/update commands belong in the reproduction guide; this document explains ownership, data flow and constraints.
 
+## How to read the code
+
+Start with `main.c` and each public header: identify who owns the state and who may call it. Then follow **BLE → roster → queued LoRa QUERY → REPLY** for normal operation, and **BLE SMP → secondary slot → MCUboot → health** for updates. Read byte offsets, retry timing and boot confirmation carefully; ordinary shell wrappers need only a quick pass. Sensor details and UART recovery are optional guides.
+
+Module comments summarize responsibility; interface comments state units and caller restrictions; inline comments explain timing/lifecycle decisions. Implementation stays in one owning module, rather than being repeated in callbacks or shell commands.
+
 ## Module map
 
 | Source / public interface | Responsibility |
@@ -19,11 +25,11 @@ This describes the modular **1.1.20** source. The on-air protocol remains versio
 | `src/drivers/wio_sx1262.c` / `include/radio_driver.h` | Deferred device initialization, PHY settings, SPI readback and serialized RX/TX |
 | `src/sensors/imu.c` / `include/imu.h` | Optional LSM6DSO worker, address detection, six-axis snapshot and freshness |
 | `src/protocol/motion.c` / `include/motion.h` | Pure C UNKNOWN/STILL/MOVING classifier |
-| `src/protocol/wire.c` / `include/wire.h` | Hardware-independent encoding and frame validation; shared by firmware and native tests |
+| `src/protocol/wire.c` / `include/wire.h` | Hardware-independent encoding and frame validation |
 | `src/platform/health.c` / `include/health.h` | Watchdog, flash-slot readiness and delayed MCUboot confirmation |
 | `src/console/commands.c` | USB shell adapter calling service APIs |
 
-`firmware/CMakeLists.txt` lists application modules explicitly. `prj.conf` enables Zephyr services; `Kconfig` defines product/demo parameters; `app.overlay` defines the Wio B2B hardware. `sysbuild.conf` and `sysbuild/mcuboot.conf` configure the signed boot chain. `conf/` holds reference role/fault overlays; `scripts/build.py` generates an explicit per-build profile, so its role/ID/fault options are authoritative for documented builds.
+`firmware/CMakeLists.txt` lists application modules explicitly. `prj.conf` enables Zephyr services; `Kconfig` defines product/demo parameters; `app.overlay` defines the Wio B2B hardware. `sysbuild.conf` and `sysbuild/mcuboot.conf` configure the signed boot chain. `conf/` contains only the optional IMU and UART recovery configuration. `scripts/build.py` generates role/ID/fault settings per build; there are no second, hand-edited role profiles to synchronize.
 
 ```mermaid
 flowchart TD
@@ -34,6 +40,10 @@ flowchart TD
     SHELL[USB shell] --> PRES
     SHELL -->|SOS / QUERY| LINK
     LINK --> DRIVER[Wio driver: SPI / radio PHY]
+    LINK --> EXCHANGE[Pure retry / response matching]
+    LINK --> HISTORY[Recent duplicate history]
+    MAIN --> IMU[Optional IMU worker]
+    IMU -->|motion snapshot| LINK
     PRES --> WIRE[wire protocol codec]
     ROSTER --> WIRE
     LINK --> WIRE
@@ -60,7 +70,7 @@ Tag IDs are 1–3; counselor ID is 200. Tags advertise and send LoRa STATUS. C01
 
 A previously unseen tag is ignored until a valid first frame. C01 emits ONLINE on first observation. Only a **changed sequence number** refreshes last-seen time; duplicate advertisements do not extend presence. In normal mode, age greater than 8000 ms emits BLE MISSING once and queues a LoRa QUERY. Two-second polling adds detection latency (approximately 8–10 seconds on the bench). A fresh BLE frame emits RECOVERED. LoRa REPLY is logged separately and cannot clear missing-BLE status.
 
-From 1.1.18, the scanner explicitly disables controller duplicate filtering (`BT_LE_SCAN_OPT_NONE`). The convenience `BT_LE_SCAN_PASSIVE` macro enabled that filtering, and changing heartbeat payloads were not delivered reliably during the 1.1.17 bench run. The application already filters by sequence; it needs reports for fresh payloads from the same address. Scan interval/window and the 8-second timeout are unchanged. See the dated IMU validation for the before/after observations.
+The scanner disables controller duplicate filtering (`BT_LE_SCAN_OPT_NONE`) so changed heartbeat payloads from the same address reach the application. The application performs its own sequence filtering.
 
 If the latest tag frame has its maintenance flag set, the roster uses 600 seconds instead. The maintenance window admits BLE SMP connections for 300 seconds by default (`bg maintenance 0..600` overrides it). A connected transfer can finish after the admission deadline. The flag and bounded grace reduce expected-update false alarms but do not guarantee an alarm-free update. Normal frames restore the short timeout.
 
@@ -99,7 +109,7 @@ Validation checks exact size/magic/protocol, known type and ID range; it does no
 
 `exchange.c` holds one transaction; it never sleeps or calls hardware. `link.c` continues dispatching all valid packets while waiting/backing off, using the established200 ms receive window. Timeouts can have one window of scheduling delay. Other STATUS/SOS frames are reported and ACKed while a query waits. A tag can defer one query response while its current transmission completes; duplicate query retries coalesce. `history.c` retains the last16 `(tag,type,sequence)` identities; duplicates are still ACKed but do not repeat business logs. This bounded cache is not replay protection. New nonzero ACK byte5 values disambiguate message type; zero-valued legacy ACKs are accepted for rolling upgrades with weaker type matching.
 
-See [wireless reliability and reproduction](WIRELESS_RELIABILITY.md) for exact flow, tests and `bg radio` counters. The radio remains half-duplex: local TX cannot simultaneously receive, and losses can still occur. Finite retry exhaustion is reported rather than interpreted as proof of a child's state.
+`bg radio` exposes completion, exhaustion, interleaved receive, duplicate and queue-drop counters. `tx_attempts` counts scheduled transaction sends, excluding immediate ACKs. The radio remains half-duplex: local TX cannot simultaneously receive, and losses can still occur. Finite retry exhaustion is reported rather than interpreted as proof of a child's state.
 
 ## Hardware and radio settings
 
@@ -112,7 +122,7 @@ See [wireless reliability and reproduction](WIRELESS_RELIABILITY.md) for exact f
 
 In Devicetree, GPIO32–53 use `gpio1` offsets 0–21; e.g. GPIO41 is `gpio1 9`. Keep upstream GPIO register definitions unchanged. SPI max is 2 MHz. Wio uses DIO2 TX switching, DIO3 TCXO at 3.0 V with 10 ms startup, and explicit **DC-DC** regulator mode. These settings target the ESP32S3 B2B kit, not a different XIAO/radio module variant.
 
-PHY: 915 MHz, SF7, BW125 kHz, CR4/5, preamble8, private network, normal IQ, TX4 dBm. Both ends must match. Driver initialization reads registers `0x0740..0x0741` for private sync word `0x1424`; `0xffff` previously indicated the incorrectly seated B2B connection. A correct readback checks SPI communication, not antenna/range performance. Send always attempts to return the radio to RX mode. See [the module datasheet](https://files.seeedstudio.com/products/SenseCAP/Wio_SX1262/Wio-SX1262_Module_Datasheet.pdf) and [hardware review](../REVIEW-2026-10-30.md).
+PHY: 915 MHz, SF7, BW125 kHz, CR4/5, preamble8, private network, normal IQ, TX4 dBm. Both ends must match. Driver initialization reads registers `0x0740..0x0741` for private sync word `0x1424`; `0xffff` previously indicated the incorrectly seated B2B connection. A correct readback checks SPI communication, not antenna/range performance. Send always attempts to return the radio to RX mode. See [the module datasheet](https://files.seeedstudio.com/products/SenseCAP/Wio_SX1262/Wio-SX1262_Module_Datasheet.pdf).
 
 ## Signed updates and storage
 
@@ -141,11 +151,11 @@ Signature checking provides application-image authenticity relative to this lab 
 | `bg query 1..3` | Counselor: enqueue one status query |
 | `bg reboot` | Cold reset |
 
-`tools/bg_serial.py` operates USB shell/logging; use `command --no-read` when a monitor already owns RX. `tools/bg_ble.py` handles discovery, SMP images/upload/test/reset/guarded-secondary-cleanup and the combined update flow, capped at 244-byte packets by default. `scripts/backup_flash.py` creates external full-flash backups; `flash_initial.py` performs destructive initial provisioning; `build.py` pins workspace/role/signing inputs and verifies the output. Native tests compile the actual wire, motion, transaction and history policies with the host compiler; Python tests also check the host BLE decoder. Build reports and hardware evidence complement tests; they do not replace RF testing.
+`tools/bg_serial.py` operates USB shell/logging; use `command --no-read` when a monitor already owns RX. `tools/bg_ble.py` handles discovery, SMP images/upload/test/reset/guarded-secondary-cleanup and the combined update flow, capped at 244-byte packets by default. `scripts/backup_flash.py` creates external full-flash backups; `flash_initial.py` performs destructive initial provisioning; `build.py` pins workspace/role/signing inputs and verifies the output. Historical test harnesses and long captures are maintained locally rather than shipped in the reproduction package. Use the build report and the two-board demo to check a new setup; the retained validation summary describes earlier hardware results.
 
 ## Implemented scope and limits
 
-Implemented: optional SparkFun LSM6DSO sensing with `--imu` (see linked IMU guide); two-board BLE presence/roster; LoRa STATUS/SOS/ACK/QUERY/REPLY; serial demo controls; signed BLE test updates, interruption/resume, rejection and watchdog revert. Consult [the dated validation record](../../evidence/validation.md) for exactly which version/test was observed.
+Implemented: optional SparkFun LSM6DSO sensing with `--imu` (see linked IMU guide); two-board BLE presence/roster; LoRa STATUS/SOS/ACK/QUERY/REPLY; serial demo controls; signed BLE test updates, interruption/resume, rejection and watchdog revert. Consult [the dated validation record](../VALIDATION.md) for exactly which version/test was observed.
 
 Pending: actual buddy pairing; full three-tag concurrent operation; clasp, vibration, battery and GNSS integration; Wi-Fi/cloud; field range and collision testing; authenticated/replay-resistant business frames; authorized management; rotating session IDs. IDs are currently static. Absence of GPS does not make radio identifiers private. Sensors must report real values or UNKNOWN; do not insert simulated data into a real alert.
 

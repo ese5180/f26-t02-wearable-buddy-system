@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Read the complete 8 MiB flash before FIRST USB provisioning; never overwrites."""
+"""Read the complete 8 MiB flash before FIRST USB provisioning; never overwrites.
+只读整片备份；进入 USB loader 会复位设备，不覆盖已有备份。
+"""
 import argparse
 import hashlib
 import json

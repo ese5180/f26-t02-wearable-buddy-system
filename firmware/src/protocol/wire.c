@@ -1,4 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
+/* Pure byte encoding/validation; no radio hardware, scheduling or application state.
+ * 只做字节编码与校验，不操作无线硬件、不调度、不持有业务状态。
+ */
 #include <string.h>
 #include "wire.h"
 void bg_presence_encode(uint8_t out[BG_PRESENCE_SIZE], uint8_t tag,

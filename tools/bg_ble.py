@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Scan BuddyGuard laboratory presence frames and use the standard SMP client."""
+"""Scan BuddyGuard laboratory presence frames and use the standard SMP client.
+电脑端 BLE 发现与 SMP 更新客户端；镜像由 MCUboot 验签、应用自行确认。
+"""
 import argparse
 import asyncio
 import json

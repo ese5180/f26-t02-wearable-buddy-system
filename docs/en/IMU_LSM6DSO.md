@@ -38,7 +38,7 @@ Set the current USB port, then run:
 
 ```sh
 .venv/bin/python tools/bg_serial.py --port "$TAG_PORT" command bg imu
-.venv/bin/python tools/bg_serial.py --port "$TAG_PORT" --log evidence/raw/my-imu.log monitor --seconds 40
+.venv/bin/python tools/bg_serial.py --port "$TAG_PORT" --log local/logs/my-imu.log monitor --seconds 40
 ```
 
 `bg imu` reports enabled/available, address, WHOAMI, motion, sample count/age/error, and six axis values. Expect `enabled=1 available=1`, WHOAMI `0x6c`, increasing sample count and age well below 1000 ms. When unavailable, axis fields may retain the last valid values; they are not current valid measurements. Disabled roles correctly report enabled0.

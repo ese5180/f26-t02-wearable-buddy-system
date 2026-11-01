@@ -1,4 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
+/* Main-loop watchdog and trial-image confirmation; not a full business-function test.
+ * 管理主循环看门狗与试运行确认，不代表全部业务功能已验证。
+ */
 #include <errno.h>
 #include <zephyr/device.h>
 #include <zephyr/dfu/mcuboot.h>
@@ -56,6 +59,9 @@ void bg_health_begin(void)
 
 void bg_health_cycle(bool healthy, bool allow_confirmation)
 {
+	/* Failure restarts the trial window and stops feeding WDT. Confirmation is
+	 * irreversible for this trial: do not let the host confirm on upload alone.
+	 * 失败重置健康窗口且停止喂狗；确认结束本轮回滚保护，不能仅凭上传成功确认。 */
 	if (!healthy) {
 		healthy_since = k_uptime_get();
 		return;

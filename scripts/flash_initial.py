@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Initial USB provisioning only; use BLE SMP for subsequent update tests."""
+"""Initial USB provisioning only; use BLE SMP for subsequent update tests.
+仅用于首次安装，会擦除整片 Flash；后续应用更新使用 BLE。
+"""
 import argparse
 import hashlib
 import json

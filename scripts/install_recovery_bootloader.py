@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Install only MCUboot after verifying a current full backup; preserve all bytes above 64 KiB."""
+"""Install only MCUboot after verifying a current full backup; preserve all bytes above 64 KiB.
+核对备份后只安装引导程序；默认预检查，显式 --write 才写入。
+"""
 import argparse
 import hashlib
 import json

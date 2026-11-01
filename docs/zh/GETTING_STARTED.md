@@ -2,7 +2,7 @@
 
 [可选 SparkFun LSM6DSO 接入文档](IMU_LSM6DSO.md)
 
-[English](../en/GETTING_STARTED.md) · [固件解释](FIRMWARE.md) · [验证记录](../../evidence/validation.md)
+[English](../en/GETTING_STARTED.md) · [固件解释](FIRMWARE.md) · [验证记录](../VALIDATION.md)
 
 适用硬件：**XIAO ESP32S3＋Wio-SX1262 B2B 套装**。本流程复现当前 Zephyr＋MCUboot 的 BLE、LoRa 和签名更新演示。先用 **1 个标签 T01＋1 个辅导员端 C01**；代码支持 T01–T03，但尚未完成四设备整套验证。当前不需要外接 IMU、GPS、电池、马达或屏幕，USB 负责供电。
 
@@ -36,12 +36,11 @@ west sdk install --version 1.0.1 --gnu-toolchains xtensa-espressif_esp32s3_zephy
 cd buddyguard
 python3.12 -m venv .venv
 .venv/bin/python -m pip install -r requirements-host.txt
-.venv/bin/python -m unittest discover -s tests -v
 ```
 
 两个 Python 环境用途不同：**工作区 `.venv`** 提供 west/esptool/imgtool，负责构建和首次烧录；**仓库 `.venv`** 提供 BLE、串口工具。后续请使用示例中的显式路径，不能假设激活一个环境就包含全部依赖。
 
-`west.yml` 固定 Zephyr 为 `f80761e49401497b5ee64ee9732dc2791055ec52`，版本显示 4.4.99，是固定开发版本而非正式 release。`west update` 同时解析其模块版本。ESP32 蓝牙配置会检查整个 hal_espressif 的 blob 集合，因此不要只下载 ESP32S3 的部分 blob。**正常 BLE／LoRa 固件不需要修改 Zephyr 源码**；可选 UART recovery 会自动应用一条 MCUboot Kconfig 默认值修复，见 [UART 恢复文档](UART_RECOVERY.md)。`patches/` 内另一个软件 SPI 补丁是历史诊断材料，不要应用它。
+`west.yml` 固定 Zephyr 为 `f80761e49401497b5ee64ee9732dc2791055ec52`，版本显示 4.4.99，是固定开发版本而非正式 release。`west update` 同时解析其模块版本。ESP32 蓝牙配置会检查整个 hal_espressif 的 blob 集合，因此不要只下载 ESP32S3 的部分 blob。**正常 BLE／LoRa 固件不需要修改 Zephyr 源码**；可选 UART recovery 会自动应用一条 MCUboot Kconfig 默认值修复，见 [UART 恢复文档](UART_RECOVERY.md)。
 
 复用已有工作区时，把 `BG_WS` 改成其路径并核对版本，不要重复 `west init`。SDK 安装需要网络和磁盘空间。主机依赖参考 [Zephyr 安装指南](https://docs.zephyrproject.org/latest/develop/getting_started/index.html)，板卡参考 [XIAO ESP32S3 文档](https://docs.zephyrproject.org/latest/boards/seeed/xiao_esp32s3/doc/index.html)；遇到新版示例差异时，以本仓库固定的版本为准。
 
@@ -80,6 +79,8 @@ chmod 600 "$BG_KEY"
 ```
 
 增加 T02/T03 时使用 `--tag-id 2` / `--tag-id 3`，并换独立构建目录。设备名自动生成 BG-T01/BG-T02/BG-T03、BG-C01；辅导员 ID 为 200。旧参数 `--counselor` 仍可用。
+
+已接 LSM6DSO 时，按可选 IMU 指南，在标签首次构建及后续候选构建中都加入 `--imu`。仅做双板无线演示时省略；故障注入只用于后面的可选回滚演示，不用于正常版本。
 
 脚本每次明确设置角色、扫描模式、ID、故障开关；同一构建目录换角色、ID、密钥或故障配置会被拒绝。遇到拒绝时用新目录，不要手动混改生成文件。
 
@@ -134,7 +135,7 @@ Mac 弹窗时允许终端／宿主进程访问蓝牙。**同一个串口只允�
 等待辅导员收到标签的新正常广播。打开**第二个终端**，重新设置辅导员端口变量，运行：
 
 ```sh
-.venv/bin/python tools/bg_serial.py --port "$COUNSELOR_PORT" --log evidence/raw/my-wireless-demo.log monitor --seconds 90
+.venv/bin/python tools/bg_serial.py --port "$COUNSELOR_PORT" --log local/logs/my-wireless-demo.log monitor --seconds 90
 ```
 
 第一个终端控制标签（其串口仍空闲）：
@@ -148,7 +149,7 @@ Mac 弹窗时允许终端／宿主进程访问蓝牙。**同一个串口只允�
 
 辅导员应依次显示：周期 STATUS `RX ... type=1`；SOS `type=3` 和 `ACTION`；失联约 8–10 秒后 `BLE MISSING` → `QUERY` → `RX ... type=5`；恢复后 `RECOVERED`。LoRa 回复只说明 LoRa 可达，不能清除 BLE 失联状态。
 
-1.1.20 的 QUERY 最多发3次，并在等待时继续处理其他帧；全部超时则明确报告未确认，操作员可再发起查询。已有 monitor 时用 `command --no-read` 发命令，见[无线可靠性文档](WIRELESS_RELIABILITY.md)。SOS 入队成功也不代表已送达，要看辅导员接收和标签 ACK。
+1.1.20 的 QUERY 最多发3次，并在等待时继续处理其他帧；全部超时则明确报告未确认，操作员可再发起查询。已有 monitor 时用 `command --no-read` 发命令，见[无线帧与重试说明](FIRMWARE.md#无线帧格式)。SOS 入队成功也不代表已送达，要看辅导员接收和标签 ACK。
 
 这里的 heartbeat 是**通信心跳**，不是生理脉搏。`heartbeat off` 仅停 BLE 广播，LoRa 继续工作。演示不输出距离或位置；未启用 `--imu` 时 motion 为 UNKNOWN；可选 IMU 文档说明真实采样。clasp 仍 UNKNOWN，电量 unavailable。
 
@@ -157,7 +158,7 @@ Mac 弹窗时允许终端／宿主进程访问蓝牙。**同一个串口只允�
 给候选镜像使用独立版本／构建目录，例如 `--version 1.1.21`，必须保持**目标板相同角色和 ID**。版本覆盖使用隔离源码副本，不修改仓库 VERSION。标签候选构建示例：
 
 ```sh
-"$BG_WS/.venv/bin/python" scripts/build.py --workspace "$BG_WS" --key "$BG_KEY" --build-dir "$BG_WS/build-bg-tag1-candidate" --role tag --tag-id 1 --imu --version 1.1.21
+"$BG_WS/.venv/bin/python" scripts/build.py --workspace "$BG_WS" --key "$BG_KEY" --build-dir "$BG_WS/build-bg-tag1-candidate" --role tag --tag-id 1 --version 1.1.21
 .venv/bin/python tools/bg_serial.py --port "$TAG_PORT" command bg maintenance 300
 # 先等约 4 秒，让辅导员收到 maintenance 标志，再开始连接：
 .venv/bin/python tools/bg_ble.py --name BG-T01 images

@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+/* Wire boundary only; no transport or mutable service state. See firmware guide for offsets.
+ * 只定义帧与编码校验，不承担传输、不持有服务状态；字段偏移见固件解释。 */
 enum { BG_PRESENCE_SIZE = 8, BG_RADIO_FRAME_SIZE = 12, BG_MAX_TAGS = 3 };
 enum bg_radio_type {
 	BG_RADIO_STATUS = 1, BG_RADIO_ACK, BG_RADIO_SOS, BG_RADIO_QUERY, BG_RADIO_REPLY,

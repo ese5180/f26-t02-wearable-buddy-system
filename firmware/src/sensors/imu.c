@@ -1,4 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
+/* Owns optional I2C sampling; consumers read a locked snapshot, never the sensor bus.
+ * 负责可选 I2C 采样；其他模块读取加锁快照，不直接访问传感器。
+ */
 #include <errno.h>
 #include <zephyr/kernel.h>
 #include "imu.h"

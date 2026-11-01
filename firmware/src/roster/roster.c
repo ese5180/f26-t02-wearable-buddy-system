@@ -1,4 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
+/* Counselor-only presence state; fresh BLE sequences drive loss/recovery and queued queries.
+ * 辅导员名单状态；以新 BLE 序号判断失联／恢复，再排队 LoRa 查询。
+ */
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include "radio_link.h"

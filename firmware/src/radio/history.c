@@ -1,4 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
+/* Bounded recent-event cache; suppresses repeated reports, not malicious replay.
+ * 有限近期事件缓存；避免重复报告，不提供安全防重放。
+ */
 #include "radio_history.h"
 
 bool bg_radio_history_seen(struct bg_radio_history *h,

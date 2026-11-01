@@ -42,7 +42,7 @@ Qwiic 接口可用转杜邦线连接；通孔需要可靠焊接。其他引脚�
 
 ```sh
 .venv/bin/python tools/bg_serial.py --port "$TAG_PORT" command bg imu
-.venv/bin/python tools/bg_serial.py --port "$TAG_PORT" --log evidence/raw/my-imu.log monitor --seconds 40
+.venv/bin/python tools/bg_serial.py --port "$TAG_PORT" --log local/logs/my-imu.log monitor --seconds 40
 ```
 
 `bg imu` 报告 enabled、available、地址、WHOAMI、运动状态、样本数、样本年龄和错误码，以及三轴加速度／三轴角速度。正常应为 `enabled=1 available=1`、WHOAMI `0x6c`、样本数持续增长、年龄明显小于 1000 ms。**available=0 时输出的轴值可能是最后一次有效值，不是当前有效测量。**辅导员或未启用 IMU 的标签显示 `enabled=0`，这是预期行为。

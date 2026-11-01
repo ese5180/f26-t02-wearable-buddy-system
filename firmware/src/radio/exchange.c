@@ -1,4 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
+/* One pure pending transaction: deadline, bounded retry and response matching.
+ * 只管理一个待完成事务的期限、有限重试及应答匹配，不执行收发。
+ */
 #include <string.h>
 #include "radio_exchange.h"
 
@@ -16,6 +19,8 @@ void bg_radio_exchange_start(struct bg_radio_exchange *e,
 enum bg_radio_exchange_action bg_radio_exchange_next(struct bg_radio_exchange *e,
 	uint32_t now)
 {
+	/* Subtract before casting so a uint32_t clock wrap preserves short deadlines.
+	 * 先做无符号差再转有符号数，避免毫秒计数回绕破坏短期限比较。 */
 	if (!e->active || (int32_t)(now - e->deadline_ms) < 0) {
 		return BG_EXCHANGE_WAIT;
 	}

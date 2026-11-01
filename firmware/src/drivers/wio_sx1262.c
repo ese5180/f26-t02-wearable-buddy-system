@@ -1,4 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
+/* B2B hardware initialization and blocking PHY I/O; runtime calls belong to the radio worker.
+ * 封装 B2B 初始化与阻塞收发；运行期仅由 radio worker 调用。
+ */
 #include <errno.h>
 #include <zephyr/device.h>
 #include <zephyr/drivers/lora.h>

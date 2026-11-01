@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Build role-specific, signed firmware against the pinned Zephyr workspace."""
+"""Build role-specific, signed firmware against the pinned Zephyr workspace.
+构建入口：固定依赖与角色，生成配置，签名并验证产物。
+"""
 import argparse
 import hashlib
 import json

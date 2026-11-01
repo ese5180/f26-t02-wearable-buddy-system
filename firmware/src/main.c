@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
-/* Boot orchestration only; each service owns its state and hardware. */
+/* Boot orchestration only; each service owns its state and hardware.
+ * 只编排启动与主循环；模块各自管理状态，不在入口堆叠业务实现。 */
 #include <zephyr/app_version.h>
 #include <zephyr/dfu/mcuboot.h>
 #include <zephyr/kernel.h>
