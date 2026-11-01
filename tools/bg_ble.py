@@ -42,6 +42,18 @@ def show_response(response):
         raise RuntimeError('SMP operation returned an error')
 
 
+def confirmed_primary_for_cleanup(images):
+    """Refuse candidate cleanup until there is one confirmed primary and no pending swap."""
+    if any(item.image not in (None, 0) for item in images):
+        raise RuntimeError('Cleanup supports only this single-image board layout')
+    active = [item for item in images if item.active]
+    if len(active) != 1 or active[0].slot != 0 or not active[0].confirmed:
+        raise RuntimeError('Cleanup requires exactly one active, confirmed primary')
+    if any(item.pending for item in images):
+        raise RuntimeError('Refusing cleanup while an image is pending activation')
+    return active[0]
+
+
 async def scan(args):
     last = {}
 
@@ -77,8 +89,36 @@ async def find_address(args):
     return device.address
 
 
+async def erase_secondary(address):
+    """Erase once; reconnect/read back if bulk Flash erase drops the BLE ACK."""
+    async with SMPClient(SMPBLETransport(), address, timeout_s=20.0) as client:
+        before = await client.request(image_management.ImageStatesRead())
+        show_response(before)
+        primary = confirmed_primary_for_cleanup(before.images)
+        if not any(item.slot == 1 for item in before.images):
+            print(json.dumps({'event': 'secondary_already_empty'}), flush=True)
+            return
+        try:
+            show_response(await client.request(image_management.ImageErase(slot=1), timeout_s=60))
+        except (SMPTransportDisconnected, asyncio.TimeoutError):
+            print(json.dumps({'event': 'erase_ack_missing',
+                              'note': 'Reconnecting for readback; the erase request is not repeated.'}),
+                  flush=True)
+    await asyncio.sleep(2)
+    async with SMPClient(SMPBLETransport(), address, timeout_s=20.0) as client:
+        after = await client.request(image_management.ImageStatesRead())
+        show_response(after)
+        current = confirmed_primary_for_cleanup(after.images)
+        if current.hash != primary.hash or current.version != primary.version or \
+                any(item.slot == 1 for item in after.images):
+            raise RuntimeError('Secondary cleanup verification failed')
+        print(json.dumps({'event': 'secondary_erased', 'primary_version': current.version}), flush=True)
+
+
 async def manage(args):
     address = await find_address(args)
+    if args.command == 'erase-secondary':
+        return await erase_secondary(address)
     transport = SMPBLETransport()
     async with SMPClient(transport, address, timeout_s=20.0) as client:
         transport.initialize(min(args.packet_size, transport.max_unencoded_size))
@@ -157,6 +197,7 @@ def main():
     scanning = sub.add_parser('scan')
     scanning.add_argument('--seconds', type=float, default=10.0)
     sub.add_parser('images')
+    sub.add_parser('erase-secondary', help='Erase only inactive slot1 after confirmed-primary checks')
     sub.add_parser('reset')
     testing = sub.add_parser('test')
     testing.add_argument('--hash', required=True)
