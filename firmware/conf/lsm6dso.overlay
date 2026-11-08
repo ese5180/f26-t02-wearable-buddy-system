@@ -1,0 +1,23 @@
+/* SparkFun SEN-18020. XIAO D4=GPIO5 SDA, D5=GPIO6 SCL. */
+#include <zephyr/dt-bindings/sensor/lsm6dso.h>
+
+&i2c0 {
+	imu_high: lsm6dso@6b {
+		compatible = "st,lsm6dso";
+		reg = <0x6b>;
+		zephyr,deferred-init;
+		accel-range = <LSM6DSO_DT_FS_4G>;
+		accel-odr = <LSM6DSO_DT_ODR_52Hz>;
+		gyro-range = <LSM6DSO_DT_FS_250DPS>;
+		gyro-odr = <LSM6DSO_DT_ODR_52Hz>;
+	};
+	imu_low: lsm6dso@6a {
+		compatible = "st,lsm6dso";
+		reg = <0x6a>;
+		zephyr,deferred-init;
+		accel-range = <LSM6DSO_DT_FS_4G>;
+		accel-odr = <LSM6DSO_DT_ODR_52Hz>;
+		gyro-range = <LSM6DSO_DT_FS_250DPS>;
+		gyro-odr = <LSM6DSO_DT_ODR_52Hz>;
+	};
+};

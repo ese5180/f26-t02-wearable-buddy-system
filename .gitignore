@@ -1,0 +1,13 @@
+.DS_Store
+.venv/
+build*/
+artifacts/
+# Local experiments/history are not part of the reproduction package.
+evidence/
+tests/
+local/
+*.pyc
+__pycache__/
+*.pem
+!keys/team2-signing-public.pem
+.env

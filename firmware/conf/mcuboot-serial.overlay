@@ -1,0 +1,6 @@
+/ {
+	chosen {
+		/* UART0 TX=D6/GPIO43, RX=D7/GPIO44; USB console stays separate. */
+		zephyr,uart-mcumgr = &uart0;
+	};
+};

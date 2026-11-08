@@ -1,81 +1,55 @@
-# ESE5180: IoT Venture
+# BuddyGuard
 
 **Team Number: 02**
 
 **Team Name: Jet2Holiday**
 
-| Team Member Name | Email Address                  |
-| ---------------- | ------------------------------ |
-| Siwei Lei        | laialex@engineering.upenn.edu  |
-| Rico Zhuang      | zzhuan13@engineering.upenn.edu |
-| Yunzhe Deng      | deng1@engineering.upenn.edu    |
-| Yubin Guan       | guan1@engineering.upenn.edu    |
+| Team Member Name | Email Address |
+| --- | --- |
+| Siwei Lei | <laialex@engineering.upenn.edu> |
+| Rico Zhuang | <zzhuan13@engineering.upenn.edu> |
+| Yunzhe Deng | <deng1@engineering.upenn.edu> |
+| Yubin Guan | <guan1@engineering.upenn.edu> |
 
-**GitHub Repository URL: [https://github.com/yunzhedeng/ese5180-IoT-Venture.git](https://github.com/yunzhedeng/ese5180-IoT-Venture.git)**
+**GitHub Repository URL:** <https://github.com/ese5180/f26-t02-wearable-buddy-system>
 
-## Concept Development
+BuddyGuard helps camp counselors notice when a camper falls behind or may need help. Campers wear screen-free tags. The bench prototype uses BLE presence and LoRa P2P queries and SOS without a phone, Wi-Fi or cellular service in the field. GPS, vibration and possible-fall alerts are planned for the wearable. Wi-Fi at base handles diagnostics and signed updates. See the [refined concept](docs/CONCEPT.md).
 
-### Product Function
+## Start here
 
-We are building a simple physical console for monitoring and approving AI agent actions. Unlike traditional macro pads, our device connects directly to AI and cloud services. Users can see agent status, review tasks, and approve sensitive actions with one press.
+- [Project stages and deliverables](docs/PROJECT_LOG.md) covers sections 3.1 through 3.13 and links to the available work.
+- [Documentation index](docs/README.md) lists the English and Chinese setup, firmware and demo guides.
+- [Firmware source map](firmware/README.md) links each feature to its code and build configuration.
+- [Bench validation](docs/VALIDATION.md) records the exact versions and tests for one tag and one counselor.
 
-### Target Market & Demographics
+## 3.6 Fleet Management submission
 
-**Who will be using your product?**
+[English README](docs/submissions/3.6-fleet-management/README.md) · [PDF export](docs/submissions/3.6-fleet-management/README.pdf)
 
-Our intended users are students, software developers, and productivity enthusiasts who want an affordable, compact keyboard for shortcuts and AI-assisted workflows. We would particularly target privacy-conscious users who value control over their device’s firmware, settings, and data handling.
+The submission covers Memfault version reporting, signed Wi-Fi OTA, coredumps, reboot reasons, Zephyr and BuddyGuard metrics, USB host activity, and the 60 s versus 15 s A/B rollout. Start with the [English Fleet guide](docs/en/FLEET_MANAGEMENT.md) or [中文操作指南](docs/zh/FLEET_MANAGEMENT.md) to reproduce it.
 
-**Who will be purchasing your product?**
+## Build and run
 
-Individual users would purchase the keyboard for their own workstations, while small businesses and engineering teams could buy it for employees. University laboratories and student organizations would also be potential buyers for affordable, customizable input devices.
+Follow [Getting started](docs/en/GETTING_STARTED.md) or [中文复现](docs/zh/GETTING_STARTED.md) to set up native macOS, Python 3.12, west 1.5.0 and Zephyr SDK 1.0.1. The board target is `xiao_esp32s3/esp32s3/procpu`, with dependencies pinned in [west.yml](west.yml).
 
-**Where would you deploy your product?**
+| Build profile | What it enables |
+| --- | --- |
+| `--role tag` / `--role counselor` | BLE presence and signed BLE SMP updates, LoRa P2P and role-specific application behavior |
+| `--imu` | Optional LSM6DSO on a tag |
+| `--wifi` | Memfault diagnostics and signed HTTPS OTA |
+| `--fleet` | Memfault diagnostics with a USB host gateway when used without `--wifi` |
+| `--serial-recovery` | Optional MCUboot recovery over UART |
 
-We would initially launch in the United States, focusing on university campuses, home offices, and small-business workstations. After validating demand and reliability, we would expand internationally through online sales.
+Build and sign with [scripts/build.py](scripts/build.py). Existing team boards use the Team 2 signing identity. Runtime Wi-Fi credentials and private signing keys are kept outside the repository. See the setup guides before provisioning a board.
 
-**How large is the market you’re targeting, in US dollars?**
+## Repository layout
 
-The United States had approximately 1.7 million software developer jobs in 2025, providing a starting point for estimating our initial customer base. Assuming 10% of that population would consider a dedicated macropad at a proposed &#36;40 retail price, our initial target market would represent approximately &#36;6.8 million in hardware purchases. This is an assumption-based, one-device-per-customer estimate—not measured demand or annual market revenue.
+| Path | Contents |
+| --- | --- |
+| [firmware/](firmware/) | Zephyr application, board configuration and MCUboot configuration |
+| [scripts/](scripts/) | Build, flash backup, initial provisioning and recovery bootloader install |
+| [tools/](tools/) | BLE update, serial console, Wi-Fi provisioning, USB telemetry gateway and UART recovery |
+| [docs/](docs/) | Project timeline, setup and implementation guides, validation and submissions |
+| [keys/](keys/) and [patches/](patches/) | Team public verification key and dependency patches |
 
-**How much of that market do you expect to capture, in US dollars?**
-
-Our first-year sales target would be 1,000 units at &#36;40 each, generating &#36;40,000 in revenue, or approximately 0.6% of our estimated target market. We would test this target through preorders, campus demonstrations, and small-business pilot sales before scaling production.
-
-**What competitors are already in the space?**
-
-Our closest competitor is OpenAI and Work Louder’s Codex Micro, listed at &#36;230. Other alternatives include Elgato’s Stream Deck Neo, listed at &#36;99.99 before promotions, and Adafruit’s MacroPad RP2040 kit. Our intended advantage would be a lower-cost, ready-to-use product with local configuration and clearly documented security controls.
-
-### Stakeholders
-
-- Zapier: for workflow automation
-- Anthropic: for Claude/Claude Code power users
-- Browser Use: for browser agents and AI automation
-- YaoEdge: for AI agent monitoring and workflow control
-
-The keypad gives their users a physical, customizable interface for launching AI agents and repetitive workflows with one press.
-
-We have already spoken with the founder of YaoEdge about our product. He said he is very interested in what we are building and would be willing to invest in the company.
-
-### System-Level Diagrams
-
-![System-Level Diagram](image/README/image.png)
-
-### Security Requirements Specification
-
-- **SecRS-01** - The console shall exchange task and approval data only with an authenticated computer companion application over an encrypted BLE connection.
-- **SecRS-02** - The nRF5340 shall verify firmware signatures before execution and reject unauthorized firmware.
-- **SecRS-03** - Sensitive actions shall require an external keypad press after the action is displayed. The companion application shall reject expired or reused approvals.
-
-### Hardware Requirements Specification
-
-- **HRS-01** — Wi-Fi Connectivity: The console shall communicate directly with the backend through an nRF7002 Wi-Fi interface without a computer gateway, at a distance of 5 m from the access point in the same room with no obstructions.
-- **HRS-02** — Display: The console shall include at least one display capable of presenting the selected agent’s identity, requested action, target resource, and risk level. Scrolling or paging may be used to show complete information.
-- **HRS-03** — Physical Controls: The console shall include two separate buttons for approval and rejection and one rotary encoder for selection. The approval button shall support continuous press detection for at least  2 seconds.
-- **HRS-04** — Protected Key Storage: The console shall use an nRF5340 and provide hardware-backed isolation for its approval-signing private key. Non-secure application code shall not be able to read or export the
-
-### Software Requirements Specification
-
-- **SRS-01** — Agent Monitoring: The software shall simultaneously track at least  two agent instances, supporting Working, Approval Required, Completed, and Failed states. Under normal connectivity on the same local network, the display shall update within 2 seconds of a backend status event.
-- **SRS-02** — Physical Approval: Approval shall require a continuous button press of at least  2 seconds **. Releasing the button early or changing the selected request shall cancel confirmation. Local feedback shall appear within 500 ms after approval is completed or rejection is pressed.
-- **SRS-03** — Authorization Enforcement: Each approval shall be signed and bound to the request ID, agent identity, action, target resource, and expiration time. The backend shall permit execution only after verification, allow each authorization to be used  once , and reject invalid, mismatched, expired, or reused authorizations.
-- **SRS-04** — Audit Logging: The backend shall persist each received approval or rejection response before acknowledging completion. Each record shall contain the request ID, agent identity, action, target resource, decision, device ID, server timestamp, and validation result, and remain retrievable after a backend restart.
+The current bench scope is one tag and one counselor. USB host activity is a power-related observation. Battery state of charge, complete multi-tag testing and outdoor validation are still open. See the [project log](docs/PROJECT_LOG.md) for the planned work.
