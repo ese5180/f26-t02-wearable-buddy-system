@@ -2,7 +2,7 @@
 
 [中文](../zh/FIRMWARE_SECURITY_CHECKOFF.md) · [Repository](https://github.com/ese5180/f26-t02-wearable-buddy-system/tree/codex/buddyguard-wireless-fota) · [PR #1](https://github.com/ese5180/f26-t02-wearable-buddy-system/pull/1)
 
-Status on **2026-10-31**: T01 and C01 now run active/confirmed1.1.20. **BLE FOTA was re-tested on C01's installed UART-recovery MCUboot**: valid upgrade, wrong-key/corruption rejection, same-file resume and valid-fault watchdog rollback passed. [Latest results](../VALIDATION.md). Earlier UART signed recovery was tested on1.1.19; no external TTL cable was connected in the latest BLE run.
+In the **2026-10-31 section 3.5 bench run**, T01 and C01 both ran active and confirmed 1.1.20. **BLE FOTA was re-tested on C01's installed UART-recovery MCUboot**: valid upgrade, wrong-key/corruption rejection, same-file resume and valid-fault watchdog rollback passed. [3.5 bench results](../VALIDATION.md#earlier-hardware-validation). Earlier UART signed recovery was tested on1.1.19; no external TTL cable was connected in the latest BLE run.
 
 ## 3.5.1 Bootloading process
 
@@ -58,7 +58,7 @@ The implemented extra-credit path differs: MCUboot itself runs an SMP server ove
 
 We use **BLE SMP/MCUmgr** for image-state queries, signed-image upload and test/reset requests. BLE was already enabled for BuddyGuard presence, and the Mac can update a nearby device without an access point, network credentials or cloud service. Zephyr provides the corresponding image-management service.
 
-The hardware also has Wi-Fi and LoRa. Wi-Fi could provide higher throughput but would require another network/update path that is not integrated in this milestone. Our LoRa protocol transports small 12-byte supervision messages; transmitting an approximately 436 KB image would require a bulk-transfer/fragmentation protocol and substantially more airtime. BLE therefore provides a practical local maintenance path while LoRa remains dedicated to supervision messages. The current client defaults to 244-byte SMP packets; transfers take several minutes on the bench.
+The hardware also has Wi-Fi and LoRa. Section 3.5 used BLE for local maintenance. Section 3.6 later added direct Wi-Fi OTA. See the [Fleet guide](FLEET_MANAGEMENT.md). Our LoRa protocol transports small 12-byte supervision messages; transmitting an approximately 436 KB image would require a bulk-transfer/fragmentation protocol and substantially more airtime. BLE therefore provides a practical local maintenance path while LoRa remains dedicated to supervision messages. The current client defaults to 244-byte SMP packets; transfers take several minutes on the bench.
 
 ## Where downloaded images are stored
 
@@ -94,7 +94,7 @@ Key files in the repository:
 - [prj.conf](../../firmware/prj.conf): `CONFIG_BOOTLOADER_MCUBOOT=y`, image management, BLE SMP and Flash management.
 - [sysbuild.conf](../../firmware/sysbuild.conf): MCUboot, ECDSA-P256 and `SB_CONFIG_MCUBOOT_MODE_SWAP_USING_MOVE=y`.
 - [mcuboot.conf](../../firmware/sysbuild/mcuboot.conf): `CONFIG_BOOT_VALIDATE_SLOT0=y`, `CONFIG_BOOT_UPGRADE_ONLY=n`.
-- [health.c](../../firmware/src/platform/health.c): watchdog and delayed application confirmation.
+- [health.c](../../firmware/src/update/health.c): watchdog and delayed application confirmation.
 - [build.py](../../scripts/build.py): external private-key selection and post-build verification.
 - [team public root](../../keys/team2-signing-public.pem): public verification material only.
 

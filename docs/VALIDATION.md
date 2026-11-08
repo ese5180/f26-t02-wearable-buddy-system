@@ -6,6 +6,8 @@ Fleet results below were reported by Siwei Lei in the [source commit](https://gi
 
 Local builds passed for the Wi-Fi tag (IMU, 60 s metrics), Wi-Fi counselor (15 s metrics and UART recovery) and baseline BLE/LoRa counselor. Both Wi-Fi builds keep the original image slots and validate against the Team 2 public key. The eight upstream host-tool checks passed against the imported tools. Hardware and Memfault results below are the team's earlier bench evidence.
 
+After moving the fleet, update and motion files into their owning directories, the same three build profiles passed again and their images verified with the committed public key. All nine host and build CLI entry points passed `--help`. The firmware C files retained their prior contents.
+
 ## A/B cohort rollout, 2026-11-08
 
 A/B adds one build-time SDK interval override and two policy-identifying metrics. BLE presence, LoRa supervision, signed OTA and crash handling are unchanged. The extra-credit demonstration is targeted rollout and a measurable diagnostic policy change, not a statistically powered comparison or battery-life result.

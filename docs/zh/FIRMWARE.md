@@ -4,7 +4,7 @@
 
 [English](../en/FIRMWARE.md) · [队友复现操作文档](GETTING_STARTED.md)
 
-本文对应模块化后的 **1.1.20** 源码。无线协议仍为版本 1，与此前验证的 1.1.15 兼容。具体安装／烧录命令见操作文档；这里解释模块职责、运行机制及限制。
+本文对应支持 Fleet Management 的 **1.5.x** 源码。BLE presence 和 LoRa 帧仍使用协议版本 1。具体安装／烧录命令见操作文档；这里解释模块职责、运行机制及限制。
 
 ## 推荐阅读顺序
 
@@ -24,12 +24,14 @@
 | `src/radio/history.c` / `include/radio_history.h` | 最近业务消息的有限去重记录 |
 | `src/drivers/wio_sx1262.c` / `include/radio_driver.h` | 延迟设备初始化、射频参数、SPI 读回、串行收发 |
 | `src/sensors/imu.c` / `include/imu.h` | 可选 LSM6DSO 后台线程、地址识别、六轴快照及过期检查 |
-| `src/protocol/motion.c` / `include/motion.h` | 纯 C UNKNOWN／STILL／MOVING 状态判断 |
+| `src/sensors/motion.c` / `include/motion.h` | 纯 C UNKNOWN／STILL／MOVING 状态判断 |
 | `src/protocol/wire.c` / `include/wire.h` | 不依赖 RTOS／硬件的编码和帧校验 |
-| `src/platform/health.c` / `include/health.h` | watchdog、Flash 分区就绪检查、延迟确认新镜像 |
+| `src/update/health.c` / `include/health.h` | watchdog、Flash 分区就绪检查、延迟确认新镜像 |
+| `src/fleet/fleet.c` / `include/fleet.h` | Memfault 设备身份、USB 活动及业务指标 |
+| `src/fleet/wifi_fleet.c` / `include/wifi_fleet.h` | Wi-Fi 配置、HTTPS 上传及云端 OTA 线程 |
 | `src/console/commands.c` | USB shell 到各服务 API 的命令适配 |
 
-`CMakeLists.txt` 显式列出模块；`prj.conf` 开启 Zephyr 服务，`Kconfig` 定义实验参数，`app.overlay` 描述 Wio B2B 连接，`sysbuild.conf` 与 `sysbuild/mcuboot.conf` 配置签名引导。`conf/` 只保留可选 IMU 与 UART 恢复配置。角色、ID 和故障开关由 `scripts/build.py` 每次生成，不需要另外维护一套手写角色配置。
+`CMakeLists.txt` 显式列出模块；`prj.conf` 开启 Zephyr 服务，`Kconfig` 定义实验参数，`app.overlay` 描述 Wio B2B 连接，`sysbuild.conf` 与 `sysbuild/mcuboot.conf` 配置签名引导。`conf/` 包含可选 IMU、UART 恢复、Fleet 和 Wi-Fi 配置。角色、ID 和故障开关由 `scripts/build.py` 每次生成，不需要另外维护一套手写角色配置。
 
 ```mermaid
 flowchart TD
@@ -55,7 +57,7 @@ flowchart TD
 
 1. 主线程先输出版本、角色、确认状态，**在初始化 radio 之前启动 8 秒复位 watchdog**。Wio 使用 deferred initialization，避免 BUSY 卡住时还没进入应用就失去 watchdog 回滚保护。
 2. 检查两个镜像分区、初始化 Wio 并核对同步字 `0x1424`、启动 BLE、按角色启动名单扫描。失败后故意不喂狗，等待复位。
-3. 如果是尚未确认的故障测试镜像，停在这里不喂狗；否则启动可选 IMU 后台线程和健康运行计时。
+3. 如果是尚未确认的故障测试镜像，停在这里不喂狗；否则启动可选 IMU 后台线程、健康运行计时及可选 Wi-Fi 服务。
 4. 每两秒轮询名单、递增 BLE 序号、更新广播。广播错误则重置健康计时且不喂狗；成功循环中达到 **15 秒**后可以确认镜像，然后喂狗。
 
 “健康”仅表示这些启动检查与 BLE 主循环正常，**不保证 LoRa 成功送达、传感器有效或儿童安全**。确认还要求 heartbeat 为 on。关闭 heartbeat 本身不会重置计时，保留原有实现。watchdog 监测主循环，并不逐个监测所有工作线程是否前进。

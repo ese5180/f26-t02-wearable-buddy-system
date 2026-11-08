@@ -4,7 +4,7 @@
 
 [中文](../zh/FIRMWARE.md) · [Reproduction guide](GETTING_STARTED.md)
 
-This describes the modular **1.1.20** source. The on-air protocol remains version 1 and compatible with the previously validated 1.1.15 bench firmware. Build/flash/update commands belong in the reproduction guide; this document explains ownership, data flow and constraints.
+This describes the 1.5.x source with optional Fleet Management. BLE presence and LoRa frames still use protocol version 1. Build/flash/update commands belong in the reproduction guide; this document explains ownership, data flow and constraints.
 
 ## How to read the code
 
@@ -24,12 +24,14 @@ Module comments summarize responsibility; interface comments state units and cal
 | `src/radio/history.c` / `include/radio_history.h` | Bounded recent business-event duplicate history |
 | `src/drivers/wio_sx1262.c` / `include/radio_driver.h` | Deferred device initialization, PHY settings, SPI readback and serialized RX/TX |
 | `src/sensors/imu.c` / `include/imu.h` | Optional LSM6DSO worker, address detection, six-axis snapshot and freshness |
-| `src/protocol/motion.c` / `include/motion.h` | Pure C UNKNOWN/STILL/MOVING classifier |
+| `src/sensors/motion.c` / `include/motion.h` | Pure C UNKNOWN/STILL/MOVING classifier |
 | `src/protocol/wire.c` / `include/wire.h` | Hardware-independent encoding and frame validation |
-| `src/platform/health.c` / `include/health.h` | Watchdog, flash-slot readiness and delayed MCUboot confirmation |
+| `src/update/health.c` / `include/health.h` | Watchdog, flash-slot readiness and delayed MCUboot confirmation |
+| `src/fleet/fleet.c` / `include/fleet.h` | Memfault device identity, USB activity and product metrics |
+| `src/fleet/wifi_fleet.c` / `include/wifi_fleet.h` | Wi-Fi provisioning, HTTPS uploads and cloud OTA worker |
 | `src/console/commands.c` | USB shell adapter calling service APIs |
 
-`firmware/CMakeLists.txt` lists application modules explicitly. `prj.conf` enables Zephyr services; `Kconfig` defines product/demo parameters; `app.overlay` defines the Wio B2B hardware. `sysbuild.conf` and `sysbuild/mcuboot.conf` configure the signed boot chain. `conf/` contains only the optional IMU and UART recovery configuration. `scripts/build.py` generates role/ID/fault settings per build; there are no second, hand-edited role profiles to synchronize.
+`firmware/CMakeLists.txt` lists application modules explicitly. `prj.conf` enables Zephyr services; `Kconfig` defines product/demo parameters; `app.overlay` defines the Wio B2B hardware. `sysbuild.conf` and `sysbuild/mcuboot.conf` configure the signed boot chain. `conf/` contains optional IMU, UART recovery, Fleet and Wi-Fi configuration. `scripts/build.py` generates role/ID/fault settings per build; there are no second, hand-edited role profiles to synchronize.
 
 ```mermaid
 flowchart TD
@@ -55,7 +57,7 @@ flowchart TD
 
 1. Main logs version, role and confirmation state, then arms the **8-second reset watchdog before radio initialization**. Wio uses deferred initialization so an unresponsive BUSY pin cannot hang before the application has watchdog protection.
 2. It checks both image slots, initializes Wio (readback must be `0x1424`), enables BLE and starts the counselor scanner when applicable. Failure deliberately waits without watchdog feeds.
-3. On an unconfirmed fault-test build, it deliberately stops here without feeding WDT. Otherwise it starts the optional IMU worker and healthy-runtime timer.
+3. On an unconfirmed fault-test build, it deliberately stops here without feeding WDT. Otherwise it starts the optional IMU worker, the healthy-runtime timer and the optional Wi-Fi service.
 4. Every two seconds it polls the roster, increments the BLE presence sequence and updates advertising. Advertising errors reset the healthy window and withhold the watchdog feed. On successful cycles, it may confirm the image after **15 seconds**, then feeds WDT.
 
 A healthy cycle means these startup checks and BLE loop are working. It does **not** prove successful LoRa delivery, correct sensor data or supervision safety. Image confirmation also requires the demo heartbeat enabled. Disabling heartbeat does not itself reset the healthy timer; this preserves the prior implementation. The watchdog only monitors the main loop, not independent progress of every worker.

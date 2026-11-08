@@ -25,6 +25,7 @@ Use the existing workspace from the reproduction guide, with source/build/key pa
 
 ```sh
 BG_WS="$HOME/buddyguard-workspace"
+export BUDDYGUARD_ZEPHYR_WORKSPACE="$BG_WS"
 BG_KEY="$HOME/.config/buddyguard/team2-signing/firmware-ecdsa-p256.pem"
 BG_BUILD="$BG_WS/build-bg-c01-recovery"
 BG_USB=/dev/cu.usbmodem11301
@@ -37,10 +38,10 @@ From the repository root:
 
 ```sh
 "$BG_WS/.venv/bin/python" scripts/build.py --workspace "$BG_WS" --key "$BG_KEY" \
-  --build-dir "$BG_BUILD" --role counselor --serial-recovery --version 1.1.20
+  --build-dir "$BG_BUILD" --role counselor --serial-recovery
 ```
 
-Use a fresh build directory when switching role, signing identity or recovery profile. `--version` creates an isolated source snapshot; it does not change `firmware/VERSION`. The helper verifies the signed application and records sizes/hashes in `buddyguard-build.json`.
+Add `--wifi` when the recovery image should retain Fleet features. Use a fresh build directory when switching role, signing identity or recovery profile. `--version` creates an isolated source snapshot; it does not change `firmware/VERSION`. The helper verifies the signed application and records sizes/hashes in `buddyguard-build.json`.
 
 **Pinned-version prerequisite:** the helper idempotently applies [the MCUboot threading patch](../../patches/mcuboot-esp32-uart-threading.patch) to the workspace's `bootloader/mcuboot`. It adds a first Kconfig default enabling multithreading for ESP32 serial recovery. The pinned Xtensa single-thread MCUboot received UART bytes in its FIFO but did not service the interrupt-driven serial adapter. Setting the hidden `CONFIG_MULTITHREADING=y` alone was insufficient. The helper checks the resulting symbol and refuses a bootloader larger than the unchanged 64 KiB partition. Ordinary builds without serial recovery retain the upstream threading default. No temporary diagnostic source changes are required.
 

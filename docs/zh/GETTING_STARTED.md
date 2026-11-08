@@ -151,7 +151,7 @@ Mac 弹窗时允许终端／宿主进程访问蓝牙。**同一个串口只允�
 
 辅导员应依次显示：周期 STATUS `RX ... type=1`；SOS `type=3` 和 `ACTION`；失联约 8–10 秒后 `BLE MISSING` → `QUERY` → `RX ... type=5`；恢复后 `RECOVERED`。LoRa 回复只说明 LoRa 可达，不能清除 BLE 失联状态。
 
-1.1.20 的 QUERY 最多发3次，并在等待时继续处理其他帧；全部超时则明确报告未确认，操作员可再发起查询。已有 monitor 时用 `command --no-read` 发命令，见[无线帧与重试说明](FIRMWARE.md#无线帧格式)。SOS 入队成功也不代表已送达，要看辅导员接收和标签 ACK。
+QUERY 最多发送 3 次，并在等待时继续处理其他帧；全部超时则明确报告未确认，操作员可再发起查询。已有 monitor 时用 `command --no-read` 发命令，见[无线帧与重试说明](FIRMWARE.md#无线帧格式)。SOS 入队成功也不代表已送达，要看辅导员接收和标签 ACK。
 
 这里的 heartbeat 是**通信心跳**，不是生理脉搏。`heartbeat off` 仅停 BLE 广播，LoRa 继续工作。演示不输出距离或位置；未启用 `--imu` 时 motion 为 UNKNOWN；可选 IMU 文档说明真实采样。clasp 仍 UNKNOWN，电量 unavailable。
 

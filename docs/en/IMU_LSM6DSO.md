@@ -1,6 +1,6 @@
-# SparkFun LSM6DSO integration / 1.1.17
+# SparkFun LSM6DSO integration
 
-IMU support began in 1.1.17; the 1.1.18 counselor also disables controller scan duplicate filtering for continuous heartbeats. Both versions use the same protocol1 frame. The physical test uses tag1.1.17 plus counselor1.1.18; new builds from current source report1.1.18.
+Initial hardware validation used tag 1.1.17 and counselor 1.1.18. The same optional IMU profile is available in 1.5.x. See [bench validation](../VALIDATION.md) for the tested combinations.
 
 [中文](../zh/IMU_LSM6DSO.md) · [Full setup guide](GETTING_STARTED.md) · [Firmware explanation](FIRMWARE.md)
 
@@ -57,7 +57,7 @@ A dedicated lower-priority thread in `src/sensors/imu.c` owns IMU I2C. Main, she
 - MOVING holds for two seconds after activity, then becomes STILL. These laboratory thresholds are not a model validated on children.
 - Read failure immediately produces UNKNOWN; data older than 1000 ms also produces UNKNOWN. A missing IMU does not block wireless service or demand image rollback.
 
-Pure C logic lives in `src/protocol/motion.c`. Native tests cover gravity, warm-up, activity hold, stale sampling and uint32 clock wrap.
+Pure C logic lives in `src/sensors/motion.c`. Native tests cover gravity, warm-up, activity hold, stale sampling and uint32 clock wrap.
 
 ## LoRa demonstration
 

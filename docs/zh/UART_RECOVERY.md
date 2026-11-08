@@ -25,6 +25,7 @@ XIAO 用自己的 USB-C 供电，串口适配器必须为 **3.3V 逻辑电平**�
 
 ```sh
 BG_WS="$HOME/buddyguard-workspace"
+export BUDDYGUARD_ZEPHYR_WORKSPACE="$BG_WS"
 BG_KEY="$HOME/.config/buddyguard/team2-signing/firmware-ecdsa-p256.pem"
 BG_BUILD="$BG_WS/build-bg-c01-recovery"
 BG_USB=/dev/cu.usbmodem11301
@@ -35,10 +36,10 @@ BG_TTL=/dev/cu.usbserial-0001
 
 ```sh
 "$BG_WS/.venv/bin/python" scripts/build.py --workspace "$BG_WS" --key "$BG_KEY" \
-  --build-dir "$BG_BUILD" --role counselor --serial-recovery --version 1.1.20
+  --build-dir "$BG_BUILD" --role counselor --serial-recovery
 ```
 
-改变角色、密钥或 recovery profile 时用新的构建目录。`--version` 生成独立源码副本，不修改仓库 `firmware/VERSION`。脚本验证签名并把大小、哈希写入 `buddyguard-build.json`。
+恢复后仍需 Fleet 功能时，构建应用加 `--wifi`。改变角色、密钥或 recovery profile 时用新的构建目录。`--version` 生成独立源码副本，不修改仓库 `firmware/VERSION`。脚本验证签名并把大小、哈希写入 `buddyguard-build.json`。
 
 **固定依赖版本所需修复：**脚本会幂等应用 [MCUboot 线程配置补丁](../../patches/mcuboot-esp32-uart-threading.patch)，修改工作区 `bootloader/mcuboot` 的一条 Kconfig 默认值：ESP32 启用串口恢复时使用多线程。实测原先的 Xtensa 单线程 bootloader 在 UART FIFO 中收到数据，但没有处理串口适配层的接收中断；单写 `CONFIG_MULTITHREADING=y` 无法改变该隐藏配置。构建脚本会检查最终符号并阻止超过 64 KiB 的 bootloader。不启用 recovery 的普通构建保留上游默认值，不需要临时诊断源码。
 

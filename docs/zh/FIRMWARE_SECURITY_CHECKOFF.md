@@ -2,7 +2,7 @@
 
 [English 提交版](../en/FIRMWARE_SECURITY_CHECKOFF.md) · [GitHub 代码分支](https://github.com/ese5180/f26-t02-wearable-buddy-system/tree/codex/buddyguard-wireless-fota) · [PR #1](https://github.com/ese5180/f26-t02-wearable-buddy-system/pull/1)
 
-截至 **2026-10-31**：T01与C01均运行 active/confirmed1.1.20。**已在C01既有UART recovery bootloader上重测BLE FOTA**：正常升级、错误签名／损坏拒绝、同文件续传和有效签名故障镜像watchdog回滚通过，见[最新实测](../VALIDATION.md)。此前UART签名恢复在1.1.19上完成；本轮没有连接外接TTL线。
+在 **2026-10-31 的 3.5 实测**中，T01 与 C01 均运行已确认的 1.1.20。**已在C01既有UART recovery bootloader上重测BLE FOTA**：正常升级、错误签名／损坏拒绝、同文件续传和有效签名故障镜像watchdog回滚通过，见[3.5 实测](../VALIDATION.md#earlier-hardware-validation)。此前UART签名恢复在1.1.19上完成；本轮没有连接外接TTL线。
 
 ## 3.5.1 启动与更新流程
 
@@ -56,7 +56,7 @@ Bootloader 预留64 KiB；每个应用槽1,376,256 B（1,344 KiB），含 header
 
 当前通过 **BLE SMP／MCUmgr** 查询镜像、上传、标记试运行及复位。BLE 已用于 presence，Mac 可以在近距离直接更新，不需要 AP、网络凭据或云服务；Zephyr 已有对应 image-management 支持。
 
-Wi-Fi 可能更快，但当前还没有整合网络／更新服务。LoRa 当前仅发12字节监督消息，传约436 KB固件需要另做分片／批量传输协议并占用大量空中时间。选择 BLE 可以完成本阶段近距离维护，同时保留 LoRa 用于告警／查询。当前 SMP 默认244字节包，桌面更新需要几分钟。
+3.5 使用 BLE 近距离维护。后续 3.6 新增直连 Wi-Fi OTA，见 [Fleet 指南](FLEET_MANAGEMENT.md)。LoRa 当前仅发12字节监督消息，传约436 KB固件需要另做分片／批量传输协议并占用大量空中时间。选择 BLE 可以完成本阶段近距离维护，同时保留 LoRa 用于告警／查询。当前 SMP 默认244字节包，桌面更新需要几分钟。
 
 ## 镜像存在哪里？是否属于 external Flash？
 
@@ -90,7 +90,7 @@ Wi-Fi 可能更快，但当前还没有整合网络／更新服务。LoRa 当前
 - [prj.conf](../../firmware/prj.conf)：MCUboot 应用支持、BLE SMP、image-management、Flash 写入。
 - [sysbuild.conf](../../firmware/sysbuild.conf)：MCUboot、ECDSA-P256、swap using move。
 - [mcuboot.conf](../../firmware/sysbuild/mcuboot.conf)：`CONFIG_BOOT_VALIDATE_SLOT0=y`、`CONFIG_BOOT_UPGRADE_ONLY=n`，保留验证与回滚。
-- [health.c](../../firmware/src/platform/health.c)：watchdog 与延迟确认。
+- [health.c](../../firmware/src/update/health.c)：watchdog 与延迟确认。
 - [build.py](../../scripts/build.py)：读取仓库外私钥并验证构建产物。
 - [团队公钥](../../keys/team2-signing-public.pem)：Git 中仅保留验证材料。
 
