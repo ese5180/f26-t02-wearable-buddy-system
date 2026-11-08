@@ -33,13 +33,15 @@ Campers wear the tags. Counselors carry the receiver. The buyer is the camp oper
 
 The American Camp Association counts about **20,000 U.S. camps** across day and overnight programs. Philadelphia Parks & Recreation runs **more than 100 neighborhood day camps** and serves **more than 7,000 campers** across its summer camps. [ACA camp data](https://www.acacamps.org/sites/default/files/2025-07/ACA-Camp-Stabilization-Toolkit-2025.pdf) · [Philadelphia Parks & Recreation](https://www.phila.gov/services/culture-recreation/activities-and-events/register-for-summer-camp/)
 
-| Market | Calculation | Rental revenue |
-| --- | --- | ---: |
-| **TAM** · U.S. camp market, upper bound | 20,000 camps × 5 kits × $199 | **$19.9 million/year** |
-| **SAM** · Philadelphia neighborhood day camps | 100 sites × 5 kits × $199 | **$99,500/year** |
-| **SOM** · First summer target | 2 sites × 5 kits × $199 | **$1,990** |
+For a full group, we use **one counselor unit and eight tags** as a planning baseline, with six and ten tags as low and high cases. The YMCA publishes staff-to-camper ratios of 1:6, 1:8 and 1:10 by age. Those ratios inform the estimate. Actual group size and the number of groups a site would equip still need to be confirmed. We assume **two equipped groups per site** and one summer rental quarter per year. [Greater Philadelphia YMCA staffing ratios](https://www.philaymca.org/camps/summer-day-camp/)
 
-One kit contains three tags and one counselor unit. We assume five kits per site at $199 per kit for one summer quarter, before shipping. The published counts describe the pool of camps. The rental rate, kit count and two-site target are estimates to check in interviews. [Rental model](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=1482974775#gid=1482974775)
+| Market | Sizing assumption | Equipment or rental estimate |
+| --- | --- | --- |
+| **TAM** · U.S. camps, upper bound | 20,000 camps × 2 groups | **40,000 counselor units + 320,000 tags** at eight tags per group |
+| **SAM** · Philadelphia neighborhood day camps | 100 sites × 2 groups | **200 counselor units + 1,600 tags** at eight tags per group |
+| **SOM** · First summer paid pilot | 2 sites × 2–3 pilot kits × $199 | **$796–$1,194** in rental revenue before shipping |
+
+At six or ten tags per group, the Philadelphia estimate is **1,200 or 2,000 tags**. The **$199 per quarter** quote covers the three-tag pilot kit. At that price and two pilot kits per site, the rental benchmarks are **$7.96 million/year nationally** and **$39,800/year in Philadelphia**. The eight-tag configuration needs its own price and a capacity test before we forecast revenue for it. [Rental model](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=1482974775#gid=1482974775)
 
 #### Competitors and current practice
 
@@ -50,7 +52,7 @@ One kit contains three tags and one counselor unit. We assume five kits per site
 
 #### Stakeholders
 
-We want to speak with a director and a lead counselor at a [Greater Philadelphia YMCA day camp](https://www.philaymca.org/camps/summer-day-camp/) or a [Philadelphia Parks & Recreation site](https://www.phila.gov/services/culture-recreation/activities-and-events/register-for-summer-camp/). We also want to talk to a [Summer Achievers host-site operator](https://www.phila.gov/2026-05-08-register-now-make-this-summer-unforgettable-with-summer-achievers-summer-camp-at-edey-schools-2/) who organizes trips and summer activities. We want to find out how they handle a missing or injured camper, which trips have poor network coverage, and who approves a rental. A director and a counselor can also tell us what they need to see in an alert and how many kits they would actually use. These interviews are still pending.
+We want to speak with a director and a lead counselor at a [Greater Philadelphia YMCA day camp](https://www.philaymca.org/camps/summer-day-camp/) or a [Philadelphia Parks & Recreation site](https://www.phila.gov/services/culture-recreation/activities-and-events/register-for-summer-camp/). We also want to talk to a [Summer Achievers host-site operator](https://www.phila.gov/2026-05-08-register-now-make-this-summer-unforgettable-with-summer-achievers-summer-camp-at-edey-schools-2/) who organizes trips and summer activities. We want to find out how they handle a missing or injured camper, which trips have poor network coverage, and who approves a rental. A director and a counselor can also tell us what they need to see in an alert and how many children are in a group and how many groups they would equip. These interviews are still pending.
 
 #### System-Level Diagrams
 
@@ -102,7 +104,7 @@ Firmware signature checks have been tested. The GPS data path and radio security
 - **SRS 04.** The counselor shall be able to request a GPS fix and its age during an incident. A missing or stale fix shall be identified, and an SOS shall go out without waiting for a fix. Test with and without satellite reception.
 - **SRS 05.** At base, devices shall report diagnostics and running firmware version to Memfault and stage signed updates for a trial boot. Verify a successful update and a rollback after watchdog reset before confirmation.
 
-The four-device field test, fall classifier and GPS incident reporting are still open. The [bench record](VALIDATION.md) covers the wireless, motion and update paths already tested.
+The bench demo has been verified with one tag and one counselor unit. The three-tag pilot test is still open. Six to ten concurrent tags per counselor unit is a commercial target. The fall classifier and GPS incident reporting still need testing. [Bench results](VALIDATION.md)
 
 ### 3.8.2 Power Budget
 
@@ -117,16 +119,16 @@ The L76K adds about 41 mA when active. The motor draws about 60 mA at 3 V while 
 
 ### 3.8.3 Hardware BOM
 
-The rental kit has three tags with GPS, an IMU and a motor driver and vibration motor on each, plus one counselor unit. The workbook includes batteries, enclosures, straps, fasteners, charging and packaging. It totals **$228.09 for one kit** and **$195.34 per kit at 1,000 kits** using the listed Adafruit IMU. Substituting the bench-tested SparkFun IMU on all three tags would bring those estimates to **$249.09** and **$214.69**, using the 100+ SparkFun price for the volume case. [MVP BOM](https://docs.google.com/spreadsheets/d/1GG7O95_0aSs89AQl4g6phD0VFDLTcqFAaMB5zflHOEA/edit?gid=2071228825#gid=2071228825) · [Hardware cost model](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=2071228825#gid=2071228825) · [SparkFun pricing](https://www.sparkfun.com/sparkfun-6-degrees-of-freedom-breakout-lsm6dso-qwiic.html)
+The current BOM prices the three-tag pilot kit. Each tag has GPS, an IMU and a driver-controlled vibration motor. The kit includes one counselor unit. The workbook includes batteries, enclosures, straps, fasteners, charging and packaging. It totals **$228.09 for one kit** and **$195.34 per kit at 1,000 kits** using the listed Adafruit IMU. Substituting the bench-tested SparkFun IMU on all three tags would bring those estimates to **$249.09** and **$214.69**, using the 100+ SparkFun price for the volume case. [MVP BOM](https://docs.google.com/spreadsheets/d/1GG7O95_0aSs89AQl4g6phD0VFDLTcqFAaMB5zflHOEA/edit?gid=2071228825#gid=2071228825) · [Hardware cost model](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=2071228825#gid=2071228825) · [SparkFun pricing](https://www.sparkfun.com/sparkfun-6-degrees-of-freedom-breakout-lsm6dso-qwiic.html)
 
 ### 3.8.4 Software BOM
 
-The workbook budgets **$3,495/month** for Memfault Growth and **$10/month** for a proposed AWS backend. Growth lists 1,000 reporting devices, or 250 fully active kits. The prototype connects directly to Memfault, so we need to confirm whether an AWS backend is needed and get a quote for fleet size and OTA. [Software BOM](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=1647301774#gid=1647301774) · [Memfault pricing](https://memfault.com/pricing/)
+The workbook budgets **$3,495/month** for Memfault Growth and **$10/month** for a proposed AWS backend. Growth lists 1,000 reporting devices, or 250 fully active four-device pilot kits. The prototype connects directly to Memfault, so we need to confirm whether an AWS backend is needed and get a quote for fleet size and OTA. [Software BOM](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=1647301774#gid=1647301774) · [Memfault pricing](https://memfault.com/pricing/)
 
 ### 3.8.5 Financial Model
 
-We plan to rent each kit for **$199 per quarter plus $15 shipping**. When kits come back, we inspect, recharge and reflash them and replace worn straps. The U.S. scenario in the workbook models a first-year loss of **$426,827** and a three-year profit of **$606,901** at 3,000 kits, before recurring software costs. For the ten-kit pilot, we will track how many kits are rented again and what they cost to turn around. [Rental scenario](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=1482974775#gid=1482974775)
+We plan to rent the three-tag pilot kit for **$199 per quarter plus $15 shipping**. Start with four to six kits across two sites. Track renewals and the cost to inspect, recharge and reflash returned kits. The workbook’s 3,000-kit scenario uses the four-device kit and excludes recurring software costs. Price the additional tags, charging equipment and cloud capacity before modeling the eight-tag configuration. [Rental scenario](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=1482974775#gid=1482974775)
 
 ### Before Submission
 
-Add the device and communication diagrams. Record the camp interviews for the stakeholder section. Enter the power assumptions in the workbook, reconcile the IMU and enclosure costs, and include recurring cloud costs in the rental model. Check that the teaching team can open the workbook. [Course manual, sections 3.2 and 3.8 and the requirements appendix](https://docs.google.com/document/d/1gKqiMN2WEVwAf0uwNyS8Gh1MBPQqg_3FwDCZpiu_ctY/edit)
+Add the device and communication diagrams. Record the camp interviews for the stakeholder section. Enter the power assumptions in the workbook, reconcile the IMU and enclosure costs, and include recurring cloud costs in the rental model. Validate group size and the eight-tag price with camp operators. Check that the teaching team can open the workbook. [Course manual, sections 3.2 and 3.8 and the requirements appendix](https://docs.google.com/document/d/1gKqiMN2WEVwAf0uwNyS8Gh1MBPQqg_3FwDCZpiu_ctY/edit)
