@@ -19,13 +19,15 @@
 
 #### Description
 
-A counselor may count everyone before leaving the playground and have no way to tell that someone fell behind until the next count. BuddyGuard gives the counselor an earlier reason to check. Camps rent the equipment by the quarter, with three wearable tags and one counselor unit per kit.
+A camper can fall behind on a trail or fall out of sight between headcounts. BuddyGuard gives the counselor an early alert and enough information to decide where to check. Campers wear screen-free tags, so they can take part without carrying a phone or checking a watch. Camps rent three tags and one counselor unit per kit each quarter.
 
 #### Product Function
 
-The tags check in over BLE. If one stops checking in, the counselor unit flags it and asks for a status update over LoRa. The tag uses an IMU to report movement, a GPS receiver to supply a location during an incident, and a vibration motor to get the wearer's attention. GPS is for a counselor's location request or an SOS. Wi-Fi at base handles device diagnostics and signed updates.
+If a tag stops checking in over BLE, the counselor unit flags it and asks for a status update over LoRa. If the IMU detects a possible fall, the tag is designed to send a separate LoRa alert. In either case, the counselor can see which tag needs a check, request a GPS fix with its age, and use the tag's vibration motor to get the camper's attention if the link is still available.
 
-We tested BLE, LoRa, IMU motion and cloud updates with one tag and one counselor. GPS reporting and vibration alerts are in the MVP BOM and still need integration. [Bench results](VALIDATION.md)
+Presence, SOS and incident messages use BLE and LoRa in the field, without Wi-Fi or cellular service. If a tag does not reply or has no GPS fix, the counselor sees that the information is unavailable. Wi-Fi is reserved for diagnostics and signed updates at base.
+
+We tested BLE, LoRa, IMU movement and cloud updates with one tag and one counselor. GPS and vibration are in the MVP BOM. Both still need integration, and fall detection still needs validation. [Bench results](VALIDATION.md)
 
 #### Target Market & Demographics
 
@@ -44,16 +46,16 @@ We assume five kits per site at $199 per kit for one summer quarter each year, b
 #### Competitors
 
 - **Campminder / Campanion** helps staff record attendance and manage bus rosters. BuddyGuard can flag a missed check-in between headcounts, while the camp keeps its attendance system. [Campminder transportation](https://campminder.com/features/transportation/)
-- **Garmin Bounce 2** gives families live location and two-way calling through an LTE service. Garmin announced it at $299.99 per watch and $9.99 per month for LTE. BuddyGuard gives camp staff one receiver for the group, with no phone or cellular plan required for local alerts. [Garmin announcement](https://www.garmin.com/en-US/newsroom/press-release/sports-fitness/parents-can-delay-the-smartphone-with-bounce-2-kids-smartwatch-from-garmin/)
-- **Nelos** already offers GPS tracking and group messaging over LoRa without cell service, using a phone paired with a radio. BuddyGuard uses a dedicated counselor unit that first tells staff which tag stopped checking in, then lets them request a location if needed. [Nelos](https://nelos.app/)
+- **Garmin Bounce 2** gives families live location and two-way calling through an LTE service. Garmin announced it at $299.99 per watch and $9.99 per month for LTE. BuddyGuard gives camp staff one receiver for the group, with screen-free tags and local alerts that need no phone or cellular plan. [Garmin announcement](https://www.garmin.com/en-US/newsroom/press-release/sports-fitness/parents-can-delay-the-smartphone-with-bounce-2-kids-smartwatch-from-garmin/)
+- **Nelos** already offers GPS tracking and group messaging over LoRa without cell service, using a phone paired with a radio. BuddyGuard uses a dedicated counselor unit for missing-tag alerts and plans to add possible-fall alerts. Staff can request a location if they need it. [Nelos](https://nelos.app/)
 
 #### Stakeholders
 
-We want to speak with a director and a lead counselor at a [Greater Philadelphia YMCA day camp](https://www.philaymca.org/camps/summer-day-camp/) or a [Philadelphia Parks & Recreation site](https://www.phila.gov/services/culture-recreation/activities-and-events/register-for-summer-camp/). We also want to talk to a [Summer Achievers host-site operator](https://www.phila.gov/2026-05-08-register-now-make-this-summer-unforgettable-with-summer-achievers-summer-camp-at-edey-schools-2/) who organizes trips and summer activities. We would ask when they count campers, what they'd do after an alert, and whether quarterly rental fits their budget and return process. Interviews are planned.
+We want to speak with a director and a lead counselor at a [Greater Philadelphia YMCA day camp](https://www.philaymca.org/camps/summer-day-camp/) or a [Philadelphia Parks & Recreation site](https://www.phila.gov/services/culture-recreation/activities-and-events/register-for-summer-camp/). We also want to talk to a [Summer Achievers host-site operator](https://www.phila.gov/2026-05-08-register-now-make-this-summer-unforgettable-with-summer-achievers-summer-camp-at-edey-schools-2/) who organizes trips and summer activities. We would ask how they respond when a camper falls or goes missing, where their staff lose network coverage, and whether quarterly rental fits their budget and return process. Interviews are planned.
 
 #### System-Level Diagrams
 
-The device block and communication diagrams will be added later. The tag uses I²C for the IMU, UART for GPS and a driver for the vibration motor. BLE carries presence, LoRa carries local queries and alerts, and Wi-Fi connects each device to Memfault at base. [Firmware guide](en/FIRMWARE.md)
+The device block and communication diagrams will be added later. The tag uses I²C for the IMU, UART for GPS and a driver for the vibration motor. BLE carries presence. LoRa carries status queries, SOS and incident alerts in the field. Wi-Fi connects each device to Memfault at base. [Firmware guide](en/FIRMWARE.md)
 
 #### Security Requirements Specification
 
@@ -83,16 +85,16 @@ Firmware signature checks have been tested. The GPS data path and radio security
 - **HRS 02.** Each tag shall read a 6-axis IMU over 3.3 V I²C. We tested the SparkFun LSM6DSO. Verify the device ID and check the readings while moving the tag.
 - **HRS 03.** Each tag shall read position fixes from a Seeed L76K GNSS module over UART. Verify a valid fix outdoors while LoRa remains operational.
 - **HRS 04.** Each tag shall drive its coin vibration motor through a driver. Trigger an alert and verify that the motor runs and stops without resetting the tag.
-- **HRS 05.** Each pilot tag shall fit a wrist strap and have a physical SOS control. The counselor unit shall have a display for the affected tag ID. Check fit and run a button-to-display test.
+- **HRS 05.** Each pilot tag shall be screen-free, fit a wrist strap and have a physical SOS control. The counselor unit shall have a display for the affected tag ID. Check fit and run a button-to-display test.
 - **HRS 06.** The production tag shall run for at least 10 hours in supervision mode on one charge. Verify with a battery discharge test.
 
 #### Software Requirements Specification
 
-**Overview.** Zephyr runs the tag and counselor firmware. The counselor tracks presence and sends LoRa queries. The Wi-Fi worker handles cloud reporting and updates.
+**Overview.** Zephyr runs the tag and counselor firmware. The counselor tracks presence and handles local incident alerts. The Wi-Fi worker handles cloud reporting and updates at base.
 
 **Users.** Camp counselors use alerts and location requests. Fleet administrators manage devices and firmware.
 
-**Definitions.** A heartbeat is a BLE presence message. A GPS fix is a position with a recorded time. UNKNOWN means no usable motion sample is available.
+**Definitions.** A heartbeat is a BLE presence message. A GPS fix is a position with a recorded time. A possible-fall alert is a prompt for staff to check on a camper.
 
 **Functionality**
 
@@ -103,7 +105,9 @@ Firmware signature checks have been tested. The GPS data path and radio security
 - **SRS 05.** On a location request or SOS, the tag shall report a fix and its age if available. Send the alert immediately even when the receiver has no fix. Test with and without satellite reception.
 - **SRS 06.** The tag shall vibrate after receiving a local alert command from its assigned counselor. Send the command and verify the vibration.
 - **SRS 07.** Signed OTA images shall stage in secondary flash and start as trial images. A watchdog reset before confirmation shall restore the last confirmed image. Test with a signed fault image.
-- **SRS 08.** In the Wi-Fi profile, each unit shall upload version, reboot reason, crash data and operational metrics to Memfault. Compare the device logs with the cloud records.
+- **SRS 08.** At base, each unit in the Wi-Fi profile shall upload version, reboot reason, crash data and operational metrics to Memfault. Compare device logs with cloud records.
+- **SRS 09.** When the fall classifier flags an event, the tag shall send a LoRa possible-fall alert with its tag ID. Compare supervised dummy falls with walking, running, jumping and removing the tag. Record missed detections and false alarms.
+- **SRS 10.** The field kit shall monitor three tags with Wi-Fi and cellular service unavailable. Run all three tags for 30 minutes within the intended test area, interrupt one tag's BLE broadcasts, and verify the alert, LoRa query and recovery. Record any false alerts. Full-kit test pending.
 
 ### 3.8.2 Power Budget
 

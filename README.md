@@ -13,7 +13,7 @@
 
 **GitHub Repository URL:** <https://github.com/ese5180/f26-t02-wearable-buddy-system>
 
-BuddyGuard is an ESE 5180 camp group-supervision prototype. Tags broadcast BLE presence to a counselor unit. The counselor can use LoRa P2P to query a tag after BLE contact is lost, and tags can send SOS messages. At a maintenance network, each device can report diagnostics and receive signed firmware releases over Wi-Fi.
+BuddyGuard helps camp counselors notice when a camper falls behind or may need help. Campers wear screen-free tags. The bench prototype uses BLE presence and LoRa P2P queries and SOS without a phone, Wi-Fi or cellular service in the field. GPS, vibration and possible-fall alerts are planned for the wearable. Wi-Fi at base handles diagnostics and signed updates. See the [refined concept](docs/CONCEPT.md).
 
 ## Start here
 
