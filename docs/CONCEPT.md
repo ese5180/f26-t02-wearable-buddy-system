@@ -104,7 +104,7 @@ Firmware signature checks have been tested. The GPS data path and radio security
 - **SRS 04.** The counselor shall be able to request a GPS fix and its age during an incident. A missing or stale fix shall be identified, and an SOS shall go out without waiting for a fix. Test with and without satellite reception.
 - **SRS 05.** At base, devices shall report diagnostics and running firmware version to Memfault and stage signed updates for a trial boot. Verify a successful update and a rollback after watchdog reset before confirmation.
 
-The bench demo has been verified with one tag and one counselor unit. The three-tag pilot test is still open. Six to ten concurrent tags per counselor unit is a commercial target. The fall classifier and GPS incident reporting still need testing. [Bench results](VALIDATION.md)
+The bench demo has been verified with one tag and one counselor unit. The three-tag pilot test is still open. The commercial sizing baseline is eight tags per counselor unit, with six and ten as sensitivity cases. That capacity still needs testing. The fall classifier and GPS incident reporting still need testing. [Bench results](VALIDATION.md)
 
 ### 3.8.2 Power Budget
 
@@ -121,13 +121,29 @@ The L76K adds about 41 mA when active. The motor draws about 60 mA at 3 V while 
 
 The current BOM prices the three-tag pilot kit. Each tag has GPS, an IMU and a driver-controlled vibration motor. The kit includes one counselor unit. The workbook includes batteries, enclosures, straps, fasteners, charging and packaging. It totals **$228.09 for one kit** and **$195.34 per kit at 1,000 kits** using the listed Adafruit IMU. Substituting the bench-tested SparkFun IMU on all three tags would bring those estimates to **$249.09** and **$214.69**, using the 100+ SparkFun price for the volume case. [MVP BOM](https://docs.google.com/spreadsheets/d/1GG7O95_0aSs89AQl4g6phD0VFDLTcqFAaMB5zflHOEA/edit?gid=2071228825#gid=2071228825) · [Hardware cost model](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=2071228825#gid=2071228825) · [SparkFun pricing](https://www.sparkfun.com/sparkfun-6-degrees-of-freedom-breakout-lsm6dso-qwiic.html)
 
+Adding five complete tags at the same BOM rates gives an **eight-tag material estimate of about $510–$577 per kit**. It uses the SparkFun IMU and carries forward the pilot kit’s charging and packaging estimates. Get quotes for a nine-device charging setup, enclosure processing and assembly before treating this as a finished-kit cost.
+
 ### 3.8.4 Software BOM
 
 The workbook budgets **$3,495/month** for Memfault Growth and **$10/month** for a proposed AWS backend. Growth lists 1,000 reporting devices, or 250 fully active four-device pilot kits. The prototype connects directly to Memfault, so we need to confirm whether an AWS backend is needed and get a quote for fleet size and OTA. [Software BOM](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=1647301774#gid=1647301774) · [Memfault pricing](https://memfault.com/pricing/)
 
 ### 3.8.5 Financial Model
 
-We plan to rent the three-tag pilot kit for **$199 per quarter plus $15 shipping**. Start with four to six kits across two sites. Track renewals and the cost to inspect, recharge and reflash returned kits. The workbook’s 3,000-kit scenario uses the four-device kit and excludes recurring software costs. Price the additional tags, charging equipment and cloud capacity before modeling the eight-tag configuration. [Rental scenario](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=1482974775#gid=1482974775)
+**Paid pilot.** Offer the three-tag kit at **$199 per summer quarter plus $15 shipping**. Start with four to six kits across two sites. Measure time to notice a staged separation, false alerts, actual turnaround cost and paid renewals. The workbook’s 3,000-kit scenario uses the four-device kit and excludes recurring software costs. [Existing rental worksheet](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=1482974775#gid=1482974775)
+
+#### Eight-tag investor scenario
+
+For an eight-tag kit and one counselor unit, use **$449 per summer quarter** as an interview price. Assume **$650** upfront for a finished kit, **$50** per paid rental for turnaround and **$40** per owned kit per year for cloud service. These are planning inputs. The $650 figure is a cost target, and $40 requires a commercial cloud quote or a different reporting setup.
+
+| Share of summer quarters rented | Average paid rentals over 3 years | Three-year result per kit |
+| --- | ---: | ---: |
+| 50% | 1.50 | **−$172** |
+| 75% | 2.25 | **+$128 (13% of rental revenue)** |
+| 90% | 2.70 | **+$307 (25% of rental revenue)** |
+
+One summer quarter is available each year. The calculation is paid rentals × ($449 − $50) − $650 − (3 × $40). It includes the kit, turnaround and cloud. Company R&D, sales and overhead are outside this calculation. Outbound shipping is billed separately and assumed to cover its cost.
+
+Cloud is the largest unverified cost. If all nine devices report, the listed Memfault Growth plan covers 111 full kits and costs roughly **$378 per kit per year** at full allocation on a twelve-month subscription. Confirm seasonal pricing, OTA coverage and whether all tags need to report before expanding the fleet. Keep larger kit orders tied to bookings and measured renewal and repair costs. [Memfault pricing](https://memfault.com/pricing/)
 
 ### Before Submission
 

@@ -10,7 +10,7 @@
 | Reproduce 3.6 Fleet Management | [Fleet setup](en/FLEET_MANAGEMENT.md) | [云端管理复现](zh/FLEET_MANAGEMENT.md) |
 | Run the live Fleet checkoff and A/B rollout | [English submission README](submissions/3.6-fleet-management/README.md) | [现场操作卡](zh/FLEET_CHECKOFF.md) · [A/B 实验](zh/FLEET_AB_TEST.md) |
 
-- [3.8 Concept Refinement](CONCEPT.md) covers the market, competitors, stakeholders, requirements and power and cost estimates.
+- [3.8 Concept Refinement](CONCEPT.md) records the current product and market assumptions. See the [financial model](CONCEPT.md#385-financial-model) for the pilot quote and the commercial scenario. Use these assumptions for pitch and final-report materials, and reconcile changes with the linked cost workbook.
 - [Project log](PROJECT_LOG.md) tracks course milestones and links to their deliverables.
 - [Bench validation](VALIDATION.md) records observed results and test limits.
 - [Firmware source map](../firmware/README.md) identifies the code for each device feature.
