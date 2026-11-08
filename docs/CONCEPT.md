@@ -1,126 +1,133 @@
-# 3.8 Concept Refinement
+# BuddyGuard
 
-**BuddyGuard · ESE 5180 Team 02 · Jet2Holiday**
+**Team Number: 02**
 
-## 3.8.1 Concept Review & Refresh
+**Team Name: Jet2Holiday**
 
-### Description
-
-Counselors at day camps use headcounts to supervise children during transitions, trips and outdoor activities. BuddyGuard adds a local alert when a camper's tag stops checking in. The first prototype covers one tag and one counselor. Camp operators rent a kit of three tags and one counselor unit for a quarter.
-
-### Product Function
-
-A tag broadcasts a BLE heartbeat, and the counselor unit marks it missing when the heartbeat times out. The unit then requests a LoRa status reply, and a tag can also send a LoRa SOS. At base, each board can use Wi-Fi to report device health and receive signed updates through Memfault.
-
-### Target Market & Demographics
-
-Counselors operate the system and campers wear the tags. The buyers are camp directors, municipal recreation departments and organizations running summer programs. Our first market is Philadelphia day camps serving school-age children, starting with sites that run field trips or frequently move groups between activities.
-
-The ACA reports about **20,000 U.S. camps**, including day and overnight programs. Philadelphia Parks & Recreation reports **more than 100 neighborhood day camps** and **more than 7,000 campers** across its summer camps. The estimate assumes one rented quarter per site per year. [ACA camp data](https://www.acacamps.org/sites/default/files/2025-07/ACA-Camp-Stabilization-Toolkit-2025.pdf) · [Philadelphia Parks & Recreation](https://www.phila.gov/services/culture-recreation/activities-and-events/register-for-summer-camp/)
-
-| Market | Assumption | Annual rental revenue |
-| --- | --- | ---: |
-| U.S. upper-bound TAM | 20,000 camps × 5 kits × $199 | $19.9M |
-| Philadelphia starting market | 100 city day camps × 5 kits × $199 | $99,500 |
-| First-season target | 2 pilot sites × 5 kits × $199 | $1,990 |
-
-Five kits per site and $199 per kit per quarter are assumptions. Figures exclude shipping and assume a single summer rental period. Interviews will test uptake, kit quantities and price. [Team cost model](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=2020998309#gid=2020998309)
-
-### Competitors and Alternatives
-
-| Alternative | What it does well | Where BuddyGuard fits |
-| --- | --- | --- |
-| [Campminder / Campanion](https://campminder.com/features/transportation/) | Attendance check-ins, bus rosters and pickup coordination. | Adds a local warning between check-ins. A camp can keep its existing attendance system. |
-| [Garmin Bounce 2](https://www.garmin.com/en-US/newsroom/press-release/sports-fitness/parents-can-delay-the-smartphone-with-bounce-2-kids-smartwatch-from-garmin/) | Individual location tracking and communication for families. Announced at $299.99 per watch plus $9.99/month for LTE service. | A counselor can monitor the group from one local unit. BLE and LoRa supervision run without cellular service or GPS collection. |
-| [Nelos](https://nelos.app/) | Phone-based LoRa group messaging and GPS tracking outside cell coverage. | Uses a dedicated counselor unit and detects missed presence heartbeats without collecting coordinates. Nelos is better suited to users who need a map and a last-known location. |
-
-**Our advantage is a phone-free group workflow.** A counselor can get an automatic missing-tag alert and request a LoRa reply without internet access. The reply can add motion context when an IMU is fitted. Staff still use their camp procedures to locate and account for campers.
-
-### Stakeholders
-
-| Potential stakeholder | Who to interview | What to validate |
-| --- | --- | --- |
-| [Greater Philadelphia YMCA Day Camps](https://www.philaymca.org/camps/summer-day-camp/) | Camp directors at West Philadelphia or Roxborough, plus a lead counselor | How staff count campers during trips, who receives an alert, and what false alarm rate is acceptable. |
-| [Philadelphia Parks & Recreation](https://www.phila.gov/services/culture-recreation/activities-and-events/register-for-summer-camp/) | Neighborhood day camp managers and recreation center supervisors | Group size, charging and handoff procedures, and site approval for a pilot. |
-| [Philadelphia Summer Achievers](https://www.phila.gov/2026-05-08-register-now-make-this-summer-unforgettable-with-summer-achievers-summer-camp-at-edey-schools-2/) | City program coordinators and host-site operators | Whether the system fits field-trip staffing, which organization buys or rents equipment, and what data it will accept. |
-
-These are outreach targets. Interview a site director and a lead counselor about alerts, quarter length and returns.
-
-### System-Level Diagrams
-
-The device block diagram and communication diagram are deferred. The tag and counselor unit use BLE for presence and 915 MHz LoRa P2P for queries and alerts. Each unit can reach Memfault over Wi-Fi at base. The optional tag IMU connects over I²C. [Firmware architecture](en/FIRMWARE.md)
-
-### Security Requirements Specification
-
-**Overview.** Protect firmware integrity and limit the data exposed by supervision and diagnostics.
-
-**Definitions.** OTA is an over-the-air update. A coredump is a snapshot collected after a crash.
-
-| ID | Requirement | Verification |
-| --- | --- | --- |
-| SEC 01 | MCUboot shall reject application images without a valid signature from the configured Team 2 ECDSA P-256 key. | Load a valid image and a wrong-key image, then compare boot results. Bench-tested over BLE. |
-| SEC 02 | The baseline system shall omit camper names and coordinates from BLE frames, LoRa frames and cloud reports. | Inspect representative frames, report schemas and diagnostic payloads before a pilot. |
-| SEC 03 | The device shall validate the HTTPS certificate and hostname before sending diagnostics or accepting a Wi-Fi OTA download. | Inspect the TLS configuration and test with an untrusted certificate. Negative TLS test pending. |
-| SEC 04 | Before a pilot, LoRa receivers shall reject modified and replayed alerts. | Modify and replay captured frames. Pending. |
-| SEC 05 | Uploaded coredumps shall exclude roster and key material. | Audit crash capture regions before a pilot. Pending. |
-
-### Hardware Requirements Specification
-
-**Overview.** The tag and counselor unit share an ESP32S3/LoRa platform. The tag can add motion sensing.
-
-**Definitions.** B2B is a board-to-board connector. IMU is an inertial measurement unit. LiPo is a lithium-polymer battery.
-
-| ID | Requirement | Verification |
-| --- | --- | --- |
-| HRS 01 | Each unit shall use the XIAO ESP32S3 and Wio-SX1262 B2B kit, with separate 2.4 GHz and 915 MHz antennas. | Inspect assembly and read the SX1262 sync word over SPI. Bench-tested. |
-| HRS 02 | A motion-enabled tag shall use the SparkFun LSM6DSO on 3.3 V I²C. | Confirm WHO_AM_I `0x6C` and sample changes on movement. Bench-tested. |
-| HRS 03 | The production tag shall operate for at least 10 hours on one charge in supervision mode. | Measure a complete duty cycle and run a discharge test. Pending. |
-| HRS 04 | The pilot tag shall have a wearable enclosure and a physical SOS control. | Check fit and verify that a button press sends SOS. Pending. |
-| HRS 05 | The pilot counselor unit shall have a display that shows the affected tag ID. | Trigger a missing-tag event and check the display. Pending. |
-
-### Software Requirements Specification
-
-**Overview.** Zephyr runs the tag and counselor profiles, the radio services and the optional Fleet Management worker.
-
-**Users.** Camp counselors use presence and alerts. Team or camp fleet administrators manage diagnostics and updates.
-
-**Definitions.** A heartbeat is a BLE presence message. A LoRa ACK acknowledges a received message. UNKNOWN means that a usable motion sample is unavailable.
-
-| ID | Requirement | Verification |
-| --- | --- | --- |
-| SRS 01 | The tag shall advance its BLE heartbeat sequence at least once every 3 seconds in normal supervision mode. | Inspect fresh sequence numbers during a bench run. |
-| SRS 02 | The counselor shall mark a previously seen tag missing within 11 seconds of its last fresh heartbeat in the normal bench profile, then queue one LoRa query. | Stop the tag broadcast and time the MISSING event. The configured timeout is 8 seconds plus roster polling. |
-| SRS 03 | Each LoRa transaction shall send at most three times and report success or exhaustion. | Test with a responding and an absent peer. |
-| SRS 04 | A motion-enabled tag shall report STILL or MOVING from fresh samples and UNKNOWN when the sample is unavailable or more than 1 second old. | Move the IMU, hold it still, then disconnect it or force stale data. |
-| SRS 05 | A complete signed OTA image shall stage in secondary flash and run as a trial. An unconfirmed image that watchdog-resets shall revert to the last confirmed image. | Run a healthy update and a signed fault-injection update. |
-| SRS 06 | In the Wi-Fi profile, each unit shall upload its firmware version, reboot reasons, crash data and operational metrics to Memfault. | Compare device output with the device page, reports and traces. |
-
-See the [bench record](VALIDATION.md) for which cases were actually run.
-
-## 3.8.2 Power Budget
-
-Use the BOM's 400 mAh LiPo and assume 80% usable capacity. A rough supervision-mode estimate is **90 mA** with Wi-Fi off, based on 85 mA for the BLE-active XIAO, about 4.6 mA for LoRa receive and 0.55 mA for the IMU. This first-pass sum treats the component currents as equivalent battery-side loads. The estimate gives **320 mAh ÷ 90 mA ≈ 3.6 hours** before accounting for LoRa transmit bursts and other loads. The 10-hour target requires an average of **32 mA or less** on this pack. Measure current at the battery with a PPK2, then evaluate duty-cycled receive or a larger pack. [Seeed board data](https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/) · [Semtech radio data](https://www.semtech.com/products/wireless-rf/lora-connect/sx1262) · [ST IMU data](https://www.st.com/en/mems-and-sensors/lsm6dso.html)
-
-## 3.8.3 Hardware BOM
-
-The model covers two device types in a four-device rental kit. It includes radios, antennas, batteries, controls, cases, straps, fasteners, charging and packaging. The sheet totals **$228.09 at one kit** and **$195.34 per kit at 1,000 kits**. It still includes three optional GNSS modules and the earlier Adafruit IMU. For a no-GNSS kit using the tested SparkFun IMU on all three tags, the same line-item assumptions give about **$213.12 / $178.72**. The latter uses SparkFun's published 100+ tier and needs a volume quote. [Hardware BOM](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=2071228825#gid=2071228825) · [SparkFun pricing](https://www.sparkfun.com/sparkfun-6-degrees-of-freedom-breakout-lsm6dso-qwiic.html)
-
-## 3.8.4 Software BOM
-
-The sheet budgets **$3,495/month** for Memfault Growth and **$10/month** for a proposed AWS backend, or **$42,060/year**. Growth lists 1,000 included reporting devices, equivalent to 250 fully active kits. The prototype has no separate AWS backend. Confirm a quote for the number of reporting devices, whether OTA is included, and what backend the product needs. Local LoRa P2P requires no cellular or LoRaWAN subscription. [Software BOM](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=1647301774#gid=1647301774) · [Memfault pricing](https://memfault.com/pricing/)
-
-## 3.8.5 Financial Model
-
-Rent each kit to the camp for **$199 per quarter plus $15 shipping**. Start with two Philadelphia sites and ten kits for one summer quarter. At return, inspect, recharge, reflash and replace worn straps before reuse.
-
-The spreadsheet's U.S. rental scenario uses 3,000 kits and one rented season per year. It models a **$426,827 first-year loss** and **$606,901 profit over three years** before the separate recurring software budget. That scenario illustrates the upfront inventory cost and the effect of reusing kits. Use the pilot to check rental utilization, refurbishment cost and willingness to renew before buying a larger fleet. [Rental scenario](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=1482974775#gid=1482974775) · [Cost inputs](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=2020998309#gid=2020998309)
-
-## Submission Check
-
-| Part | Check before submission |
+| Team Member Name | Email Address |
 | --- | --- |
-| 3.8.1 Concept | Text and appendix-format requirements are in this document. Add the two diagrams when ready. |
-| 3.8.2 Power | Enter the current and runtime assumptions in the workbook and replace them with measurements when available. |
-| 3.8.3 Hardware BOM | Separate the GNSS option and update the IMU and enclosure costs. |
-| 3.8.4 Software BOM | Verify the cloud plan and price for the active fleet, including OTA. |
-| 3.8.5 Financial model | Use the quarterly rental scenario, include recurring software costs and check teaching-team access to the workbook. |
+| Siwei Lei | <laialex@engineering.upenn.edu> |
+| Rico Zhuang | <zzhuan13@engineering.upenn.edu> |
+| Yunzhe Deng | <deng1@engineering.upenn.edu> |
+| Yubin Guan | <guan1@engineering.upenn.edu> |
+
+**GitHub Repository URL:** <https://github.com/ese5180/f26-t02-wearable-buddy-system>
+
+## 3.8 Concept Refinement
+
+### 3.8.1 Concept Review & Refresh
+
+#### Description
+
+A counselor may count everyone before leaving the playground and have no way to tell that someone fell behind until the next count. BuddyGuard gives the counselor an earlier reason to check. Camps rent the equipment by the quarter, with three wearable tags and one counselor unit per kit.
+
+#### Product Function
+
+The tags check in over BLE. If one stops checking in, the counselor unit flags it and asks for a status update over LoRa. The tag uses an IMU to report movement, a GPS receiver to supply a location during an incident, and a vibration motor to get the wearer's attention. GPS is for a counselor's location request or an SOS. Wi-Fi at base handles device diagnostics and signed updates.
+
+We tested BLE, LoRa, IMU motion and cloud updates with one tag and one counselor. GPS reporting and vibration alerts are in the MVP BOM and still need integration. [Bench results](VALIDATION.md)
+
+#### Target Market & Demographics
+
+Campers wear the tags. Counselors carry the receiver. The buyer is the camp operator, typically a camp director or recreation department. We're starting with Philadelphia day camps for school-age children, particularly programs that take field trips or move groups between sites.
+
+The American Camp Association counts about **20,000 U.S. camps** across day and overnight programs. Philadelphia Parks & Recreation runs **more than 100 neighborhood day camps** and serves **more than 7,000 campers** across its summer camps. [ACA camp data](https://www.acacamps.org/sites/default/files/2025-07/ACA-Camp-Stabilization-Toolkit-2025.pdf) · [Philadelphia Parks & Recreation](https://www.phila.gov/services/culture-recreation/activities-and-events/register-for-summer-camp/)
+
+| Market | Calculation | Rental revenue |
+| --- | --- | ---: |
+| **TAM** · U.S. camp market, upper bound | 20,000 camps × 5 kits × $199 | **$19.9 million/year** |
+| **SAM** · Philadelphia neighborhood day camps | 100 sites × 5 kits × $199 | **$99,500/year** |
+| **SOM** · First summer target | 2 sites × 5 kits × $199 | **$1,990** |
+
+We assume five kits per site at $199 per kit for one summer quarter each year, before shipping. The counts come from published data. The price, kits per site and first-summer target are our assumptions. [Rental model](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=1482974775#gid=1482974775)
+
+#### Competitors
+
+- **Campminder / Campanion** helps staff record attendance and manage bus rosters. BuddyGuard can flag a missed check-in between headcounts, while the camp keeps its attendance system. [Campminder transportation](https://campminder.com/features/transportation/)
+- **Garmin Bounce 2** gives families live location and two-way calling through an LTE service. Garmin announced it at $299.99 per watch and $9.99 per month for LTE. BuddyGuard gives camp staff one receiver for the group, with no phone or cellular plan required for local alerts. [Garmin announcement](https://www.garmin.com/en-US/newsroom/press-release/sports-fitness/parents-can-delay-the-smartphone-with-bounce-2-kids-smartwatch-from-garmin/)
+- **Nelos** already offers GPS tracking and group messaging over LoRa without cell service, using a phone paired with a radio. BuddyGuard uses a dedicated counselor unit that first tells staff which tag stopped checking in, then lets them request a location if needed. [Nelos](https://nelos.app/)
+
+#### Stakeholders
+
+We want to speak with a director and a lead counselor at a [Greater Philadelphia YMCA day camp](https://www.philaymca.org/camps/summer-day-camp/) or a [Philadelphia Parks & Recreation site](https://www.phila.gov/services/culture-recreation/activities-and-events/register-for-summer-camp/). We also want to talk to a [Summer Achievers host-site operator](https://www.phila.gov/2026-05-08-register-now-make-this-summer-unforgettable-with-summer-achievers-summer-camp-at-edey-schools-2/) who organizes trips and summer activities. We would ask when they count campers, what they'd do after an alert, and whether quarterly rental fits their budget and return process. Interviews are planned.
+
+#### System-Level Diagrams
+
+The device block and communication diagrams will be added later. The tag uses I²C for the IMU, UART for GPS and a driver for the vibration motor. BLE carries presence, LoRa carries local queries and alerts, and Wi-Fi connects each device to Memfault at base. [Firmware guide](en/FIRMWARE.md)
+
+#### Security Requirements Specification
+
+**Overview.** Protect firmware updates and keep camper location within the assigned group.
+
+**Definitions.** OTA means over-the-air update. A coredump is a snapshot of device memory taken after a crash.
+
+**Functionality**
+
+- **SEC 01.** MCUboot shall reject images that fail verification against the Team 2 ECDSA P-256 public key. Test with a valid image and a wrong-key image.
+- **SEC 02.** The tag shall send GPS coordinates only to its assigned counselor unit over an authenticated and encrypted LoRa link, in response to a location request or SOS. Capture traffic during routine supervision and an incident.
+- **SEC 03.** Cloud reports and coredumps shall exclude camper names, coordinates and private keys. Audit the report schema and crash capture regions before a pilot.
+- **SEC 04.** Devices shall reject tampered or replayed incident messages. Modify and replay a captured packet to test this.
+- **SEC 05.** Devices shall validate the HTTPS certificate and hostname before uploading diagnostics or downloading firmware. Test with an untrusted certificate.
+
+Firmware signature checks have been tested. The GPS data path and radio security still need verification.
+
+#### Hardware Requirements Specification
+
+**Overview.** Both roles use the same ESP32S3/LoRa kit. The tag adds motion, location and vibration hardware.
+
+**Definitions.** B2B means board-to-board. IMU means inertial measurement unit. GNSS is satellite positioning, including GPS.
+
+**Functionality**
+
+- **HRS 01.** Each unit shall use the XIAO ESP32S3 and Wio-SX1262 B2B kit with 2.4 GHz and 915 MHz antennas. Check assembly and read back the LoRa sync word over SPI.
+- **HRS 02.** Each tag shall read a 6-axis IMU over 3.3 V I²C. We tested the SparkFun LSM6DSO. Verify the device ID and check the readings while moving the tag.
+- **HRS 03.** Each tag shall read position fixes from a Seeed L76K GNSS module over UART. Verify a valid fix outdoors while LoRa remains operational.
+- **HRS 04.** Each tag shall drive its coin vibration motor through a driver. Trigger an alert and verify that the motor runs and stops without resetting the tag.
+- **HRS 05.** Each pilot tag shall fit a wrist strap and have a physical SOS control. The counselor unit shall have a display for the affected tag ID. Check fit and run a button-to-display test.
+- **HRS 06.** The production tag shall run for at least 10 hours in supervision mode on one charge. Verify with a battery discharge test.
+
+#### Software Requirements Specification
+
+**Overview.** Zephyr runs the tag and counselor firmware. The counselor tracks presence and sends LoRa queries. The Wi-Fi worker handles cloud reporting and updates.
+
+**Users.** Camp counselors use alerts and location requests. Fleet administrators manage devices and firmware.
+
+**Definitions.** A heartbeat is a BLE presence message. A GPS fix is a position with a recorded time. UNKNOWN means no usable motion sample is available.
+
+**Functionality**
+
+- **SRS 01.** The tag shall advance its BLE heartbeat sequence at least once every 3 seconds in normal supervision mode. Check the sequence in captured frames.
+- **SRS 02.** In the bench profile, the counselor shall flag a previously seen tag within 11 seconds of its last fresh heartbeat and queue a LoRa query. Stop BLE broadcasts and time the alert.
+- **SRS 03.** A LoRa transaction shall make at most three attempts and report completion or exhaustion. Test with a responding and an absent peer.
+- **SRS 04.** The tag shall report STILL or MOVING from fresh IMU data and UNKNOWN if the sample is more than 1 second old or unavailable. Test moving, still and stale readings.
+- **SRS 05.** On a location request or SOS, the tag shall report a fix and its age if available. Send the alert immediately even when the receiver has no fix. Test with and without satellite reception.
+- **SRS 06.** The tag shall vibrate after receiving a local alert command from its assigned counselor. Send the command and verify the vibration.
+- **SRS 07.** Signed OTA images shall stage in secondary flash and start as trial images. A watchdog reset before confirmation shall restore the last confirmed image. Test with a signed fault image.
+- **SRS 08.** In the Wi-Fi profile, each unit shall upload version, reboot reason, crash data and operational metrics to Memfault. Compare the device logs with the cloud records.
+
+### 3.8.2 Power Budget
+
+The BOM uses a 400 mAh LiPo. With 80% usable capacity, the tag has about 320 mAh. The first-pass estimates below use vendor currents as approximate battery-side loads, with Wi-Fi off.
+
+| Tag mode | Approximate draw | Estimated runtime |
+| --- | ---: | ---: |
+| BLE active, LoRa receiving, IMU on, GPS in standby | 90 mA | 3.6 h |
+| Same conditions with GPS acquiring or tracking continuously | 131 mA | 2.4 h |
+
+The L76K adds about 41 mA when active. The motor draws about 60 mA at 3 V while vibrating. Neither estimate includes LoRa transmit bursts or vibration duty cycle. A 10-hour day needs a measured average of **32 mA or less** on this battery. We will measure the assembled tag and test GPS standby between incidents. [XIAO](https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/) · [SX1262](https://www.semtech.com/products/wireless-rf/lora-connect/sx1262) · [LSM6DSO](https://www.st.com/en/mems-and-sensors/lsm6dso.html) · [L76K](https://wiki.seeedstudio.com/get_start_l76k_gnss/) · [Vibration motor](https://www.adafruit.com/product/1201)
+
+### 3.8.3 Hardware BOM
+
+The rental kit has three tags with GPS, an IMU and a motor driver and vibration motor on each, plus one counselor unit. The workbook includes batteries, enclosures, straps, fasteners, charging and packaging. It totals **$228.09 for one kit** and **$195.34 per kit at 1,000 kits** using the listed Adafruit IMU. Substituting the bench-tested SparkFun IMU on all three tags would bring those estimates to **$249.09** and **$214.69**, using the 100+ SparkFun price for the volume case. [MVP BOM](https://docs.google.com/spreadsheets/d/1GG7O95_0aSs89AQl4g6phD0VFDLTcqFAaMB5zflHOEA/edit?gid=2071228825#gid=2071228825) · [Hardware cost model](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=2071228825#gid=2071228825) · [SparkFun pricing](https://www.sparkfun.com/sparkfun-6-degrees-of-freedom-breakout-lsm6dso-qwiic.html)
+
+### 3.8.4 Software BOM
+
+The workbook budgets **$3,495/month** for Memfault Growth and **$10/month** for a proposed AWS backend. Growth lists 1,000 reporting devices, or 250 fully active kits. The prototype connects directly to Memfault, so we need to confirm whether an AWS backend is needed and get a quote for fleet size and OTA. [Software BOM](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=1647301774#gid=1647301774) · [Memfault pricing](https://memfault.com/pricing/)
+
+### 3.8.5 Financial Model
+
+We plan to rent each kit for **$199 per quarter plus $15 shipping**. When kits come back, we inspect, recharge and reflash them and replace worn straps. The U.S. scenario in the workbook models a first-year loss of **$426,827** and a three-year profit of **$606,901** at 3,000 kits, before recurring software costs. For the ten-kit pilot, we will track how many kits are rented again and what they cost to turn around. [Rental scenario](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=1482974775#gid=1482974775)
+
+### Before Submission
+
+Add the two diagrams. Enter the power assumptions in the workbook, reconcile the IMU and enclosure prices, and include recurring cloud costs in the quarterly rental scenario. Check that the teaching team can open the workbook.
