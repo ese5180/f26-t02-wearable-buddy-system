@@ -12,6 +12,8 @@ Start with [main.c](src/main.c), then the interfaces under [include/](include/).
 | Wio radio hardware / 硬件 | [wio_sx1262.c](src/drivers/wio_sx1262.c) | [Full setup / 完整搭建](../docs/en/GETTING_STARTED.md) |
 | IMU / 运动采样 | [imu.c](src/sensors/imu.c), [motion.c](src/protocol/motion.c) | [中文](../docs/zh/IMU_LSM6DSO.md), [English](../docs/en/IMU_LSM6DSO.md) |
 | Firmware health / 更新确认 | [health.c](src/platform/health.c) | [中文](../docs/zh/FIRMWARE_SECURITY_CHECKOFF.md), [English](../docs/en/FIRMWARE_SECURITY_CHECKOFF.md) |
+| Fleet diagnostics / 云端诊断 | [fleet.c](src/platform/fleet.c), [fleet.conf](conf/fleet.conf) | [操作与指标](../docs/zh/FLEET_MANAGEMENT.md) |
+| Wi-Fi cloud OTA / 直连云端更新 | [wifi_fleet.c](src/platform/wifi_fleet.c), [wifi.conf](conf/wifi.conf) | [中文](../docs/zh/FLEET_MANAGEMENT.md), [English](../docs/en/FLEET_MANAGEMENT.md) |
 | USB commands / 开发命令 | [commands.c](src/console/commands.c) | [Host tool / 主机工具](../tools/bg_serial.py) |
 
 Read in three passes: **main + public headers → service implementation → driver/Zephyr internals as needed**. Module headers explain ownership; public API comments explain caller constraints; inline comments explain non-obvious timing, lifecycle and safety decisions. Straightforward assignments do not need narration. MCUboot source is fetched by west into `bootloader/mcuboot/` in the workspace, rather than copied into this repository.

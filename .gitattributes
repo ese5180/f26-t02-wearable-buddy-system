@@ -1,2 +1,3 @@
 # Unified patch context has a marker space before the source's tab indentation.
 patches/*.patch whitespace=-space-before-tab
+patches/zephyr-shared-heap-lock.patch whitespace=-space-before-tab,-blank-at-eol

@@ -1,5 +1,7 @@
 # BuddyGuard：队友复现操作文档
 
+[Fleet Management 构建与 Wi-Fi 配置](FLEET_MANAGEMENT.md)
+
 [可选 SparkFun LSM6DSO 接入文档](IMU_LSM6DSO.md)
 
 [English](../en/GETTING_STARTED.md) · [固件解释](FIRMWARE.md) · [验证记录](../VALIDATION.md)

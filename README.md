@@ -1,12 +1,27 @@
 # BuddyGuard — ESE 5180 Team 2
 
-XIAO ESP32S3 + Wio-SX1262 B2B kit · Zephyr · MCUboot · **1.1.20**
+XIAO ESP32S3 + Wio-SX1262 B2B kit · Zephyr · MCUboot · **Fleet A/B 1.5.x**
 
-BLE communication heartbeat, counselor roster, LoRa P2P alerts/queries, signed BLE updates and optional UART recovery. The tag can use a SparkFun LSM6DSO for motion context.
+BLE communication heartbeat, counselor roster, LoRa P2P alerts/queries, signed Wi-Fi/BLE updates and optional UART recovery. The tag can use a SparkFun LSM6DSO for motion context.
 
-BLE 通信心跳、辅导员名单、LoRa P2P 告警／查询、签名 BLE 更新及可选 UART 恢复；标签可接 SparkFun LSM6DSO 提供运动状态。
+BLE 通信心跳、辅导员名单、LoRa P2P 告警／查询、签名 Wi-Fi／BLE 更新及可选 UART 恢复；标签可接 SparkFun LSM6DSO 提供运动状态。
 
 ## Start here / 从这里开始
+
+Use the Team 2 course repository's `codex/buddyguard-wireless-fota` branch while [PR #1](https://github.com/ese5180/f26-t02-wearable-buddy-system/pull/1) is under review. The [validation record](docs/VALIDATION.md) attributes the fleet bench results to Siwei Lei's implementation.
+
+### Fleet Management (3.6)
+
+| Course requirement / 课程要求 | Demonstration / 演示内容 |
+|---|---|
+| Cloud OTA and versions / 云端更新与版本 | Memfault cohort release → device Wi-Fi download → MCUboot test boot → confirmation and version reported to Memfault |
+| Coredump / 崩溃转储 | Trigger a bench assert and show the symbolized stack in Traces |
+| MCU reboot reasons / 重启原因 | Inspect User Reset, Assert and Firmware Update in Reboots |
+| Zephyr and product metrics / 系统与业务指标 | CPU, heap, thread stack and the counselor's `bg_missing_events_total` |
+| Power status / 供电观察 | USB host activity detected from USB frames. Battery SoC and actual power source are unavailable |
+| Extra credit / 加分 | Cohort-targeted OTA and 60 s versus 15 s diagnostic sampling. Wi-Fi upload runs on a separate cycle |
+
+Build with `--wifi` for direct HTTPS telemetry and OTA. `--fleet` alone provides an optional USB gateway. Setup and reproduction: [中文](docs/zh/FLEET_MANAGEMENT.md) · [English](docs/en/FLEET_MANAGEMENT.md). Live demo: [checkoff 操作卡](docs/zh/FLEET_CHECKOFF.md) · [A/B 实验](docs/zh/FLEET_AB_TEST.md).
 
 | Purpose / 用途 | 中文 | English |
 |---|---|---|
@@ -27,12 +42,12 @@ firmware/       product modules, interfaces, board and MCUboot configuration
                 固件模块、接口、硬件与引导配置
 scripts/        signed builds, full backup, initial provisioning, recovery install
                 签名构建、备份、首次安装、恢复引导安装
-tools/          host-side BLE, USB shell and UART recovery clients
-                电脑端 BLE、USB 命令及 UART 恢复工具
+tools/          host-side BLE, USB shell, Wi-Fi provisioning and UART recovery
+                电脑端 BLE、USB 命令、Wi-Fi 配置及 UART 恢复工具
 docs/en/ zh/    reproduction and explanation, optional guides kept separate
                 双语操作／解释文档，可选内容单列
 keys/           public verification key only / 仅公钥
-patches/        required MCUboot UART prerequisite / 必要的 UART 修复
+patches/        MCUboot UART and shared PSRAM heap prerequisites / UART 与共享堆修复
 west.yml        pinned Zephyr and imported dependencies / 固定依赖版本
 ```
 
@@ -44,7 +59,8 @@ Native macOS remains the documented environment. Use Python 3.12, west 1.5.0, SD
 
 ```mermaid
 flowchart LR
-    HOST[BLE host] --> APP[Running Zephyr application]
+    CLOUD[Memfault HTTPS] --> APP[Running Zephyr application]
+    HOST[BLE host] --> APP
     APP --> SLOT[Secondary SPI NOR slot]
     SLOT -->|test + reset| BOOT[MCUboot validation]
     BOOT -->|valid| TRIAL[Unconfirmed trial]
@@ -56,20 +72,20 @@ flowchart LR
 | Question / 问题 | Answer / 当前实现 |
 |---|---|
 | Bootloader size / 引导大小 | T01: 46,672 B; C01 with UART recovery: 63,728 B |
-| Application size / 应用大小 | T01: 436,948 B unsigned / 437,099 B signed; C01: 435,748 / 435,899 B |
-| Download handler / 下载方 | Application receives BLE SMP; MCUboot validates and activates at boot / 应用下载，引导验签激活 |
-| Transport / 传输 | BLE for nearby maintenance without AP/cloud; LoRa for supervision / BLE 本地更新，LoRa 监督消息 |
+| Application size / 应用大小 | Wi-Fi builds are about 967 KB signed; exact per-build sizes and hashes are in `buddyguard-build.json` |
+| Download handler / 下载方 | Application downloads HTTPS or receives BLE SMP; MCUboot validates and activates at boot / 应用下载，引导验签激活 |
+| Transport / 传输 | Wi-Fi HTTPS for cloud telemetry/OTA; BLE for nearby maintenance; LoRa for supervision |
 | Storage / 存储 | On-board external SPI NOR: primary `0x20000`, secondary `0x170000`, each `0x150000` B |
-| Failure handling / 故障处理 | Unique ECDSA-P256 signing, hash validation, secondary staging/resume, test boot, delayed confirmation, watchdog/revert |
+| Failure handling / 故障处理 | Unique ECDSA-P256 signing, hash validation, secondary staging, BLE resume, test boot, delayed confirmation, watchdog/revert |
 | Extra credit / 加分 | MCUboot UART signed recovery and invalid-signature rejection demonstrated on C01 1.1.19 |
 
 Sizes are recorded binary-file sizes, not partition allocation or RAM. The boot Flash is external to the MCU; no second storage module is fitted. Confirm the course's external-storage interpretation with Nick. Full answers and reproduction commands are linked above.
 
 ## Scope and next work / 范围与下一步
 
-Validated on **one tag + one counselor**; T01–T03 are configurable. Child-to-child pairing, a complete three-tag deployment, clasp/motor/GNSS/battery sensing and Wi-Fi/cloud are pending. No cloud project has been created. Next steps are teammate reproduction, additional-tag/field tests and then course cloud integration.
+Validated on **one tag + one counselor**; T01–T03 are configurable. Direct Wi-Fi HTTPS telemetry and signed OTA are bench-tested on both roles. The optional `--wifi` profile supports 2.4 GHz PSK networks; enterprise PennKey authentication is not implemented. A recorded Zephyr shared-heap locking patch is applied for Wi-Fi builds. Interrupted Wi-Fi downloads retry the complete image. Long-duration field reliability is untested. Child-to-child pairing, a complete three-tag deployment and clasp/motor/GNSS/battery sensing remain pending.
 
-已验证一标签＋一辅导员；儿童间配对、三标签完整并发及其余外设仍待实现。运动缺失／过期报 UNKNOWN；没有测量距离或位置。下一步先完成队友独立复现及多标签／现场验证，再接课程云平台。
+已验证一标签＋一辅导员通过 Wi-Fi 直接接入云平台；儿童间配对、三标签完整并发及其余外设仍待实现。运动缺失／过期报 UNKNOWN；没有测量距离或位置。下一步是队友独立复现、多标签／现场验证，以及真实电量检测。
 
 MCUboot enforces application signatures. Hardware secure-boot eFuses, Flash encryption, management authorization and radio authentication are not enabled; IDs are static. This is a laboratory prototype with the limits described in the firmware guide.
 

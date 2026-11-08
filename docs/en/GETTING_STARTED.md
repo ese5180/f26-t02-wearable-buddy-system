@@ -1,6 +1,6 @@
 # BuddyGuard: teammate reproduction guide
 
-[Optional SparkFun LSM6DSO / IMU guide](IMU_LSM6DSO.md)
+[Fleet Management build and Wi-Fi provisioning](FLEET_MANAGEMENT.md) · [Optional SparkFun LSM6DSO / IMU guide](IMU_LSM6DSO.md)
 
 [中文](../zh/GETTING_STARTED.md) · [Firmware explanation](FIRMWARE.md) · [Validation record](../VALIDATION.md)
 

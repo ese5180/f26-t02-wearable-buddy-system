@@ -153,11 +153,15 @@ Signature checking provides application-image authenticity relative to this lab 
 
 `tools/bg_serial.py` operates USB shell/logging; use `command --no-read` when a monitor already owns RX. `tools/bg_ble.py` handles discovery, SMP images/upload/test/reset/guarded-secondary-cleanup and the combined update flow, capped at 244-byte packets by default. `scripts/backup_flash.py` creates external full-flash backups; `flash_initial.py` performs destructive initial provisioning; `build.py` pins workspace/role/signing inputs and verifies the output. Historical test harnesses and long captures are maintained locally rather than shipped in the reproduction package. Use the build report and the two-board demo to check a new setup; the retained validation summary describes earlier hardware results.
 
+## Fleet diagnostics and Wi-Fi updates
+
+`fleet.c` exposes the device's running build identity and snapshots of existing services to the Memfault SDK. The SDK collects Zephyr metrics, reboot reasons and coredumps. `wifi_fleet.c` runs the Wi-Fi and HTTPS work in a separate thread. The worker uploads diagnostics, looks up compatible releases and streams the application to secondary before requesting a test boot. MCUboot validates the signature and the existing application health module confirms the trial. The SDK's coredump backend reserves space at the end of secondary. See the [Fleet Management guide](FLEET_MANAGEMENT.md) for profiles, provisioning and demo steps.
+
 ## Implemented scope and limits
 
 Implemented: optional SparkFun LSM6DSO sensing with `--imu` (see linked IMU guide); two-board BLE presence/roster; LoRa STATUS/SOS/ACK/QUERY/REPLY; serial demo controls; signed BLE test updates, interruption/resume, rejection and watchdog revert. Consult [the dated validation record](../VALIDATION.md) for exactly which version/test was observed.
 
-Pending: actual buddy pairing; full three-tag concurrent operation; clasp, vibration, battery and GNSS integration; Wi-Fi/cloud; field range and collision testing; authenticated/replay-resistant business frames; authorized management; rotating session IDs. IDs are currently static. Absence of GPS does not make radio identifiers private. Sensors must report real values or UNKNOWN; do not insert simulated data into a real alert.
+Pending: actual buddy pairing; full three-tag concurrent operation; clasp, vibration, battery and GNSS integration; field range and collision testing; authenticated/replay-resistant business frames; authorized management; rotating session IDs. IDs are currently static. Absence of GPS does not make radio identifiers private. Sensors must report real values or UNKNOWN; do not insert simulated data into a real alert.
 
 To extend the firmware, keep sensor hardware in a dedicated driver/service and expose a snapshot to the protocol producer; version the protocol when its meaning changes. Do not place SPI access in shell callbacks, block BLE callbacks, or make a second thread operate the LoRa device. Add security/pairing/range requirements before presenting the prototype as child-safety equipment.
 

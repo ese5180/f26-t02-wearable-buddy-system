@@ -159,11 +159,15 @@ sysbuild 同时构建 MCUboot 和应用。MCUboot 使用 ECDSA-P256、primary �
 
 历史测试程序及长日志保留在本地归档，不纳入复现包。新环境通过构建报告和双板演示检查；实测摘要只说明此前完成的硬件验证。
 
+## Fleet 诊断与 Wi-Fi 更新
+
+`fleet.c` 向 Memfault SDK 提供设备实际运行版本和现有服务的指标快照。SDK 负责采集 Zephyr 指标、重启原因和 coredump。`wifi_fleet.c` 的独立线程负责联网、HTTPS 上传和发布查询，将下载完成的应用写入 secondary 后请求试运行。MCUboot 验签，由原有健康模块确认试运行。coredump 使用 secondary 尾部预留区域。配置与演示见 [Fleet Management 指南](FLEET_MANAGEMENT.md)。
+
 ## 已实现范围与限制
 
 已实现：可选 SparkFun LSM6DSO 采样与运动状态（使用 `--imu`，见接入文档）；双板 BLE presence／名单、LoRa STATUS／SOS／ACK／QUERY／REPLY、串口演示、BLE 签名试运行更新、中断续传、拒绝错误镜像、watchdog 回滚。具体在哪个版本上做过哪些实测，以[有日期的验证记录](../VALIDATION.md)为准。
 
-待做：儿童之间配对；三标签完整并发；搭扣、振动、电量、GNSS；Wi-Fi／云；户外范围／碰撞测试；业务帧认证／防重放；管理授权；轮换 session ID。**当前 ID 是静态的**，没有 GPS 不意味着无线标识私密。传感器必须输出真实测量或 UNKNOWN，不能在真实报警里插入伪造值。
+待做：儿童之间配对；三标签完整并发；搭扣、振动、电量、GNSS；户外范围／碰撞测试；业务帧认证／防重放；管理授权；轮换 session ID。**当前 ID 是静态的**，没有 GPS 不意味着无线标识私密。传感器必须输出真实测量或 UNKNOWN，不能在真实报警里插入伪造值。
 
 扩展时把传感器硬件放在独立驱动／服务，由协议发送方读取状态快照；含义改变时升级协议版本。不要在 shell 直接访问 SPI、阻塞 BLE 回调或让第二个线程同时操作 LoRa。成为儿童安全设备之前还需定义并验证安全、配对及距离／覆盖要求。
 
