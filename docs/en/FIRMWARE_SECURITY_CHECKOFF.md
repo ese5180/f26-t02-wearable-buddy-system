@@ -1,6 +1,6 @@
 # Firmware Security Implementation — BuddyGuard Team 2
 
-[中文](../zh/FIRMWARE_SECURITY_CHECKOFF.md) · [Repository](https://github.com/ese5180/f26-t02-wearable-buddy-system/tree/codex/buddyguard-wireless-fota) · [PR #1](https://github.com/ese5180/f26-t02-wearable-buddy-system/pull/1)
+[中文](../zh/FIRMWARE_SECURITY_CHECKOFF.md) · [Repository](https://github.com/ese5180/f26-t02-wearable-buddy-system/tree/main) · [PR #1](https://github.com/ese5180/f26-t02-wearable-buddy-system/pull/1)
 
 In the **2026-10-31 section 3.5 bench run**, T01 and C01 both ran active and confirmed 1.1.20. **BLE FOTA was re-tested on C01's installed UART-recovery MCUboot**: valid upgrade, wrong-key/corruption rejection, same-file resume and valid-fault watchdog rollback passed. [3.5 bench results](../VALIDATION.md#earlier-hardware-validation). Earlier UART signed recovery was tested on1.1.19; no external TTL cable was connected in the latest BLE run.
 

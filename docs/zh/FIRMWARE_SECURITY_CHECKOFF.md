@@ -1,6 +1,6 @@
 # Firmware Security Implementation — Team 2 回答与评估
 
-[English 提交版](../en/FIRMWARE_SECURITY_CHECKOFF.md) · [GitHub 代码分支](https://github.com/ese5180/f26-t02-wearable-buddy-system/tree/codex/buddyguard-wireless-fota) · [PR #1](https://github.com/ese5180/f26-t02-wearable-buddy-system/pull/1)
+[English 提交版](../en/FIRMWARE_SECURITY_CHECKOFF.md) · [GitHub 主分支](https://github.com/ese5180/f26-t02-wearable-buddy-system/tree/main) · [PR #1](https://github.com/ese5180/f26-t02-wearable-buddy-system/pull/1)
 
 在 **2026-10-31 的 3.5 实测**中，T01 与 C01 均运行已确认的 1.1.20。**已在C01既有UART recovery bootloader上重测BLE FOTA**：正常升级、错误签名／损坏拒绝、同文件续传和有效签名故障镜像watchdog回滚通过，见[3.5 实测](../VALIDATION.md#earlier-hardware-validation)。此前UART签名恢复在1.1.19上完成；本轮没有连接外接TTL线。
 

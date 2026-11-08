@@ -26,7 +26,7 @@ python3.12 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install west==1.5.0
-git clone --branch codex/buddyguard-wireless-fota https://github.com/ese5180/f26-t02-wearable-buddy-system.git buddyguard
+git clone https://github.com/ese5180/f26-t02-wearable-buddy-system.git buddyguard
 west init -l buddyguard
 west update
 west zephyr-export
