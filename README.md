@@ -17,6 +17,7 @@ BuddyGuard helps camp counselors notice when a camper falls behind or may need h
 
 ## Start here
 
+- [Concept and rental model](docs/CONCEPT.md) distinguishes the tested bench demo, the paid pilot kit and the commercial group kit.
 - [Project stages and deliverables](docs/PROJECT_LOG.md) covers sections 3.1 through 3.13 and links to the available work.
 - [Documentation index](docs/README.md) lists the English and Chinese setup, firmware and demo guides.
 - [Firmware source map](firmware/README.md) links each feature to its code and build configuration.
