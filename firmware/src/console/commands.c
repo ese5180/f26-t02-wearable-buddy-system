@@ -12,6 +12,9 @@
 #include "presence.h"
 #include "radio_link.h"
 #include "imu.h"
+#if defined(CONFIG_BUDDYGUARD_FLEET)
+#include "memfault/core/reboot_tracking.h"
+#endif
 static int cmd_bg(const struct shell *shell, size_t argc, char **argv)
 {
 	if (!strcmp(argv[1], "radio") && argc == 2) {
@@ -60,6 +63,10 @@ static int cmd_bg(const struct shell *shell, size_t argc, char **argv)
 		return 0;
 	}
 	if (!strcmp(argv[1], "reboot") && argc == 2) {
+#if defined(CONFIG_BUDDYGUARD_FLEET)
+		/* Preserve user intent: the hardware alone only reports a software reset. */
+		MEMFAULT_REBOOT_MARK_RESET_IMMINENT(kMfltRebootReason_UserReset);
+#endif
 		sys_reboot(SYS_REBOOT_COLD);
 		return 0;
 	}

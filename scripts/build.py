@@ -16,16 +16,14 @@ BOARD = 'xiao_esp32s3/esp32s3/procpu'
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def prepare_serial_recovery(workspace):
-    """Apply the pinned MCUboot UART interrupt prerequisite, idempotently."""
-    module = workspace / 'bootloader/mcuboot'
-    patch = ROOT / 'patches/mcuboot-esp32-uart-threading.patch'
+def apply_dependency_patch(module, patch):
+    """Apply a recorded prerequisite once; reject conflicting local changes."""
     command = ['git', '-C', str(module), 'apply']
     if subprocess.run(command + ['--reverse', '--check', str(patch)], capture_output=True).returncode == 0:
         return
     check = subprocess.run(command + ['--check', str(patch)], capture_output=True, text=True)
     if check.returncode:
-        raise RuntimeError('MCUboot UART prerequisite cannot be applied; preserve local edits and inspect: ' + check.stderr)
+        raise RuntimeError('Dependency patch cannot be applied; preserve local edits and inspect: ' + check.stderr)
     subprocess.run(command + [str(patch)], check=True)
 
 
@@ -38,10 +36,17 @@ def main():
     p.add_argument('--counselor', action='store_true', help='Compatibility alias for --role counselor')
     p.add_argument('--tag-id', type=int, choices=range(1, 4), default=None)
     p.add_argument('--imu', action='store_true', help='Tag only: enable SparkFun LSM6DSO on I2C D4/D5')
+    p.add_argument('--fleet', action='store_true', help='Enable Memfault diagnostics via the USB host gateway')
+    p.add_argument('--wifi', action='store_true', help='Enable direct Wi-Fi HTTPS telemetry/OTA (implies --fleet)')
+    p.add_argument('--heartbeat-seconds', type=int, choices=(15, 60),
+                   help='Fleet A/B metric collection interval: A=60 (default), B=15')
     p.add_argument('--serial-recovery', action='store_true', help='Build MCUboot with UART0 recovery (requires separate USB bootloader installation)')
     p.add_argument('--fault', action='store_true', help='Rollback test ONLY: stop feeding WDT before confirmation')
     p.add_argument('--version', help='Isolated major.minor.patch override; does not edit source VERSION')
     args = p.parse_args()
+    args.fleet = args.fleet or args.wifi
+    if args.heartbeat_seconds is not None and not args.fleet:
+        p.error('--heartbeat-seconds requires --fleet or --wifi')
     if args.counselor and args.role == 'tag':
         p.error('--counselor conflicts with --role tag')
     role = args.role or ('counselor' if args.counselor else 'tag')
@@ -70,9 +75,24 @@ def main():
     if actual != pinned:
         p.error(f'Zephyr HEAD {actual} differs from west.yml {pinned}; run west update in the documented workspace.')
     if args.serial_recovery:
-        prepare_serial_recovery(workspace)
+        apply_dependency_patch(workspace / 'bootloader/mcuboot', ROOT / 'patches/mcuboot-esp32-uart-threading.patch')
+    if args.wifi:
+        apply_dependency_patch(workspace / 'zephyr', ROOT / 'patches/zephyr-shared-heap-lock.patch')
+    memfault = workspace / 'modules/lib/memfault-firmware-sdk'
+    if args.fleet:
+        expected = '65f578b3bc767ffd6cbcb0cc6828992780761b84'
+        if not (memfault / 'zephyr/module.yml').is_file():
+            p.error('Memfault SDK is missing; update dependencies using this branch west.yml (see FLEET_MANAGEMENT.md).')
+        revision = subprocess.check_output(['git', '-C', str(memfault), 'rev-parse', 'HEAD'], text=True).strip()
+        if revision != expected:
+            p.error(f'Memfault SDK must be pinned to {expected}; found {revision}')
     profile = {'board': BOARD, 'role': role, 'tag_id': tag, 'fault': args.fault, 'imu': args.imu,
                'serial_recovery': args.serial_recovery, 'key': str(key)}
+    if args.fleet:
+        profile['fleet'] = True
+        profile['heartbeat_seconds'] = args.heartbeat_seconds or 60
+    if args.wifi:
+        profile['wifi'] = True
     marker = build.with_name(build.name + '.buddyguard.json')
     if marker.exists() and json.loads(marker.read_text()) != profile:
         p.error('Build directory belongs to another role/ID/key/fault profile. Choose a new build directory.')
@@ -108,9 +128,24 @@ def main():
     marker.write_text(json.dumps(profile, indent=2) + '\n')
     env = os.environ.copy()
     env['PATH'] = str(west.parent) + os.pathsep + env['PATH']
+    overlays = [str(application / 'conf/lsm6dso.overlay')] if args.imu else []
+    if args.wifi:
+        overlays.append(str(application / 'conf/wifi.overlay'))
     cmd = [str(west), 'build', '-b', BOARD, '--sysbuild', str(application), '-d', str(build), '--',
            '-DSB_CONFIG_BOOT_SIGNATURE_KEY_FILE="' + str(key) + '"', '-DEXTRA_CONF_FILE=' + str(config),
-           '-Dfirmware_EXTRA_DTC_OVERLAY_FILE=' + (str(application / 'conf/lsm6dso.overlay') if args.imu else '')]
+           '-Dfirmware_EXTRA_DTC_OVERLAY_FILE=' + ';'.join(overlays)]
+    if args.fleet:
+        serial = 'BG-C01' if role == 'counselor' else f'BG-T{tag:02d}'
+        with config.open('a') as stream:
+            stream.write(f'CONFIG_BUDDYGUARD_DEVICE_SERIAL="{serial}"\n')
+            stream.write(f'CONFIG_MEMFAULT_METRICS_HEARTBEAT_INTERVAL_SECS={profile["heartbeat_seconds"]}\n')
+        fleet_configs = [str(application / 'conf/fleet.conf')]
+        if args.wifi:
+            fleet_configs.append(str(application / 'conf/wifi.conf'))
+        # Apply the generated role/experiment profile last, after overlay defaults.
+        fleet_configs.append(str(config))
+        cmd.extend(['-DEXTRA_CONF_FILE=' + ';'.join(fleet_configs),
+                    '-DZEPHYR_EXTRA_MODULES=' + str(memfault)])
     boot_confs = [str(application / 'sysbuild/mcuboot.conf')]
     if args.serial_recovery:
         boot_confs.append(str(application / 'conf/mcuboot-serial.conf'))
@@ -140,9 +175,19 @@ def main():
         raise RuntimeError('MCUboot exceeds the unchanged 64 KiB boot partition; do not flash')
     report.update(bootloader_bytes=boot.stat().st_size,
                   bootloader_sha256=hashlib.sha256(boot.read_bytes()).hexdigest())
+    if args.fleet:
+        # Reserve the final 128 KiB + 64 KiB trailer of secondary for diagnostics.
+        # Keep images below this bound so a stored update/revert image is not damaged.
+        if image.stat().st_size > 0x150000 - 0x20000 - 0x10000:
+            raise RuntimeError('Fleet image overlaps the secondary coredump reserve; do not flash')
+        report.update(memfault_revision=revision,
+                      symbols=str(build / 'firmware/zephyr/zephyr.elf'))
     if args.serial_recovery:
         report['recovery_patch_sha256'] = hashlib.sha256(
             (ROOT / 'patches/mcuboot-esp32-uart-threading.patch').read_bytes()).hexdigest()
+    if args.wifi:
+        report['wifi_heap_patch_sha256'] = hashlib.sha256(
+            (ROOT / 'patches/zephyr-shared-heap-lock.patch').read_bytes()).hexdigest()
     (build / 'buddyguard-build.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report, indent=2))
     return 0

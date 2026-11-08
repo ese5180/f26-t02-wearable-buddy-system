@@ -1,6 +1,13 @@
 cmake_minimum_required(VERSION 3.20.0)
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(buddyguard)
+if(CONFIG_BUDDYGUARD_WIFI)
+  target_sources(app PRIVATE src/platform/wifi_fleet.c)
+endif()
+if(CONFIG_BUDDYGUARD_FLEET)
+  zephyr_include_directories(config)
+  target_sources(app PRIVATE src/platform/fleet.c)
+endif()
 target_sources(app PRIVATE
   src/main.c
   src/ble/presence.c

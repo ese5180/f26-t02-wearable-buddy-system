@@ -4,6 +4,21 @@ source "Kconfig.zephyr"
 
 menu "BuddyGuard prototype"
 
+config BUDDYGUARD_WIFI
+	bool "Direct Wi-Fi HTTPS telemetry and OTA"
+	depends on BUDDYGUARD_FLEET && WIFI
+	default n
+
+config BUDDYGUARD_FLEET
+	bool "Memfault fleet diagnostics over the USB host gateway"
+	depends on MEMFAULT
+	default n
+
+config BUDDYGUARD_DEVICE_SERIAL
+	string "Unique cloud device serial"
+	default "BG-T01"
+	depends on BUDDYGUARD_FLEET
+
 config BUDDYGUARD_COUNSELOR
 	bool "Build the counselor receiver role"
 	default n

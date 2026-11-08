@@ -5,5 +5,9 @@ manifest:
       url: https://github.com/zephyrproject-rtos/zephyr
       revision: f80761e49401497b5ee64ee9732dc2791055ec52
       import: true
+    - name: memfault-firmware-sdk
+      url: https://github.com/memfault/memfault-firmware-sdk
+      revision: 65f578b3bc767ffd6cbcb0cc6828992780761b84 # 1.46.0
+      path: modules/lib/memfault-firmware-sdk
   self:
     path: buddyguard

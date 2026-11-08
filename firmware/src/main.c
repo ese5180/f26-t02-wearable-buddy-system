@@ -6,6 +6,8 @@
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include "health.h"
+#include "fleet.h"
+#include "wifi_fleet.h"
 #include "imu.h"
 #include "presence.h"
 #include "radio_link.h"
@@ -37,7 +39,9 @@ int main(void)
 	}
 	bg_imu_start();
 	bg_health_begin();
+	bg_wifi_start();
 	for (;;) {
+		bg_fleet_poll();
 		bg_roster_poll();
 		rc = bg_presence_tick();
 		if (rc != 0) {
