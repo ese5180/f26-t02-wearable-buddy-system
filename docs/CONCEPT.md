@@ -19,19 +19,17 @@
 
 #### Description
 
-A camper can fall behind on a trail or fall out of sight between headcounts. BuddyGuard gives the counselor an early alert and enough information to decide where to check. Campers wear screen-free tags, so they can take part without carrying a phone or checking a watch. Camps rent three tags and one counselor unit per kit each quarter.
+The Greater Philadelphia YMCA's camp handbook prohibits camper cell phones and describes lost-camper drills and injury response. Camps already have a procedure for what to do when someone is missing or hurt. We're looking at the gap before staff notice that something happened. [Greater Philadelphia YMCA 2026 handbook, pp. 13, 18–19](https://www.philaymca.org/sites/default/files/2026-01/2026%20Camp%20Handbook%20Final.pdf)
 
-#### Product Function
+#### Product Name & Function
 
-If a tag stops checking in over BLE, the counselor unit flags it and asks for a status update over LoRa. If the IMU detects a possible fall, the tag is designed to send a separate LoRa alert. In either case, the counselor can see which tag needs a check, request a GPS fix with its age, and use the tag's vibration motor to get the camper's attention if the link is still available.
+BuddyGuard gives campers screen-free tags that check in over BLE and gives counselors a handheld that flags missed check-ins. The tag is designed to send LoRa SOS and possible-fall alerts, share an available GPS fix during an incident, and vibrate when the counselor sends a prompt. Field supervision runs on BLE and LoRa without Wi-Fi or cellular service, while Wi-Fi at base handles diagnostics and signed updates.
 
-Presence, SOS and incident messages use BLE and LoRa in the field, without Wi-Fi or cellular service. If a tag does not reply or has no GPS fix, the counselor sees that the information is unavailable. Wi-Fi is reserved for diagnostics and signed updates at base.
-
-We tested BLE, LoRa, IMU movement and cloud updates with one tag and one counselor. GPS and vibration are in the MVP BOM. Both still need integration, and fall detection still needs validation. [Bench results](VALIDATION.md)
+The October proposal made group monitoring the default, with buddy pairs as an optional mode for trips. We're validating group monitoring first. Both roles now use the same XIAO ESP32S3 / Wio-SX1262 kit. We tested BLE, LoRa, IMU movement and cloud updates with one tag and one counselor. GPS and vibration are in the MVP BOM and still need integration. Fall detection still needs validation. [Bench results](VALIDATION.md)
 
 #### Target Market & Demographics
 
-Campers wear the tags. Counselors carry the receiver. The buyer is the camp operator, typically a camp director or recreation department. We're starting with Philadelphia day camps for school-age children, particularly programs that take field trips or move groups between sites.
+Campers wear the tags. Counselors carry the receiver. The buyer is the camp operator, typically a camp director or recreation department. We're starting with Philadelphia day camps serving children ages 6–12, particularly programs that take field trips or move groups between sites.
 
 The American Camp Association counts about **20,000 U.S. camps** across day and overnight programs. Philadelphia Parks & Recreation runs **more than 100 neighborhood day camps** and serves **more than 7,000 campers** across its summer camps. [ACA camp data](https://www.acacamps.org/sites/default/files/2025-07/ACA-Camp-Stabilization-Toolkit-2025.pdf) · [Philadelphia Parks & Recreation](https://www.phila.gov/services/culture-recreation/activities-and-events/register-for-summer-camp/)
 
@@ -41,21 +39,22 @@ The American Camp Association counts about **20,000 U.S. camps** across day and 
 | **SAM** · Philadelphia neighborhood day camps | 100 sites × 5 kits × $199 | **$99,500/year** |
 | **SOM** · First summer target | 2 sites × 5 kits × $199 | **$1,990** |
 
-We assume five kits per site at $199 per kit for one summer quarter each year, before shipping. The counts come from published data. The price, kits per site and first-summer target are our assumptions. [Rental model](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=1482974775#gid=1482974775)
+One kit contains three tags and one counselor unit. We assume five kits per site at $199 per kit for one summer quarter, before shipping. The published counts describe the pool of camps. The rental rate, kit count and two-site target are estimates to check in interviews. [Rental model](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=1482974775#gid=1482974775)
 
-#### Competitors
+#### Competitors and current practice
 
+- **Headcounts and buddy checks** are already part of camp trips. They give staff a clear way to account for children at checkpoints. BuddyGuard adds an alert between checks, and the counselor follows the camp’s existing response procedure. [Example camp trip safety plan](https://www.acacamps.org/sites/default/files/resource_library/07-PA-NewYorkStateGuidelinesforplanning.pdf#page=33)
 - **Campminder / Campanion** helps staff record attendance and manage bus rosters. BuddyGuard can flag a missed check-in between headcounts, while the camp keeps its attendance system. [Campminder transportation](https://campminder.com/features/transportation/)
 - **Garmin Bounce 2** gives families live location and two-way calling through an LTE service. Garmin announced it at $299.99 per watch and $9.99 per month for LTE. BuddyGuard gives camp staff one receiver for the group, with screen-free tags and local alerts that need no phone or cellular plan. [Garmin announcement](https://www.garmin.com/en-US/newsroom/press-release/sports-fitness/parents-can-delay-the-smartphone-with-bounce-2-kids-smartwatch-from-garmin/)
 - **Nelos** already offers GPS tracking and group messaging over LoRa without cell service, using a phone paired with a radio. BuddyGuard uses a dedicated counselor unit for missing-tag alerts and plans to add possible-fall alerts. Staff can request a location if they need it. [Nelos](https://nelos.app/)
 
 #### Stakeholders
 
-We want to speak with a director and a lead counselor at a [Greater Philadelphia YMCA day camp](https://www.philaymca.org/camps/summer-day-camp/) or a [Philadelphia Parks & Recreation site](https://www.phila.gov/services/culture-recreation/activities-and-events/register-for-summer-camp/). We also want to talk to a [Summer Achievers host-site operator](https://www.phila.gov/2026-05-08-register-now-make-this-summer-unforgettable-with-summer-achievers-summer-camp-at-edey-schools-2/) who organizes trips and summer activities. We would ask how they respond when a camper falls or goes missing, where their staff lose network coverage, and whether quarterly rental fits their budget and return process. Interviews are planned.
+We want to speak with a director and a lead counselor at a [Greater Philadelphia YMCA day camp](https://www.philaymca.org/camps/summer-day-camp/) or a [Philadelphia Parks & Recreation site](https://www.phila.gov/services/culture-recreation/activities-and-events/register-for-summer-camp/). We also want to talk to a [Summer Achievers host-site operator](https://www.phila.gov/2026-05-08-register-now-make-this-summer-unforgettable-with-summer-achievers-summer-camp-at-edey-schools-2/) who organizes trips and summer activities. We want to find out how they handle a missing or injured camper, which trips have poor network coverage, and who approves a rental. A director and a counselor can also tell us what they need to see in an alert and how many kits they would actually use. These interviews are still pending.
 
 #### System-Level Diagrams
 
-The device block and communication diagrams will be added later. The tag uses I²C for the IMU, UART for GPS and a driver for the vibration motor. BLE carries presence. LoRa carries status queries, SOS and incident alerts in the field. Wi-Fi connects each device to Memfault at base. [Firmware guide](en/FIRMWARE.md)
+The device diagram will show battery and USB charging, the ESP32S3, SPI to the Wio radio, I²C to the IMU, UART to GPS and the motor driver. The communication diagram will show BLE presence from tags to the counselor, two-way LoRa P2P for incidents, and Wi-Fi/HTTPS to Memfault at base. Both diagrams are deferred. [Firmware guide](en/FIRMWARE.md)
 
 #### Security Requirements Specification
 
@@ -84,9 +83,8 @@ Firmware signature checks have been tested. The GPS data path and radio security
 - **HRS 01.** Each unit shall use the XIAO ESP32S3 and Wio-SX1262 B2B kit with 2.4 GHz and 915 MHz antennas. Check assembly and read back the LoRa sync word over SPI.
 - **HRS 02.** Each tag shall read a 6-axis IMU over 3.3 V I²C. We tested the SparkFun LSM6DSO. Verify the device ID and check the readings while moving the tag.
 - **HRS 03.** Each tag shall read position fixes from a Seeed L76K GNSS module over UART. Verify a valid fix outdoors while LoRa remains operational.
-- **HRS 04.** Each tag shall drive its coin vibration motor through a driver. Trigger an alert and verify that the motor runs and stops without resetting the tag.
-- **HRS 05.** Each pilot tag shall be screen-free, fit a wrist strap and have a physical SOS control. The counselor unit shall have a display for the affected tag ID. Check fit and run a button-to-display test.
-- **HRS 06.** The production tag shall run for at least 10 hours in supervision mode on one charge. Verify with a battery discharge test.
+- **HRS 04.** The screen-free wrist tag shall have a physical SOS button and a driver-controlled vibration motor. Check fit, send SOS and run the motor without resetting the tag.
+- **HRS 05.** The counselor unit shall display the affected tag ID and alert type. Trigger a missing-tag alert and an SOS to check the display.
 
 #### Software Requirements Specification
 
@@ -98,16 +96,13 @@ Firmware signature checks have been tested. The GPS data path and radio security
 
 **Functionality**
 
-- **SRS 01.** The tag shall advance its BLE heartbeat sequence at least once every 3 seconds in normal supervision mode. Check the sequence in captured frames.
-- **SRS 02.** In the bench profile, the counselor shall flag a previously seen tag within 11 seconds of its last fresh heartbeat and queue a LoRa query. Stop BLE broadcasts and time the alert.
-- **SRS 03.** A LoRa transaction shall make at most three attempts and report completion or exhaustion. Test with a responding and an absent peer.
-- **SRS 04.** The tag shall report STILL or MOVING from fresh IMU data and UNKNOWN if the sample is more than 1 second old or unavailable. Test moving, still and stale readings.
-- **SRS 05.** On a location request or SOS, the tag shall report a fix and its age if available. Send the alert immediately even when the receiver has no fix. Test with and without satellite reception.
-- **SRS 06.** The tag shall vibrate after receiving a local alert command from its assigned counselor. Send the command and verify the vibration.
-- **SRS 07.** Signed OTA images shall stage in secondary flash and start as trial images. A watchdog reset before confirmation shall restore the last confirmed image. Test with a signed fault image.
-- **SRS 08.** At base, each unit in the Wi-Fi profile shall upload version, reboot reason, crash data and operational metrics to Memfault. Compare device logs with cloud records.
-- **SRS 09.** When the fall classifier flags an event, the tag shall send a LoRa possible-fall alert with its tag ID. Compare supervised dummy falls with walking, running, jumping and removing the tag. Record missed detections and false alarms.
-- **SRS 10.** The field kit shall monitor three tags with Wi-Fi and cellular service unavailable. Run all three tags for 30 minutes within the intended test area, interrupt one tag's BLE broadcasts, and verify the alert, LoRa query and recovery. Record any false alerts. Full-kit test pending.
+- **SRS 01.** With Wi-Fi and cellular service unavailable, the counselor shall monitor three tags and flag a previously seen tag within 11 seconds of its last fresh BLE message in the bench profile. Run a 30-minute group test, stop one tag and record time to alert and false alerts.
+- **SRS 02.** The counselor shall query a missing tag over LoRa, stop after at most three attempts, and show reply or no reply. A fresh BLE message shall clear the missing state. Test reachable and unreachable tags.
+- **SRS 03.** The tag shall send a possible-fall alert when the IMU classifier flags an event. Compare test-dummy falls with walking, running, jumping and removing the tag. Record misses and false alarms.
+- **SRS 04.** The counselor shall be able to request a GPS fix and its age during an incident. A missing or stale fix shall be identified, and an SOS shall go out without waiting for a fix. Test with and without satellite reception.
+- **SRS 05.** At base, devices shall report diagnostics and running firmware version to Memfault and stage signed updates for a trial boot. Verify a successful update and a rollback after watchdog reset before confirmation.
+
+The four-device field test, fall classifier and GPS incident reporting are still open. The [bench record](VALIDATION.md) covers the wireless, motion and update paths already tested.
 
 ### 3.8.2 Power Budget
 
@@ -118,7 +113,7 @@ The BOM uses a 400 mAh LiPo. With 80% usable capacity, the tag has about 320 mAh
 | BLE active, LoRa receiving, IMU on, GPS in standby | 90 mA | 3.6 h |
 | Same conditions with GPS acquiring or tracking continuously | 131 mA | 2.4 h |
 
-The L76K adds about 41 mA when active. The motor draws about 60 mA at 3 V while vibrating. Neither estimate includes LoRa transmit bursts or vibration duty cycle. A 10-hour day needs a measured average of **32 mA or less** on this battery. We will measure the assembled tag and test GPS standby between incidents. [XIAO](https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/) · [SX1262](https://www.semtech.com/products/wireless-rf/lora-connect/sx1262) · [LSM6DSO](https://www.st.com/en/mems-and-sensors/lsm6dso.html) · [L76K](https://wiki.seeedstudio.com/get_start_l76k_gnss/) · [Vibration motor](https://www.adafruit.com/product/1201)
+The L76K adds about 41 mA when active. The motor draws about 60 mA at 3 V while vibrating. Neither estimate includes LoRa transmit bursts or vibration duty cycle. Our target is 10 hours on a charge, which requires **32 mA or less** on this battery. Verify it with a battery discharge test and measure GPS standby, radio bursts and vibration on the assembled tag. [XIAO](https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/) · [SX1262](https://www.semtech.com/products/wireless-rf/lora-connect/sx1262) · [LSM6DSO](https://www.st.com/en/mems-and-sensors/lsm6dso.html) · [L76K](https://wiki.seeedstudio.com/get_start_l76k_gnss/) · [Vibration motor](https://www.adafruit.com/product/1201)
 
 ### 3.8.3 Hardware BOM
 
@@ -134,4 +129,4 @@ We plan to rent each kit for **$199 per quarter plus $15 shipping**. When kits c
 
 ### Before Submission
 
-Add the two diagrams. Enter the power assumptions in the workbook, reconcile the IMU and enclosure prices, and include recurring cloud costs in the quarterly rental scenario. Check that the teaching team can open the workbook.
+Add the device and communication diagrams. Record the camp interviews for the stakeholder section. Enter the power assumptions in the workbook, reconcile the IMU and enclosure costs, and include recurring cloud costs in the rental model. Check that the teaching team can open the workbook. [Course manual, sections 3.2 and 3.8 and the requirements appendix](https://docs.google.com/document/d/1gKqiMN2WEVwAf0uwNyS8Gh1MBPQqg_3FwDCZpiu_ctY/edit)
