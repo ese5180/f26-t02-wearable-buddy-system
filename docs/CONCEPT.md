@@ -56,6 +56,10 @@ At six or ten tags per group, the shortlist needs **54 or 90 tags**. Equipping t
 
 We want to speak with a director and a lead counselor at a [Greater Philadelphia YMCA day camp](https://www.philaymca.org/camps/summer-day-camp/) or a [Philadelphia Parks &amp; Recreation site](https://www.phila.gov/services/culture-recreation/activities-and-events/register-for-summer-camp/). We also want to talk to a [Summer Achievers host-site operator](https://www.phila.gov/2026-05-08-register-now-make-this-summer-unforgettable-with-summer-achievers-summer-camp-at-edey-schools-2/) who organizes trips and summer activities. We will also contact the five operators on our Philadelphia shortlist. We want to find out how they handle a missing or injured camper, which trips have poor network coverage, and who approves a rental. A director and a counselor can also tell us what they need to see in an alert and how many children are in a group and how many groups they would equip. These interviews are still pending.
 
+**Initial stakeholder feedback (November 9, 2026).** A registrar at the Greater Philadelphia YMCA said she did not expect the YMCA to recruit members for our study or share their information. Speaking as a parent, she saw how BuddyGuard could help if a child went missing and raised concerns about who could access a child's information.
+
+For our first tests, we plan to use adult volunteers and fictional camper records. In the proposed design, a tag shares its location only during an incident and only with the assigned counselor. Before a camp pilot, we will verify that camper names and coordinates stay out of cloud diagnostics and crash reports.
+
 #### System-Level Diagrams
 
 **Hardware**
