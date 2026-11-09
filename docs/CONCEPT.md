@@ -4,14 +4,14 @@
 
 **Team Name: Jet2Holiday**
 
-| Team Member Name | Email Address |
-| --- | --- |
-| Siwei Lei | <laialex@engineering.upenn.edu> |
-| Rico Zhuang | <zzhuan13@engineering.upenn.edu> |
-| Yunzhe Deng | <deng1@engineering.upenn.edu> |
-| Yubin Guan | <guan1@engineering.upenn.edu> |
+| Team Member Name | Email Address                                                        |
+| ---------------- | -------------------------------------------------------------------- |
+| Siwei Lei        | [laialex@engineering.upenn.edu](mailto:laialex@engineering.upenn.edu)   |
+| Rico Zhuang      | [zzhuan13@engineering.upenn.edu](mailto:zzhuan13@engineering.upenn.edu) |
+| Yunzhe Deng      | [deng1@engineering.upenn.edu](mailto:deng1@engineering.upenn.edu)       |
+| Yubin Guan       | [guan1@engineering.upenn.edu](mailto:guan1@engineering.upenn.edu)       |
 
-**GitHub Repository URL:** <https://github.com/ese5180/f26-t02-wearable-buddy-system>
+**GitHub Repository URL:** [https://github.com/ese5180/f26-t02-wearable-buddy-system](https://github.com/ese5180/f26-t02-wearable-buddy-system)
 
 ## 3.8 Concept Refinement
 
@@ -25,23 +25,25 @@ The Greater Philadelphia YMCA's camp handbook prohibits camper cell phones and d
 
 BuddyGuard gives campers screen-free tags that check in over BLE and gives counselors a handheld that flags missed check-ins. The tag is designed to send LoRa SOS and possible-fall alerts, share an available GPS fix during an incident, and vibrate when the counselor sends a prompt. Field supervision runs on BLE and LoRa without Wi-Fi or cellular service, while Wi-Fi at base handles diagnostics and signed updates.
 
-The October proposal made group monitoring the default, with buddy pairs as an optional mode for trips. We're validating group monitoring first. Both roles now use the same XIAO ESP32S3 / Wio-SX1262 kit. We tested BLE, LoRa, IMU movement and cloud updates with one tag and one counselor. GPS and vibration are in the MVP BOM and still need integration. Fall detection still needs validation. [Bench results](VALIDATION.md)
+The October proposal made group monitoring the default, with buddy pairs as an optional mode for trips. We're validating group monitoring first. Both roles now use the same XIAO ESP32S3 / Wio-SX1262 kit. We tested BLE, LoRa, IMU movement and cloud updates with one tag and one counselor. GPS and vibration are in the MVP BOM and still need integration. Fall detection still needs validation.
 
 #### Target Market & Demographics
 
-Campers wear the tags. Counselors carry the receiver. The buyer is the camp operator, typically a camp director or recreation department. We're starting with Philadelphia day camps serving children ages 6–12, particularly programs that take field trips or move groups between sites.
+Campers wear the tags. Counselors carry the receiver. The buyer is the camp operator, typically a camp director or recreation department. Our first market is Philadelphia day camps serving children ages 6–12 that take field trips or run outdoor activities.
 
-The American Camp Association counts about **20,000 U.S. camps** across day and overnight programs. Philadelphia Parks & Recreation runs **more than 100 neighborhood day camps** and serves **more than 7,000 campers** across its summer camps. [ACA camp data](https://www.acacamps.org/sites/default/files/2025-07/ACA-Camp-Stabilization-Toolkit-2025.pdf) · [Philadelphia Parks & Recreation](https://www.phila.gov/services/culture-recreation/activities-and-events/register-for-summer-camp/)
+The American Camp Association counts about **20,000 U.S. camps** across day and overnight programs. Philadelphia Parks & Recreation runs **more than 100 neighborhood day camps** and serves **more than 7,000 campers** across its summer camps. [ACA camp data](https://www.acacamps.org/sites/default/files/2025-07/ACA-Camp-Stabilization-Toolkit-2025.pdf) · [Philadelphia Parks &amp; Recreation](https://www.phila.gov/services/culture-recreation/activities-and-events/register-for-summer-camp/)
 
-For a full group, we use **one counselor unit and eight tags** as a planning baseline, with six and ten tags as low and high cases. The YMCA publishes staff-to-camper ratios of 1:6, 1:8 and 1:10 by age. Those ratios inform the estimate. Actual group size and the number of groups a site would equip still need to be confirmed. We assume **two equipped groups per site** and one summer rental quarter per year. [Greater Philadelphia YMCA staffing ratios](https://www.philaymca.org/camps/summer-day-camp/)
+For a full group, we use **one counselor unit and eight tags** as a planning baseline, with six and ten tags as low and high cases. The YMCA publishes staff-to-camper ratios of 1:6, 1:8 and 1:10 by age. Those ratios inform the estimate. Actual group size and the number of groups a site would equip still need to be confirmed. For national context we assume **two equipped groups per camp**. For our Philadelphia shortlist, the base case is **one equipped group per site**. Each kit rents for one summer quarter per year. [Greater Philadelphia YMCA staffing ratios](https://www.philaymca.org/camps/summer-day-camp/)
+
+We shortlisted five Philadelphia operators with **nine candidate sites**: the Schuylkill Center, Germantown Friends School, Penn Charter, ESF Camps at Friends Select, and five GPCA Summer Achievers K–8 sites. The Schuylkill Center and Penn Charter list field trips or day trips. None of these sites is a confirmed booking.
 
 | Market | Sizing assumption | Equipment or rental estimate |
 | --- | --- | --- |
 | **TAM** · U.S. camps, upper bound | 20,000 camps × 2 groups | **40,000 counselor units + 320,000 tags** at eight tags per group |
-| **SAM** · Philadelphia neighborhood day camps | 100 sites × 2 groups | **200 counselor units + 1,600 tags** at eight tags per group |
-| **SOM** · First summer paid pilot | 2 sites × 2–3 pilot kits × $199 | **$796–$1,194** in rental revenue before shipping |
+| **SAM** · Philadelphia shortlist | 9 candidate sites × 1 eight-tag kit | **9 counselor units + 72 tags**, or **$5,841** per summer at $649 if every site rents |
+| **SOM** · First summer paid pilot | 2 sites × 1 three-tag kit × $199 | **$398** in rental revenue before shipping |
 
-At six or ten tags per group, the Philadelphia estimate is **1,200 or 2,000 tags**. The **$199 per quarter** quote covers the three-tag pilot kit. At that price and two pilot kits per site, the rental benchmarks are **$7.96 million/year nationally** and **$39,800/year in Philadelphia**. The eight-tag configuration needs its own price and a capacity test before we forecast revenue for it. [Rental model](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=1482974775#gid=1482974775)
+At six or ten tags per group, the shortlist needs **54 or 90 tags**. Equipping two groups at every shortlisted site would mean **18 counselor units, 144 tags and $11,682 per summer**. The pilot uses the three-tag kit at **$199**, and the standard eight-tag rental is **$649** (see 3.8.5). The eight-tag kit still needs a capacity test. Next-season programming, group counts and who approves a rental are still unconfirmed for every site. [Quarterly Rental Model](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=385202602#gid=385202602)
 
 #### Competitors and current practice
 
@@ -52,7 +54,7 @@ At six or ten tags per group, the Philadelphia estimate is **1,200 or 2,000 tags
 
 #### Stakeholders
 
-We want to speak with a director and a lead counselor at a [Greater Philadelphia YMCA day camp](https://www.philaymca.org/camps/summer-day-camp/) or a [Philadelphia Parks & Recreation site](https://www.phila.gov/services/culture-recreation/activities-and-events/register-for-summer-camp/). We also want to talk to a [Summer Achievers host-site operator](https://www.phila.gov/2026-05-08-register-now-make-this-summer-unforgettable-with-summer-achievers-summer-camp-at-edey-schools-2/) who organizes trips and summer activities. We want to find out how they handle a missing or injured camper, which trips have poor network coverage, and who approves a rental. A director and a counselor can also tell us what they need to see in an alert and how many children are in a group and how many groups they would equip. These interviews are still pending.
+We want to speak with a director and a lead counselor at a [Greater Philadelphia YMCA day camp](https://www.philaymca.org/camps/summer-day-camp/) or a [Philadelphia Parks &amp; Recreation site](https://www.phila.gov/services/culture-recreation/activities-and-events/register-for-summer-camp/). We also want to talk to a [Summer Achievers host-site operator](https://www.phila.gov/2026-05-08-register-now-make-this-summer-unforgettable-with-summer-achievers-summer-camp-at-edey-schools-2/) who organizes trips and summer activities. We will also contact the five operators on our Philadelphia shortlist. We want to find out how they handle a missing or injured camper, which trips have poor network coverage, and who approves a rental. A director and a counselor can also tell us what they need to see in an alert and how many children are in a group and how many groups they would equip. These interviews are still pending.
 
 #### System-Level Diagrams
 
@@ -60,48 +62,39 @@ We want to speak with a director and a lead counselor at a [Greater Philadelphia
 
 ```mermaid
 flowchart TB
-    subgraph HARDWARE["BuddyGuard · Hardware"]
-        direction LR
+    subgraph SENSORS["Sensors · Student Tag"]
+        IMU["IMU · LSM6DSO"]
+        GNSS["GNSS · L76K"]
+        SOS["SOS Button"]
+        CLASP["Magnetic Clasp Sensor"]
+    end
 
-        subgraph SENSORS["Sensors · Student Tag"]
-            direction TB
-            IMU["IMU · LSM6DSO"]
-            GNSS["GNSS · L76K"]
-            SOS["SOS Button"]
-            CLASP["Magnetic Clasp Sensor"]
-        end
+    MCU["XIAO ESP32S3"]
 
-        MCU["XIAO ESP32S3"]
-
-        subgraph ACTUATORS["Actuators"]
-            direction TB
-            LCD["LCD<br/>Counselor Handheld"]
-            MOTOR["Vibration Motor<br/>Student Tag"]
-        end
-
-        IMU <-->|"I2C 3.3 V"| MCU
-        GNSS -->|"UART 3.3 V"| MCU
-        SOS -->|"GPIO 3.3 V"| MCU
-        CLASP -->|"GPIO 3.3 V"| MCU
-        MCU -->|"SPI 3.3 V"| LCD
-        MCU -->|"GPIO 3.3 V"| MOTOR
+    subgraph ACTUATORS["Actuators"]
+        LCD["LCD<br/>Counselor Handheld"]
+        MOTOR["DRV2605L + Vibration Motor<br/>Student Tag"]
     end
 
     subgraph POWER["Power"]
-        direction LR
-        LIPO["LiPo"] --> REG["Regulator"] --> RAIL["3.3 V Rail"]
+        LIPO["LiPo"] --> REG["Regulator"]
+        REG --> RAIL["3.3 V Rail"]
     end
 
-    HARDWARE ~~~ POWER
+    IMU <-->|"I2C 3.3 V"| MCU
+    GNSS -->|"UART 3.3 V"| MCU
+    SOS -->|"GPIO 3.3 V"| MCU
+    CLASP -->|"GPIO 3.3 V"| MCU
+    MCU -->|"SPI 3.3 V"| LCD
+    MCU -->|"I2C 3.3 V"| MOTOR
 
-    style HARDWARE fill:#F8FAFC,stroke:#CBD5E1
     style SENSORS fill:#ECFDF5,stroke:#74B9A3,color:#145344
     style MCU fill:#203A63,stroke:#142746,color:#FFFFFF
     style ACTUATORS fill:#FFF3E5,stroke:#D9A365,color:#653B15
     style POWER fill:#FFF8DC,stroke:#CBB567,color:#5C4814
 ```
 
-Both units use the XIAO ESP32S3. The student tag carries the IMU, GNSS, SOS button, clasp sensor and vibration motor. The counselor handheld uses an LCD to show local alerts. The motor's GPIO signal controls a MOSFET driver.
+Both units use the XIAO ESP32S3. The student tag carries the IMU, GNSS, SOS button, clasp sensor and vibration motor. The counselor handheld uses an LCD to show local alerts. A DRV2605L haptic driver shares the IMU's I²C bus and drives the vibration motor.
 
 **Communication**
 
@@ -120,7 +113,7 @@ flowchart LR
     style CLOUD fill:#FFF3E5,stroke:#D9A365,color:#653B15
 ```
 
-In the field, tags broadcast BLE check-ins and exchange LoRa packets directly with the assigned counselor handheld. The handheld flags missed check-ins on its LCD. Field supervision uses a star topology with the handheld at the center and runs without Wi-Fi or cellular service. At base, the handheld joins camp Wi-Fi, uploads device diagnostics over HTTPS, and pulls signed firmware from Memfault. The Memfault dashboard shows fleet health and update status. [Firmware guide](en/FIRMWARE.md)
+In the field, tags broadcast BLE check-ins and exchange LoRa packets directly with the assigned counselor handheld. The handheld flags missed check-ins on its LCD. Field supervision uses a star topology with the handheld at the center and runs without Wi-Fi or cellular service. At base, the handheld joins camp Wi-Fi, uploads device diagnostics over HTTPS, and pulls signed firmware from Memfault. The Memfault dashboard shows fleet health and update status.
 
 #### Security Requirements Specification
 
@@ -174,41 +167,45 @@ The bench demo has been verified with one tag and one counselor unit. The three-
 
 The BOM uses a 400 mAh LiPo. With 80% usable capacity, the tag has about 320 mAh. The first-pass estimates below use vendor currents as approximate battery-side loads, with Wi-Fi off.
 
-| Tag mode | Approximate draw | Estimated runtime |
-| --- | ---: | ---: |
-| BLE active, LoRa receiving, IMU on, GPS in standby | 90 mA | 3.6 h |
-| Same conditions with GPS acquiring or tracking continuously | 131 mA | 2.4 h |
+| Tag mode                                                    | Approximate draw | Estimated runtime |
+| ----------------------------------------------------------- | ---------------: | ----------------: |
+| BLE active, LoRa receiving, IMU on, GPS in standby          |            90 mA |             3.6 h |
+| Same conditions with GPS acquiring or tracking continuously |           131 mA |             2.4 h |
 
-The L76K adds about 41 mA when active. The motor draws about 60 mA at 3 V while vibrating. Neither estimate includes LoRa transmit bursts or vibration duty cycle. Our target is 10 hours on a charge, which requires **32 mA or less** on this battery. Verify it with a battery discharge test and measure GPS standby, radio bursts and vibration on the assembled tag. [XIAO](https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/) · [SX1262](https://www.semtech.com/products/wireless-rf/lora-connect/sx1262) · [LSM6DSO](https://www.st.com/en/mems-and-sensors/lsm6dso.html) · [L76K](https://wiki.seeedstudio.com/get_start_l76k_gnss/) · [Vibration motor](https://www.adafruit.com/product/1201)
+The L76K adds about 41 mA when active. The motor draws about 60 mA at 3 V while vibrating. Neither estimate includes LoRa transmit bursts or vibration duty cycle. Our target is 10 hours on a charge, which requires **32 mA or less** on this battery. Verify it with a battery discharge test and measure GPS standby, radio bursts and vibration on the assembled tag. The handheld's runtime is separate. Its LCD backlight and Wi-Fi draw at base still need measuring. [Power budget](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=385202602#gid=385202602) · [XIAO](https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/) · [SX1262](https://www.semtech.com/products/wireless-rf/lora-connect/sx1262) · [LSM6DSO](https://www.st.com/en/mems-and-sensors/lsm6dso.html) · [L76K](https://wiki.seeedstudio.com/get_start_l76k_gnss/) · [Vibration motor](https://www.adafruit.com/product/1201)
 
 ### 3.8.3 Hardware BOM
 
-The current BOM prices the three-tag pilot kit. Each tag has GPS, an IMU and a driver-controlled vibration motor. The kit includes one counselor unit. The workbook includes batteries, enclosures, straps, fasteners, charging and packaging. It totals **$228.09 for one kit** and **$195.34 per kit at 1,000 kits** using the listed Adafruit IMU. Substituting the bench-tested SparkFun IMU on all three tags would bring those estimates to **$249.09** and **$214.69**, using the 100+ SparkFun price for the volume case. [MVP BOM](https://docs.google.com/spreadsheets/d/1GG7O95_0aSs89AQl4g6phD0VFDLTcqFAaMB5zflHOEA/edit?gid=2071228825#gid=2071228825) · [Hardware cost model](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=2071228825#gid=2071228825) · [SparkFun pricing](https://www.sparkfun.com/sparkfun-6-degrees-of-freedom-breakout-lsm6dso-qwiic.html)
+The current BOM prices the three-tag pilot kit with one counselor unit. Each tag has GPS, the bench-tested SparkFun LSM6DSO IMU and a vibration motor on a DRV2605L haptic driver. The counselor unit adds a 1.14-inch SPI LCD. The workbook includes batteries, enclosures, straps, fasteners, charging and packaging. It totals **$258.12 for one kit** and **$221.26 per kit at volume**, using published 100+ price tiers where available and planning estimates elsewhere. Enclosures are priced as injection-molded ABS shells at about $0.35 per kit for material and processing. The prototype shells are 3D printed, and mold tooling is not included yet. [Hardware cost model](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=2071228825#gid=2071228825) · [MVP BOM](https://docs.google.com/spreadsheets/d/1GG7O95_0aSs89AQl4g6phD0VFDLTcqFAaMB5zflHOEA/edit?gid=2071228825#gid=2071228825) · [SparkFun pricing](https://www.sparkfun.com/sparkfun-6-degrees-of-freedom-breakout-lsm6dso-qwiic.html)
 
-Adding five complete tags at the same BOM rates gives an **eight-tag material estimate of about $510–$577 per kit**. It uses the SparkFun IMU and carries forward the pilot kit’s charging and packaging estimates. Get quotes for a nine-device charging setup, enclosure processing and assembly before treating this as a finished-kit cost.
+Each additional tag adds **$69.54** in materials (**$61.84** at volume). An **eight-tag kit with one counselor unit comes to $605.83** in materials (**$530.45** at volume). It carries forward the pilot kit’s charging and packaging estimates. Get quotes for a nine-device charging setup, packaging, enclosure tooling and assembly before treating this as a finished-kit cost.
 
 ### 3.8.4 Software BOM
 
-The workbook budgets **$3,495/month** for Memfault Growth and **$10/month** for a proposed AWS backend. Growth lists 1,000 reporting devices, or 250 fully active four-device pilot kits. The prototype connects directly to Memfault, so we need to confirm whether an AWS backend is needed and get a quote for fleet size and OTA. [Software BOM](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=1647301774#gid=1647301774) · [Memfault pricing](https://memfault.com/pricing/)
+The workbook budgets **$3,495/month** for Memfault Growth and **$10/month** for a proposed AWS backend. Growth lists 1,000 reporting devices. That covers 250 fully active four-device pilot kits or 111 nine-device kits. The prototype connects directly to Memfault, so we need to confirm whether an AWS backend is needed and get a quote for fleet size and OTA. [Software BOM](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=1647301774#gid=1647301774) · [Memfault pricing](https://memfault.com/pricing/)
 
 ### 3.8.5 Financial Model
 
-**Paid pilot.** Offer the three-tag kit at **$199 per summer quarter plus $15 shipping**. Start with four to six kits across two sites. Measure time to notice a staged separation, false alerts, actual turnaround cost and paid renewals. The workbook’s 3,000-kit scenario uses the four-device kit and excludes recurring software costs. [Existing rental worksheet](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=1482974775#gid=1482974775)
+We rent kits by the summer quarter.
 
-#### Eight-tag investor scenario
+| Offer | Kit | Rent per summer quarter |
+| --- | --- | ---: |
+| Paid pilot | 3 tags and 1 counselor handheld | $199 plus $15 shipping |
+| Standard rental | 8 tags and 1 counselor handheld | $649, plus shipping at cost |
+| Multi-kit reservation | 3 or more standard kits reserved in advance by one operator | $599 per kit, plus shipping at cost |
 
-For an eight-tag kit and one counselor unit, use **$449 per summer quarter** as an interview price. Assume **$650** upfront for a finished kit, **$50** per paid rental for turnaround and **$40** per owned kit per year for cloud service. These are planning inputs. The $650 figure is a cost target, and $40 requires a commercial cloud quote or a different reporting setup.
+**Paid pilot.** Start with **one three-tag kit at each of two sites**, which brings in **$398** before shipping. After pilot materials and $25 turnaround per kit, the pilot loses about **$168** before cloud costs. Its job is to measure time to notice a staged separation, false alerts, actual turnaround cost and paid renewals. The workbook keeps the earlier 3,000-kit sell-vs-rent comparison as a legacy tab. The quarterly rental model replaces it. [Quarterly Rental Model](https://docs.google.com/spreadsheets/d/1Vo3cIDeer3M5wfd5n27pI2ez8do8EjMCnAkfwn7qf3Q/edit?gid=385202602#gid=385202602)
 
-| Share of summer quarters rented | Average paid rentals over 3 years | Three-year result per kit |
+#### Standard rental
+
+The commercial model assumes a **$650** finished-kit cost, **$50** in turnaround costs and a **$40** allowance for loss, repairs and support per paid rental, and **$40** in annual cloud costs per owned kit. Each kit has one summer rental opportunity per year and an assumed three-year life. The $650 figure is a cost target. Eight-tag materials alone are $605.83 at single-unit prices, so $650 leaves about $44 for assembly, or about $120 at volume pricing.
+
+| Summer utilization | Payback at $649 | Three-year direct result per kit |
 | --- | ---: | ---: |
-| 50% | 1.50 | **−$172** |
-| 75% | 2.25 | **+$128 (13% of rental revenue)** |
-| 90% | 2.70 | **+$307 (25% of rental revenue)** |
+| 50% | 2.71 years | +$68.50 |
+| 75% | 1.71 years | +$487.75 |
+| 90% | 1.40 years | +$739.30 |
 
-One summer quarter is available each year. The calculation is paid rentals × ($449 − $50) − $650 − (3 × $40). It includes the kit, turnaround and cloud. Company R&D, sales and overhead are outside this calculation. Outbound shipping is billed separately and assumed to cover its cost.
+The three-year result is paid rentals × ($649 − $50 − $40) − $650 − (3 × $40). Break-even is **45.9%** of summer quarters rented. At 75% utilization, the $599 multi-kit rate pays back in 1.90 years. At 50%, it needs 3.03 years, which is longer than the assumed kit life. Payback is a fleet-average estimate and excludes company R&D, sales and overhead. Outbound shipping is billed separately at cost.
 
-Cloud is the largest unverified cost. If all nine devices report, the listed Memfault Growth plan covers 111 full kits and costs roughly **$378 per kit per year** at full allocation on a twelve-month subscription. Confirm seasonal pricing, OTA coverage and whether all tags need to report before expanding the fleet. Keep larger kit orders tied to bookings and measured renewal and repair costs. [Memfault pricing](https://memfault.com/pricing/)
-
-### Before Submission
-
-Record the camp interviews for the stakeholder section. Enter the power assumptions in the workbook, reconcile the IMU and enclosure costs, and include recurring cloud costs in the rental model. Validate group size and the eight-tag price with camp operators. Check that the teaching team can open the workbook. [Course manual, sections 3.2 and 3.8 and the requirements appendix](https://docs.google.com/document/d/1gKqiMN2WEVwAf0uwNyS8Gh1MBPQqg_3FwDCZpiu_ctY/edit)
+Cloud is the largest unverified cost. If all nine devices report, the listed Memfault Growth plan covers 111 full kits and costs roughly **$378 per kit per year** at full allocation on a twelve-month subscription. At 75% utilization, that plan would produce a three-year loss of about **$526** per kit. Break-even would need 106% utilization, which one summer slot per year cannot reach. Cloud has to stay under about **$203 per kit per year** to break even at 75%. The commercial prices and cloud costs still need validation. Confirm seasonal pricing, OTA coverage and whether all tags need to report. We plan to confirm paid reservations and small-fleet cloud costs before building commercial inventory. [Memfault pricing](https://memfault.com/pricing/)
