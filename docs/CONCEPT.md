@@ -56,7 +56,71 @@ We want to speak with a director and a lead counselor at a [Greater Philadelphia
 
 #### System-Level Diagrams
 
-The device diagram will show battery and USB charging, the ESP32S3, SPI to the Wio radio, I²C to the IMU, UART to GPS and the motor driver. The communication diagram will show BLE presence from tags to the counselor, two-way LoRa P2P for incidents, and Wi-Fi/HTTPS to Memfault at base. Both diagrams are deferred. [Firmware guide](en/FIRMWARE.md)
+**Hardware**
+
+```mermaid
+flowchart TB
+    subgraph HARDWARE["BuddyGuard · Hardware"]
+        direction LR
+
+        subgraph SENSORS["Sensors · Student Tag"]
+            direction TB
+            IMU["IMU · LSM6DSO"]
+            GNSS["GNSS · L76K"]
+            SOS["SOS Button"]
+            CLASP["Magnetic Clasp Sensor"]
+        end
+
+        MCU["XIAO ESP32S3"]
+
+        subgraph ACTUATORS["Actuators"]
+            direction TB
+            LCD["LCD<br/>Counselor Handheld"]
+            MOTOR["Vibration Motor<br/>Student Tag"]
+        end
+
+        IMU <-->|"I2C 3.3 V"| MCU
+        GNSS -->|"UART 3.3 V"| MCU
+        SOS -->|"GPIO 3.3 V"| MCU
+        CLASP -->|"GPIO 3.3 V"| MCU
+        MCU -->|"SPI 3.3 V"| LCD
+        MCU -->|"GPIO 3.3 V"| MOTOR
+    end
+
+    subgraph POWER["Power"]
+        direction LR
+        LIPO["LiPo"] --> REG["Regulator"] --> RAIL["3.3 V Rail"]
+    end
+
+    HARDWARE ~~~ POWER
+
+    style HARDWARE fill:#F8FAFC,stroke:#CBD5E1
+    style SENSORS fill:#ECFDF5,stroke:#74B9A3,color:#145344
+    style MCU fill:#203A63,stroke:#142746,color:#FFFFFF
+    style ACTUATORS fill:#FFF3E5,stroke:#D9A365,color:#653B15
+    style POWER fill:#FFF8DC,stroke:#CBB567,color:#5C4814
+```
+
+Both units use the XIAO ESP32S3. The student tag carries the IMU, GNSS, SOS button, clasp sensor and vibration motor. The counselor handheld uses an LCD to show local alerts. The motor's GPIO signal controls a MOSFET driver.
+
+**Communication**
+
+```mermaid
+flowchart LR
+    TAG["Student Tag"]
+    COUNSELOR["Counselor Handheld<br/>Local alerts on LCD"]
+    CLOUD["Memfault Cloud<br/>Device health and update status"]
+
+    TAG -->|"BLE advertising · 2.4 GHz<br/>Presence heartbeat"| COUNSELOR
+    TAG <-->|"LoRa P2P · 915 MHz<br/>Status, SOS, reply →<br/>← Query, ACK"| COUNSELOR
+    COUNSELOR <-->|"Camp Wi-Fi · HTTPS · at base<br/>Diagnostics →<br/>← Signed firmware"| CLOUD
+
+    style TAG fill:#ECFDF5,stroke:#74B9A3,color:#145344
+    style COUNSELOR fill:#203A63,stroke:#142746,color:#FFFFFF
+    style CLOUD fill:#FFF3E5,stroke:#D9A365,color:#653B15
+```
+
+In the field, tags broadcast BLE check-ins and exchange LoRa packets directly with the assigned counselor handheld. The handheld flags missed check-ins on its LCD. Field supervision uses a star topology with the handheld at the center and runs without Wi-Fi or cellular service. At base, the handheld joins camp Wi-Fi, uploads device diagnostics over HTTPS, and pulls signed firmware from Memfault. The Memfault dashboard shows fleet health and update status. [Firmware guide](en/FIRMWARE.md)
 
 #### Security Requirements Specification
 
@@ -147,4 +211,4 @@ Cloud is the largest unverified cost. If all nine devices report, the listed Mem
 
 ### Before Submission
 
-Add the device and communication diagrams. Record the camp interviews for the stakeholder section. Enter the power assumptions in the workbook, reconcile the IMU and enclosure costs, and include recurring cloud costs in the rental model. Validate group size and the eight-tag price with camp operators. Check that the teaching team can open the workbook. [Course manual, sections 3.2 and 3.8 and the requirements appendix](https://docs.google.com/document/d/1gKqiMN2WEVwAf0uwNyS8Gh1MBPQqg_3FwDCZpiu_ctY/edit)
+Record the camp interviews for the stakeholder section. Enter the power assumptions in the workbook, reconcile the IMU and enclosure costs, and include recurring cloud costs in the rental model. Validate group size and the eight-tag price with camp operators. Check that the teaching team can open the workbook. [Course manual, sections 3.2 and 3.8 and the requirements appendix](https://docs.google.com/document/d/1gKqiMN2WEVwAf0uwNyS8Gh1MBPQqg_3FwDCZpiu_ctY/edit)
