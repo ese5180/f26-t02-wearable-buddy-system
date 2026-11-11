@@ -1,0 +1,101 @@
+# port=/dev/cu.usbmodem1101 start_epoch=1794434375.030
+1794434375.080	resence seq=216 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434375.081	uart:~$ [8D[J[00:08:36.144,000] <inf> bg_lora: TX tag=T01 type=3 seq=59 attempt=1
+1794434375.081	uart:~$ [8D[J[00:08:36.282,000] <inf> bg_lora: ACK tag=T01 type=3 seq=59 attempt=1 rssi=-22 snr=13
+1794434375.081	uart:~$ [8D[J[00:08:36.369,000] <inf> buddyguard: Presence seq=257 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434376.768	uart:~$ [8D[Juart:~$ [8D[Juart:~$ [8D[J[00:08:37.814,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(3,-56,1038) gyro_mrad_s=(12,50,-33) samples=12028
+1794434376.768	uart:~$ [8D[J[00:08:38.370,000] <inf> buddyguard: Presence seq=258 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434378.809	uart:~$ [8D[Juart:~$ [8D[J[00:08:39.822,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(-8,21,1020) gyro_mrad_s=(6,-4,-14) samples=12075
+1794434378.809	uart:~$ [8D[J[00:08:40.371,000] <inf> buddyguard: Presence seq=259 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434380.086	uart:~$ [8D[Juart:~$ [8D[J[00:08:41.146,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-9,14,999) gyro_mrad_s=(6,-6,2) samples=12106
+1794434381.323	uart:~$ [8D[Juart:~$ [8D[J[00:08:42.372,000] <inf> buddyguard: Presence seq=260 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434381.323	uart:~$ [8D[J[00:08:43.153,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-12,18,1018) gyro_mrad_s=(5,-5,-1) samples=12153
+1794434381.323	uart:~$ [8D[J[00:08:43.161,000] <inf> bg_lora: TX tag=T01 type=1 seq=60 attempt=1
+1794434381.323	uart:~$ [8D[J[00:08:43.299,000] <inf> bg_lora: ACK tag=T01 type=1 seq=60 attempt=1 rssi=-20 snr=13
+1794434383.358	uart:~$ [8D[Juart:~$ [8D[J[00:08:44.373,000] <inf> buddyguard: Presence seq=261 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434383.358	uart:~$ [8D[J[00:08:45.161,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-9,18,1015) gyro_mrad_s=(5,-5,-2) samples=12200
+1794434385.341	uart:~$ [8D[Juart:~$ [8D[J[00:08:46.374,000] <inf> buddyguard: Presence seq=262 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434385.341	uart:~$ [8D[J[00:08:47.168,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-9,21,1013) gyro_mrad_s=(6,-3,-2) samples=12247
+1794434387.317	uart:~$ [8D[Juart:~$ [8D[J[00:08:48.375,000] <inf> buddyguard: Presence seq=263 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434387.318	uart:~$ [8D[J[00:08:49.175,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-8,25,1001) gyro_mrad_s=(5,-5,-3) samples=12294
+1794434389.347	uart:~$ [8D[Juart:~$ [8D[J[00:08:50.376,000] <inf> buddyguard: Presence seq=264 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434389.347	uart:~$ [8D[J[00:08:51.182,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-10,15,1018) gyro_mrad_s=(6,-5,-2) samples=12341
+1794434391.338	uart:~$ [8D[Juart:~$ [8D[J[00:08:52.377,000] <inf> buddyguard: Presence seq=265 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434391.338	uart:~$ [8D[J[00:08:53.190,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-9,13,1013) gyro_mrad_s=(5,-4,-3) samples=12388
+1794434391.339	uart:~$ [8D[J[00:08:53.287,000] <inf> bg_lora: TX tag=T01 type=1 seq=61 attempt=1
+1794434393.338	uart:~$ [8D[Juart:~$ [8D[J[00:08:54.378,000] <inf> buddyguard: Presence seq=266 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434393.338	uart:~$ [8D[J[00:08:54.423,000] <inf> bg_lora: TX tag=T01 type=1 seq=61 attempt=2
+1794434393.338	uart:~$ [8D[J[00:08:54.561,000] <inf> bg_lora: ACK tag=T01 type=1 seq=61 attempt=2 rssi=-20 snr=13
+1794434393.338	uart:~$ [8D[J[00:08:55.197,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-8,20,1003) gyro_mrad_s=(5,-3,-5) samples=12435
+1794434394.676	uart:~$ [8D[Juart:~$ [8D[J[00:08:55.710,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(-58,45,1020) gyro_mrad_s=(5,0,78) samples=12447
+1794434394.676	uart:~$ [8D[J[00:08:56.379,000] <inf> buddyguard: Presence seq=267 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434396.654	uart:~$ [8D[Juart:~$ [8D[J[00:08:57.717,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(67,18,1020) gyro_mrad_s=(5,72,10) samples=12494
+1794434396.654	uart:~$ [8D[J[00:08:58.380,000] <inf> buddyguard: Presence seq=268 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434398.698	uart:~$ [8D[Juart:~$ [8D[J[00:08:59.725,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(14,18,1020) gyro_mrad_s=(3,-39,8) samples=12541
+1794434398.698	uart:~$ [8D[J[00:09:00.381,000] <inf> buddyguard: Presence seq=269 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434398.698	uart:~$ [8D[J[00:09:00.536,000] <wrn> bg_imu: IMPACT src=polled axis=y polled_delta_mg=1019 (threshold 1000); SOS queue result=0
+1794434398.698	uart:~$ [8D[J[00:09:00.681,000] <inf> bg_lora: TX tag=T01 type=3 seq=62 attempt=1
+1794434399.761	uart:~$ [8D[Juart:~$ [8D[J[00:09:00.819,000] <inf> bg_lora: ACK tag=T01 type=3 seq=62 attempt=1 rssi=-20 snr=13
+1794434399.761	uart:~$ [8D[J[00:09:01.732,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(-128,-641,1113) gyro_mrad_s=(-3016,-653,399) samples=12588
+1794434401.368	uart:~$ [8D[Juart:~$ [8D[J[00:09:02.382,000] <inf> buddyguard: Presence seq=270 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434401.368	uart:~$ [8D[J[00:09:03.353,000] <inf> bg_lora: TX tag=T01 type=1 seq=63 attempt=1
+1794434402.440	uart:~$ [8D[Juart:~$ [8D[J[00:09:03.494,000] <inf> bg_lora: ACK tag=T01 type=1 seq=63 attempt=1 rssi=-20 snr=13
+1794434402.440	uart:~$ [8D[J[00:09:03.739,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(-23,-464,874) gyro_mrad_s=(68,-1,-11) samples=12635
+1794434402.440	uart:~$ [8D[J[00:09:04.383,000] <inf> buddyguard: Presence seq=271 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434404.710	uart:~$ [8D[Juart:~$ [8D[J[00:09:05.746,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(-16,22,1018) gyro_mrad_s=(6,-8,-15) samples=12682
+1794434404.710	uart:~$ [8D[J[00:09:06.384,000] <inf> buddyguard: Presence seq=272 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434406.729	uart:~$ [8D[Juart:~$ [8D[J[00:09:07.754,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(-457,-266,276) gyro_mrad_s=(-2835,2114,1579) samples=12729
+1794434406.729	uart:~$ [8D[J[00:09:07.796,000] <wrn> bg_imu: IMPACT src=imu axis=z polled_delta_mg=937 (threshold 1000); SOS queue result=0
+1794434406.729	uart:~$ [8D[J[00:09:07.889,000] <inf> bg_lora: TX tag=T01 type=3 seq=64 attempt=1
+1794434406.729	uart:~$ [8D[J[00:09:08.028,000] <inf> bg_lora: ACK tag=T01 type=3 seq=64 attempt=1 rssi=-20 snr=13
+1794434406.729	uart:~$ [8D[J[00:09:08.385,000] <inf> buddyguard: Presence seq=273 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434408.708	uart:~$ [8D[Juart:~$ [8D[J[00:09:09.761,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(-31,-168,1010) gyro_mrad_s=(-91,-34,7) samples=12776
+1794434408.709	uart:~$ [8D[J[00:09:10.386,000] <inf> buddyguard: Presence seq=274 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434410.209	uart:~$ [8D[Juart:~$ [8D[J[00:09:11.256,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-50,-150,993) gyro_mrad_s=(14,-26,-5) samples=12811
+1794434411.341	uart:~$ [8D[Juart:~$ [8D[J[00:09:12.387,000] <inf> buddyguard: Presence seq=275 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434411.341	uart:~$ [8D[J[00:09:13.263,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-36,-63,1013) gyro_mrad_s=(28,-15,4) samples=12858
+1794434412.479	uart:~$ [8D[Juart:~$ [8D[J[00:09:13.505,000] <inf> bg_lora: TX tag=T01 type=1 seq=65 attempt=1
+1794434412.480	uart:~$ [8D[J[00:09:13.645,000] <inf> bg_lora: ACK tag=T01 type=1 seq=65 attempt=1 rssi=-20 snr=13
+1794434412.480	uart:~$ [8D[J[00:09:14.388,000] <inf> buddyguard: Presence seq=276 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434412.480	uart:~$ [8D[J[00:09:14.417,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(-73,-137,1056) gyro_mrad_s=(-498,42,122) samples=12885
+1794434414.080	uart:~$ [8D[Juart:~$ [8D[J[00:09:15.100,000] <wrn> bg_imu: IMPACT src=polled axis=z polled_delta_mg=1102 (threshold 1000); SOS queue result=0
+1794434414.080	uart:~$ [8D[J[00:09:15.127,000] <inf> bg_lora: TX tag=T01 type=3 seq=66 attempt=1
+1794434414.080	uart:~$ [8D[J[00:09:15.265,000] <inf> bg_lora: ACK tag=T01 type=3 seq=66 attempt=1 rssi=-20 snr=12
+1794434415.374	uart:~$ [8D[Juart:~$ [8D[J[00:09:16.389,000] <inf> buddyguard: Presence seq=277 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434415.375	uart:~$ [8D[J[00:09:16.424,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(-42,-95,1006) gyro_mrad_s=(-20,-12,4) samples=12932
+1794434417.350	uart:~$ [8D[Juart:~$ [8D[J[00:09:18.390,000] <inf> buddyguard: Presence seq=278 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434417.350	uart:~$ [8D[J[00:09:18.433,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(-43,10,1009) gyro_mrad_s=(5,-18,-5) samples=12979
+1794434418.594	uart:~$ [8D[Juart:~$ [8D[J[00:09:19.628,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-29,18,1009) gyro_mrad_s=(5,-1,-5) samples=13007
+1794434418.594	uart:~$ [8D[J[00:09:20.391,000] <inf> buddyguard: Presence seq=279 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434420.579	uart:~$ [8D[Juart:~$ [8D[J[00:09:21.636,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-30,16,1015) gyro_mrad_s=(4,-7,-1) samples=13054
+1794434420.579	uart:~$ [8D[J[00:09:22.361,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(-15,-132,1010) gyro_mrad_s=(-1358,170,141) samples=13071
+1794434420.579	uart:~$ [8D[J[00:09:22.391,000] <inf> buddyguard: Presence seq=280 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434420.579	uart:~$ [8D[J[00:09:22.618,000] <wrn> bg_imu: IMPACT src=polled axis=z polled_delta_mg=1481 (threshold 1000); SOS queue result=0
+1794434421.761	uart:~$ [8D[Juart:~$ [8D[J[00:09:22.807,000] <inf> bg_lora: TX tag=T01 type=3 seq=67 attempt=1
+1794434421.761	uart:~$ [8D[J[00:09:22.950,000] <inf> bg_lora: ACK tag=T01 type=3 seq=67 attempt=1 rssi=-20 snr=13
+1794434421.761	uart:~$ [8D[J[00:09:23.564,000] <inf> bg_lora: TX tag=T01 type=1 seq=68 attempt=1
+1794434423.304	uart:~$ [8D[Juart:~$ [8D[J[00:09:24.369,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(-33,-67,1008) gyro_mrad_s=(78,-19,0) samples=13118
+1794434423.355	uart:~$ [8D[J[00:09:24.392,000] <inf> buddyguard: Presence seq=281 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434423.355	uart:~$ [8D[J[00:09:24.669,000] <inf> bg_lora: TX tag=T01 type=1 seq=68 attempt=2
+1794434423.355	uart:~$ [8D[J[00:09:24.811,000] <inf> bg_lora: ACK tag=T01 type=1 seq=68 attempt=2 rssi=-21 snr=12
+1794434425.353	uart:~$ [8D[Juart:~$ [8D[J[00:09:26.376,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(-36,16,1012) gyro_mrad_s=(5,-7,0) samples=13165
+1794434425.353	uart:~$ [8D[J[00:09:26.393,000] <inf> buddyguard: Presence seq=282 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434425.353	uart:~$ [8D[J[00:09:27.017,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-26,16,1012) gyro_mrad_s=(3,-8,-2) samples=13180
+1794434427.065	uart:~$ [8D[Juart:~$ [8D[J[00:09:28.127,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(-27,131,1018) gyro_mrad_s=(67,-40,-372) samples=13206
+1794434427.065	uart:~$ [8D[J[00:09:28.394,000] <inf> buddyguard: Presence seq=283 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434429.080	uart:~$ [8D[Juart:~$ [8D[J[00:09:30.135,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-17,18,1011) gyro_mrad_s=(5,-4,-3) samples=13253
+1794434429.080	uart:~$ [8D[J[00:09:30.395,000] <inf> buddyguard: Presence seq=284 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434431.106	uart:~$ [8D[Juart:~$ [8D[J[00:09:32.142,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-12,21,1016) gyro_mrad_s=(7,-6,-5) samples=13300
+1794434431.107	uart:~$ [8D[J[00:09:32.396,000] <inf> buddyguard: Presence seq=285 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434432.573	uart:~$ [8D[Juart:~$ [8D[J[00:09:33.610,000] <inf> bg_lora: TX tag=T01 type=1 seq=69 attempt=1
+1794434432.573	uart:~$ [8D[J[00:09:33.750,000] <inf> bg_lora: ACK tag=T01 type=1 seq=69 attempt=1 rssi=-21 snr=12
+1794434432.573	uart:~$ [8D[J[00:09:34.150,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-16,22,1015) gyro_mrad_s=(15,-11,-13) samples=13347
+1794434432.573	uart:~$ [8D[J[00:09:34.397,000] <inf> buddyguard: Presence seq=286 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434433.580	uart:~$ [8D[Juart:~$ [8D[J[00:09:34.621,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(-341,44,951) gyro_mrad_s=(6,-2,35) samples=13358
+1794434435.334	uart:~$ [8D[Juart:~$ [8D[J[00:09:36.398,000] <inf> buddyguard: Presence seq=287 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434435.389	uart:~$ [8D[J[00:09:36.628,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(-18,21,1022) gyro_mrad_s=(5,-5,0) samples=13405
+1794434435.390	uart:~$ [8D[J[00:09:36.670,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-17,19,1016) gyro_mrad_s=(4,-3,-3) samples=13406
+1794434437.376	uart:~$ [8D[Juart:~$ [8D[J[00:09:38.399,000] <inf> buddyguard: Presence seq=288 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434437.376	uart:~$ [8D[J[00:09:38.678,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-16,18,1010) gyro_mrad_s=(3,-4,0) samples=13453
+1794434439.367	uart:~$ [8D[Juart:~$ [8D[J[00:09:40.400,000] <inf> buddyguard: Presence seq=289 advertising=1 connected=0 maintenance=0 confirmed=1
+1794434439.368	uart:~$ [8D[J[00:09:40.685,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-9,30,1012) gyro_mrad_s=(5,-1,-16) samples=13500
