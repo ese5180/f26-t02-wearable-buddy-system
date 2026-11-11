@@ -34,6 +34,7 @@ static int cmd_bg(const struct shell *shell, size_t argc, char **argv)
 		shell_print(shell, "accel_mg=(%d,%d,%d) gyro_mrad_s=(%d,%d,%d)",
 			s.accel_mg[0], s.accel_mg[1], s.accel_mg[2], s.gyro_mrad_s[0],
 			s.gyro_mrad_s[1], s.gyro_mrad_s[2]);
+		shell_print(shell, "impacts=%u last_impact_mg=%d", s.impacts, s.last_impact_mg);
 		return 0;
 	}
 	if (!strcmp(argv[1], "status") && argc == 2) {

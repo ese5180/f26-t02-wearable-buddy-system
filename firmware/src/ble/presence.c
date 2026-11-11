@@ -30,6 +30,14 @@ static const struct bt_data sd[] = {
 		sizeof(CONFIG_BT_DEVICE_NAME) - 1),
 };
 
+/* Non-connectable presence advertising. Interval units are 0.625 ms; the default
+ * 100 ms (max 150 ms) equals Zephyr's BT_LE_ADV_NCONN_IDENTITY used before.
+ * 广播间隔单位 0.625 ms；默认值与原来的 BT_LE_ADV_NCONN_IDENTITY 相同。 */
+#define ADV_UNITS(ms) ((ms) * 8 / 5)
+static const struct bt_le_adv_param presence_params = BT_LE_ADV_PARAM_INIT(
+	BT_LE_ADV_OPT_USE_IDENTITY, ADV_UNITS(CONFIG_BUDDYGUARD_PRESENCE_ADV_INTERVAL_MS),
+	ADV_UNITS(CONFIG_BUDDYGUARD_PRESENCE_ADV_INTERVAL_MS * 3 / 2), NULL);
+
 static atomic_t connected;
 static atomic_t restart_advertising;
 static atomic_t awaiting_recycle;
@@ -116,7 +124,7 @@ static int update_advertising(void)
 			maintenance ? sd : NULL, maintenance ? ARRAY_SIZE(sd) : 0);
 	}
 	const struct bt_le_adv_param *params = maintenance ?
-		BT_LE_ADV_CONN_FAST_1 : BT_LE_ADV_NCONN_IDENTITY;
+		BT_LE_ADV_CONN_FAST_1 : &presence_params;
 	int rc = bt_le_adv_start(params, ad, ARRAY_SIZE(ad),
 		maintenance ? sd : NULL, maintenance ? ARRAY_SIZE(sd) : 0);
 	if (rc == 0) {

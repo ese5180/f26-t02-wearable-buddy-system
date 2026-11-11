@@ -12,6 +12,8 @@ struct bg_imu_snapshot {
 	/* x/y/z, mg and mrad/s. / 三轴，分别为 mg 与 mrad/s。 */
 	int32_t accel_mg[3], gyro_mrad_s[3];
 	uint32_t samples;
+	uint32_t impacts;        /* impacts detected since boot / 启动以来冲击次数 */
+	int32_t last_impact_mg;  /* largest axis change of the last impact */
 	int64_t sampled_ms;
 	int last_error;
 };

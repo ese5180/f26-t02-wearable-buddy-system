@@ -41,6 +41,7 @@ def main():
     p.add_argument('--heartbeat-seconds', type=int, choices=(15, 60),
                    help='Fleet A/B metric collection interval: A=60 (default), B=15')
     p.add_argument('--serial-recovery', action='store_true', help='Build MCUboot with UART0 recovery (requires separate USB bootloader installation)')
+    p.add_argument('--low-power', action='store_true', help='Closed-loop low-power profile: CPU 80 MHz')
     p.add_argument('--fault', action='store_true', help='Rollback test ONLY: stop feeding WDT before confirmation')
     p.add_argument('--version', help='Isolated major.minor.patch override; does not edit source VERSION')
     args = p.parse_args()
@@ -93,6 +94,8 @@ def main():
         profile['heartbeat_seconds'] = args.heartbeat_seconds or 60
     if args.wifi:
         profile['wifi'] = True
+    if args.low_power:
+        profile['low_power'] = True
     marker = build.with_name(build.name + '.buddyguard.json')
     if marker.exists() and json.loads(marker.read_text()) != profile:
         p.error('Build directory belongs to another role/ID/key/fault profile. Choose a new build directory.')
@@ -131,8 +134,12 @@ def main():
     overlays = [str(application / 'conf/lsm6dso.overlay')] if args.imu else []
     if args.wifi:
         overlays.append(str(application / 'conf/wifi.overlay'))
+    if args.low_power:
+        overlays.append(str(application / 'conf/lowpower.overlay'))
+    # The generated role profile is always applied last.
+    base_confs = ([str(application / 'conf/lowpower.conf')] if args.low_power else []) + [str(config)]
     cmd = [str(west), 'build', '-b', BOARD, '--sysbuild', str(application), '-d', str(build), '--',
-           '-DSB_CONFIG_BOOT_SIGNATURE_KEY_FILE="' + str(key) + '"', '-DEXTRA_CONF_FILE=' + str(config),
+           '-DSB_CONFIG_BOOT_SIGNATURE_KEY_FILE="' + str(key) + '"', '-DEXTRA_CONF_FILE=' + ';'.join(base_confs),
            '-Dfirmware_EXTRA_DTC_OVERLAY_FILE=' + ';'.join(overlays)]
     if args.fleet:
         serial = 'BG-C01' if role == 'counselor' else f'BG-T{tag:02d}'
@@ -142,6 +149,8 @@ def main():
         fleet_configs = [str(application / 'conf/fleet.conf')]
         if args.wifi:
             fleet_configs.append(str(application / 'conf/wifi.conf'))
+        if args.low_power:
+            fleet_configs.append(str(application / 'conf/lowpower.conf'))
         # Apply the generated role/experiment profile last, after overlay defaults.
         fleet_configs.append(str(config))
         cmd.extend(['-DEXTRA_CONF_FILE=' + ';'.join(fleet_configs),

@@ -32,6 +32,35 @@ config BUDDYGUARD_IMU
 	  Poll a deferred LSM6DSO at address 0x6b or 0x6a. Missing or stale
 	  measurements produce UNKNOWN and do not block the wireless service.
 
+config BUDDYGUARD_IMPACT_THRESHOLD_MG
+	int "Impact: single-axis change between consecutive IMU samples (mg)"
+	depends on BUDDYGUARD_IMU
+	range 300 3900
+	default 1000
+	help
+	  An impact (possible fall or hard knock) queues one LoRa SOS and pulses
+	  the impact-gpios marker so a logic analyzer can time it.
+
+config BUDDYGUARD_IMPACT_LOCKOUT_MS
+	int "Impact: ignore further impacts for this long after one fires"
+	depends on BUDDYGUARD_IMU
+	range 500 60000
+	default 3000
+
+config BUDDYGUARD_IMPACT_MARKER_MS
+	int "Impact: marker pulse width on the zephyr,user impact-gpios pin"
+	depends on BUDDYGUARD_IMU
+	range 1 1000
+	default 50
+
+config BUDDYGUARD_PRESENCE_ADV_INTERVAL_MS
+	int "Presence (non-connectable) advertising minimum interval; maximum is 1.5x"
+	range 100 6000
+	default 100
+	help
+	  100 keeps the original 100-150 ms interval. The low-power profile raises
+	  it; the presence sequence still changes every 2 s.
+
 config BUDDYGUARD_PRESENCE_TIMEOUT_MS
 	int "BLE presence timeout for the laboratory demo"
 	range 4000 120000

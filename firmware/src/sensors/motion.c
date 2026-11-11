@@ -56,3 +56,51 @@ const char *bg_motion_name(uint8_t motion)
 	default: return "UNKNOWN";
 	}
 }
+
+void bg_impact_reset(struct bg_impact_detector *detector)
+{
+	memset(detector, 0, sizeof(*detector));
+}
+
+struct bg_impact bg_impact_update(struct bg_impact_detector *detector, uint32_t now_ms,
+				  const int32_t accel_mg[3], int32_t threshold_mg,
+				  uint32_t lockout_ms, uint8_t hw_axes)
+{
+	struct bg_impact result = {0};
+	/* After a sampling gap the previous sample is stale: compare against nothing. */
+	if (detector->initialized && now_ms - detector->last_sample_ms > 1000U) {
+		bool fired = detector->fired;
+		uint32_t last_impact_ms = detector->last_impact_ms;
+		bg_impact_reset(detector);
+		detector->fired = fired;          /* keep the lockout across a gap */
+		detector->last_impact_ms = last_impact_ms;
+	}
+	bool have_previous = detector->initialized;
+	if (have_previous) {
+		for (unsigned axis = 0; axis < 3; ++axis) {
+			int32_t delta = (int32_t)magnitude((int64_t)accel_mg[axis] -
+							   detector->previous_accel_mg[axis]);
+			if (delta > result.delta_mg) {
+				result.delta_mg = delta;
+				result.axis = (uint8_t)axis;
+			}
+		}
+	}
+	detector->initialized = true;
+	detector->last_sample_ms = now_ms;
+	memcpy(detector->previous_accel_mg, accel_mg, sizeof(detector->previous_accel_mg));
+
+	bool software = have_previous && result.delta_mg >= threshold_mg;
+	hw_axes &= 0x7;
+	if (hw_axes) {
+		result.hardware = true;
+		result.axis = (hw_axes & 1) ? 0 : (hw_axes & 2) ? 1 : 2;
+	}
+	bool locked = detector->fired && now_ms - detector->last_impact_ms < lockout_ms;
+	if ((software || hw_axes) && !locked) {
+		result.detected = true;
+		detector->fired = true;
+		detector->last_impact_ms = now_ms;
+	}
+	return result;
+}

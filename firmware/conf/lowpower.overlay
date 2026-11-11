@@ -1,0 +1,10 @@
+/* Low-power profile (build.py --low-power): run the ESP32-S3 at 80 MHz instead of 240 MHz.
+ * BLE, LoRa SPI (2 MHz), I2C (100 kHz) and the USB console all work at 80 MHz.
+ * 低功耗配置：CPU 从 240 MHz 降到 80 MHz。 */
+&cpu0 {
+	clock-frequency = <DT_FREQ_M(80)>;
+};
+
+&cpu1 {
+	clock-frequency = <DT_FREQ_M(80)>;
+};

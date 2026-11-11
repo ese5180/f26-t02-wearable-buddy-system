@@ -1,5 +1,13 @@
 /* SparkFun SEN-18020. XIAO D4=GPIO5 SDA, D5=GPIO6 SCL. */
+#include <zephyr/dt-bindings/gpio/gpio.h>
 #include <zephyr/dt-bindings/sensor/lsm6dso.h>
+
+/ {
+	zephyr,user {
+		/* Impact marker for the Saleae: XIAO D0 = GPIO1, not used by Wio or the IMU. */
+		impact-gpios = <&gpio0 1 GPIO_ACTIVE_HIGH>;
+	};
+};
 
 &i2c0 {
 	imu_high: lsm6dso@6b {
@@ -7,7 +15,7 @@
 		reg = <0x6b>;
 		zephyr,deferred-init;
 		accel-range = <LSM6DSO_DT_FS_4G>;
-		accel-odr = <LSM6DSO_DT_ODR_52Hz>;
+		accel-odr = <LSM6DSO_DT_ODR_417Hz>; /* wake-up detector sees ~1 ms knocks */
 		gyro-range = <LSM6DSO_DT_FS_250DPS>;
 		gyro-odr = <LSM6DSO_DT_ODR_52Hz>;
 	};
@@ -16,7 +24,7 @@
 		reg = <0x6a>;
 		zephyr,deferred-init;
 		accel-range = <LSM6DSO_DT_FS_4G>;
-		accel-odr = <LSM6DSO_DT_ODR_52Hz>;
+		accel-odr = <LSM6DSO_DT_ODR_417Hz>; /* wake-up detector sees ~1 ms knocks */
 		gyro-range = <LSM6DSO_DT_FS_250DPS>;
 		gyro-odr = <LSM6DSO_DT_ODR_52Hz>;
 	};

@@ -29,6 +29,12 @@ BuddyGuard helps camp counselors notice when a camper falls behind or may need h
 
 The submission covers Memfault version reporting, signed Wi-Fi OTA, coredumps, reboot reasons, Zephyr and BuddyGuard metrics, USB host activity, and the 60 s versus 15 s A/B rollout. Start with the [English Fleet guide](docs/en/FLEET_MANAGEMENT.md) or [中文操作指南](docs/zh/FLEET_MANAGEMENT.md) to reproduce it.
 
+## 3.7 Closing the Loop submission
+
+[Closed-loop README](docs/closed-loop/README.md) · [Impact pass test](docs/closed-loop/impact-pass-test.md) · [Low-power pass test](docs/closed-loop/lowpower-pass-test.md)
+
+An AI agent built two tag features in a closed loop (pass test first, then change, build, flash, measure, prove or revert), following the [closed-loop-starter](https://github.com/SolidPD/closed-loop-starter). **Impact → automatic SOS** (`--imu`): a sudden acceleration change of 1000 mg or more queues one LoRa SOS and pulses D0 for the Saleae. **Low-power profile** (`--low-power`): 80 MHz CPU instead of 240 MHz, measured before and after with the PPK2.
+
 ## Build and run
 
 Follow [Getting started](docs/en/GETTING_STARTED.md) or [中文复现](docs/zh/GETTING_STARTED.md) to set up native macOS, Python 3.12, west 1.5.0 and Zephyr SDK 1.0.1. The board target is `xiao_esp32s3/esp32s3/procpu`, with dependencies pinned in [west.yml](west.yml).
@@ -36,10 +42,11 @@ Follow [Getting started](docs/en/GETTING_STARTED.md) or [中文复现](docs/zh/G
 | Build profile | What it enables |
 | --- | --- |
 | `--role tag` / `--role counselor` | BLE presence and signed BLE SMP updates, LoRa P2P and role-specific application behavior |
-| `--imu` | Optional LSM6DSO on a tag |
+| `--imu` | Optional LSM6DSO on a tag, with impact → automatic SOS |
 | `--wifi` | Memfault diagnostics and signed HTTPS OTA |
 | `--fleet` | Memfault diagnostics with a USB host gateway when used without `--wifi` |
 | `--serial-recovery` | Optional MCUboot recovery over UART |
+| `--low-power` | Closed-loop low-power profile: 80 MHz CPU |
 
 Build and sign with [scripts/build.py](scripts/build.py). Existing team boards use the Team 2 signing identity. Runtime Wi-Fi credentials and private signing keys are kept outside the repository. See the setup guides before provisioning a board.
 
