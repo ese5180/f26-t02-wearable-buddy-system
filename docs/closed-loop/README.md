@@ -17,9 +17,9 @@ A hard knock or a fall shows up as a sudden jump in acceleration. The concept al
   1. pulses `zephyr,user impact-gpios` (XIAO **D0 / GPIO1**) high for 50 ms through a delayable work item, so the IMU thread never blocks;
   2. calls `bg_radio_sos()`, the same queue the `bg sos` shell command uses, so the counselor shows `ACTION: counselor check tag T01, SOS received`;
   3. logs `IMPACT src=<imu|polled> axis=<x|y|z> ...`. `bg imu` now also prints `impacts=` and `last_impact_mg=`.
+- `conf/lsm6dso.overlay` declares the marker pin. The feature only exists in `--imu` builds.
 
 **Loop iteration 1 failed, which is why detection moved into the IMU.** Version 1.6.0 compared only the 25 Hz polled samples (accelerometer at 52 Hz). Serial-log check on 2026-11-11: 0 of 4 hard knocks on the desk fired; the IMU itself worked (`motion=MOVING`). A knock lasts about 1 ms; the 52 Hz output filter smooths it out and 40 ms polling usually misses it. Iteration 2 (1.6.2) uses the 417 Hz latched wake-up detector above: the setup line `IMU wake-up detector: threshold 1500 mg (WK_THS=24)` appeared and the first knock fired with `src=imu` while the polled samples only changed by 1295 mg, but only 1 of 3 hard knocks fired. Iteration 3 (1.6.4) lowers the threshold to 1000 mg (`WK_THS=16`); pass test T1 checks that rest and handling still give no false trigger.
-- `conf/lsm6dso.overlay` declares the marker pin. The feature only exists in `--imu` builds.
 
 Saleae wiring: ch0 = D0 (marker), ch1 = D4 (SDA), ch2 = D5 (SCL), ground to GND, 4 MS/s.
 
@@ -34,6 +34,8 @@ What does not change: BLE presence timing, LoRa STATUS every 10 s, SOS/QUERY/REP
 Measurement: USB unplugged, PPK2 source mode 3300 mV into the XIAO 3V3 pin, wait 320 s (past the 300 s maintenance window), record 60 s with `tools/bg_ppk2_steady.py`. Before = 1.6.4 (`build-cl-tag`), after = 1.6.6 (`build-cl-tag-lowpower`).
 
 ## The prompts
+
+The requirement prompts, based on the starter kit templates. In the bench sessions they were given together with the wiring and cue details for that run.
 
 Feature 1 (from closed-loop-starter `prompts/feature-v1.md`):
 
@@ -79,5 +81,6 @@ built-in sample-count and range check (both 100 %, 0 out of range).
 ## Limits
 
 - Thresholds are bench values, not validated on children. A thrown or dropped bag can also trigger an impact SOS.
-- 25 Hz software polling can miss a very short impulse; the LSM6DSO's hardware wake-up interrupt would need an INT wire.
+- The latched wake-up event is read every 40 ms, so the SOS starts up to about 40 ms after the knock. Wiring the LSM6DSO INT1 pin to a GPIO would make it immediate.
+- The IMU board is on a cable, so knocks must hit the IMU board itself; a board that keeps tipping after a knock can trigger again once the 3 s lockout ends.
 - The low-power numbers are for this bench tag (XIAO + Wio + IMU, no Wi-Fi build). A deployed tag would also need sleep modes, which the BLE and LoRa design here does not use yet.
