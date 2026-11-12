@@ -1,0 +1,78 @@
+flashing build-cl-tag-lowpower (version 1.6.6) to tag on /dev/cu.usbmodem101 over BLE
+{"event": "upload_start", "bytes": 437355, "packet_limit": 244}
+{"event": "upload", "bytes": 160, "total": 437355, "percent": 0}
+{"event": "upload", "bytes": 22040, "total": 437355, "percent": 5}
+{"event": "upload", "bytes": 43919, "total": 437355, "percent": 10}
+{"event": "upload", "bytes": 65796, "total": 437355, "percent": 15}
+{"event": "upload", "bytes": 87477, "total": 437355, "percent": 20}
+{"event": "upload", "bytes": 109377, "total": 437355, "percent": 25}
+{"event": "upload", "bytes": 131277, "total": 437355, "percent": 30}
+{"event": "upload", "bytes": 153177, "total": 437355, "percent": 35}
+{"event": "upload", "bytes": 175077, "total": 437355, "percent": 40}
+{"event": "upload", "bytes": 196977, "total": 437355, "percent": 45}
+{"event": "upload", "bytes": 218877, "total": 437355, "percent": 50}
+{"event": "upload", "bytes": 240558, "total": 437355, "percent": 55}
+{"event": "upload", "bytes": 262458, "total": 437355, "percent": 60}
+{"event": "upload", "bytes": 284358, "total": 437355, "percent": 65}
+{"event": "upload", "bytes": 306258, "total": 437355, "percent": 70}
+{"event": "upload", "bytes": 328158, "total": 437355, "percent": 75}
+{"event": "upload", "bytes": 350058, "total": 437355, "percent": 80}
+Disconnected from 5B4353DA-F391-9624-5F38-3230B8CA2D73
+Exception in SMPClient:
+Traceback (most recent call last):
+  File "/Users/deng/Desktop/1/PENN/ESE5180/buddyguard-ws/buddyguard/tools/bg_ble.py", line 143, in manage
+    async for offset in client.upload(image, upgrade=False,
+  File "/Users/deng/Desktop/1/PENN/ESE5180/buddyguard-ws/buddyguard/.venv/lib/python3.12/site-packages/smpclient/__init__.py", line 328, in upload
+    response = await self.request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/deng/Desktop/1/PENN/ESE5180/buddyguard-ws/buddyguard/.venv/lib/python3.12/site-packages/smpclient/__init__.py", line 230, in request
+    frame = await self._transport.send_and_receive(request.BYTES)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/deng/Desktop/1/PENN/ESE5180/buddyguard-ws/buddyguard/.venv/lib/python3.12/site-packages/smpclient/transport/ble.py", line 212, in send_and_receive
+    return await self.receive()
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/deng/Desktop/1/PENN/ESE5180/buddyguard-ws/buddyguard/.venv/lib/python3.12/site-packages/smpclient/transport/ble.py", line 183, in receive
+    await self._notify_or_disconnect()
+  File "/Users/deng/Desktop/1/PENN/ESE5180/buddyguard-ws/buddyguard/.venv/lib/python3.12/site-packages/smpclient/transport/ble.py", line 261, in _notify_or_disconnect
+    raise SMPTransportDisconnected(
+smpclient.transport.SMPTransportDisconnected: SMPBLETransport disconnected from 5B4353DA-F391-9624-5F38-3230B8CA2D73
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/deng/Desktop/1/PENN/ESE5180/buddyguard-ws/buddyguard/tools/bg_ble.py", line 156, in manage
+    raise UploadInterrupted('Upload interrupted before activation') from exc
+UploadInterrupted: Upload interrupted before activation
+
+{"event": "retry_upload", "next_attempt": 2, "note": "Reconnect using the same image SHA; do not confirm."}
+{"event": "upload_start", "bytes": 437355, "packet_limit": 244}
+{"event": "upload", "bytes": 160, "total": 437355, "percent": 0}
+{"event": "upload", "bytes": 22040, "total": 437355, "percent": 5}
+{"event": "upload", "bytes": 43919, "total": 437355, "percent": 10}
+{"event": "upload", "bytes": 65796, "total": 437355, "percent": 15}
+{"event": "upload", "bytes": 87477, "total": 437355, "percent": 20}
+{"event": "upload", "bytes": 109377, "total": 437355, "percent": 25}
+{"event": "upload", "bytes": 131277, "total": 437355, "percent": 30}
+{"event": "upload", "bytes": 153177, "total": 437355, "percent": 35}
+{"event": "upload", "bytes": 175077, "total": 437355, "percent": 40}
+{"event": "upload", "bytes": 196977, "total": 437355, "percent": 45}
+{"event": "upload", "bytes": 218877, "total": 437355, "percent": 50}
+{"event": "upload", "bytes": 240558, "total": 437355, "percent": 55}
+{"event": "upload", "bytes": 262458, "total": 437355, "percent": 60}
+{"event": "upload", "bytes": 284358, "total": 437355, "percent": 65}
+{"event": "upload", "bytes": 306258, "total": 437355, "percent": 70}
+{"event": "upload", "bytes": 328158, "total": 437355, "percent": 75}
+{"event": "upload", "bytes": 350058, "total": 437355, "percent": 80}
+{"event": "upload", "bytes": 371958, "total": 437355, "percent": 85}
+{"event": "upload", "bytes": 393639, "total": 437355, "percent": 90}
+{"event": "upload", "bytes": 415539, "total": 437355, "percent": 95}
+{"event": "upload", "bytes": 437355, "total": 437355, "percent": 100}
+{"event": "upload_complete", "elapsed_seconds": 198.45}
+{"version": 1, "sequence": 26, "images": [{"slot": 0, "version": "1.6.4", "image": null, "hash": "9c489096fbb3249efc9886bdff5e9069b23c4cf5a0cb4415ab19e6054bc358e1", "bootable": true, "pending": false, "confirmed": true, "active": true, "permanent": false}, {"slot": 1, "version": "1.6.6", "image": null, "hash": "a49b8a73db568a6f0dff455d84e67ecb600cc86eba9f2195672822e35af153bc", "bootable": true, "pending": false, "confirmed": false, "active": false, "permanent": false}], "splitStatus": 0}
+{"version": 1, "sequence": 27, "images": [{"slot": 0, "version": "1.6.4", "image": null, "hash": "9c489096fbb3249efc9886bdff5e9069b23c4cf5a0cb4415ab19e6054bc358e1", "bootable": true, "pending": false, "confirmed": true, "active": true, "permanent": false}, {"slot": 1, "version": "1.6.6", "image": null, "hash": "a49b8a73db568a6f0dff455d84e67ecb600cc86eba9f2195672822e35af153bc", "bootable": true, "pending": true, "confirmed": false, "active": false, "permanent": false}], "splitStatus": 0}
+{"version": 1, "sequence": 28}
+{"event": "test_upgrade_requested", "note": "Device self-test must confirm; verify serial and image state."}
+Disconnected from 5B4353DA-F391-9624-5F38-3230B8CA2D73
+upload done; waiting for swap, boot and the 15 s health check...
+  version=1.6.6 role=TAG tag=1 sequence=22 connected=0 maintenance=1 confirmed=1
+FLASH OK: 1.6.6 running and confirmed

@@ -1,0 +1,77 @@
+     30 s settling
+     60 s settling
+     90 s settling
+    120 s settling
+    150 s settling
+    180 s settling
+    210 s settling
+    240 s settling
+    270 s settling
+    300 s settling
+    330 s recording
+    360 s recording
+ERROR:root:An error occured when writing to serial port: Attempting to use a port that is not open
+3300 mV, settle 320 s, record 60 s, port /dev/cu.usbmodemDFCCAF094DE02, 6000000 samples -> docs/closed-loop/captures/lowpower-before-2026-11-11.csv, output OFF
+samples: 6000000 of 6000000 expected (100.0 %), 0 out of range; settle phase decoded 31970000
+mean 74.881 mA  median 73.477  p99 120.248  max 253.084 mA
+  s0   mean   74.822 mA  max  222.564 mA
+  s1   mean   76.497 mA  max  253.084 mA
+  s2   mean   74.786 mA  max  210.860 mA
+  s3   mean   74.644 mA  max  224.126 mA
+  s4   mean   74.823 mA  max  220.221 mA
+  s5   mean   74.513 mA  max  221.783 mA
+  s6   mean   74.615 mA  max  213.979 mA
+  s7   mean   74.830 mA  max  224.126 mA
+  s8   mean   74.673 mA  max  217.880 mA
+  s9   mean   74.768 mA  max  223.345 mA
+  s10  mean   74.613 mA  max  206.185 mA
+  s11  mean   76.469 mA  max  206.185 mA
+  s12  mean   74.528 mA  max  206.185 mA
+  s13  mean   74.773 mA  max  224.126 mA
+  s14  mean   74.646 mA  max  206.185 mA
+  s15  mean   74.603 mA  max  219.441 mA
+  s16  mean   74.708 mA  max  218.660 mA
+  s17  mean   74.665 mA  max  206.185 mA
+  s18  mean   74.756 mA  max  221.002 mA
+  s19  mean   74.528 mA  max  223.345 mA
+  s20  mean   74.772 mA  max  219.441 mA
+  s21  mean   76.375 mA  max  220.221 mA
+  s22  mean   74.778 mA  max  206.964 mA
+  s23  mean   74.719 mA  max  224.126 mA
+  s24  mean   74.697 mA  max  205.406 mA
+  s25  mean   74.528 mA  max  217.880 mA
+  s26  mean   74.616 mA  max  224.907 mA
+  s27  mean   74.842 mA  max  224.126 mA
+  s28  mean   74.545 mA  max  217.100 mA
+  s29  mean   74.695 mA  max  224.907 mA
+  s30  mean   74.609 mA  max  206.185 mA
+  s31  mean   76.444 mA  max  221.002 mA
+  s32  mean   74.548 mA  max  207.743 mA
+  s33  mean   74.800 mA  max  220.221 mA
+  s34  mean   74.632 mA  max  206.185 mA
+  s35  mean   74.836 mA  max  220.221 mA
+  s36  mean   74.578 mA  max  224.126 mA
+  s37  mean   74.793 mA  max  206.185 mA
+  s38  mean   74.562 mA  max  224.126 mA
+  s39  mean   74.649 mA  max  222.564 mA
+  s40  mean   74.720 mA  max  206.185 mA
+  s41  mean   76.395 mA  max  253.084 mA
+  s42  mean   74.801 mA  max  206.185 mA
+  s43  mean   74.697 mA  max  221.783 mA
+  s44  mean   74.685 mA  max  224.126 mA
+  s45  mean   74.551 mA  max  221.783 mA
+  s46  mean   74.796 mA  max  223.345 mA
+  s47  mean   74.748 mA  max  223.345 mA
+  s48  mean   74.894 mA  max  223.345 mA
+  s49  mean   74.690 mA  max  206.185 mA
+  s50  mean   74.595 mA  max  206.185 mA
+  s51  mean   74.932 mA  max  221.783 mA
+  s52  mean   76.535 mA  max  219.441 mA
+  s53  mean   74.971 mA  max  215.539 mA
+  s54  mean   74.782 mA  max  223.345 mA
+  s55  mean   74.817 mA  max  224.126 mA
+  s56  mean   74.743 mA  max  226.469 mA
+  s57  mean   74.770 mA  max  224.907 mA
+  s58  mean   74.655 mA  max  205.406 mA
+  s59  mean   74.834 mA  max  206.964 mA
+exit 0

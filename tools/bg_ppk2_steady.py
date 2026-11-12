@@ -10,8 +10,13 @@ Powers the board from the PPK2, waits <settle_s> seconds without recording (the 
 Unplug the tag's USB cable first: USB would power the board around the PPK2.
 
 The CSV holds one row per millisecond: t_ms, mean_uA, max_uA (100 raw samples each), so a
-60 s record is 60,000 rows. The summary uses every raw sample. Based on closed-loop-starter's
-ppk2-capture-v1.py and the same ppk2-api 0.9.2 calls.
+60 s record is 60,000 rows. The summary uses every raw sample.
+
+Serial reading runs in ppk2-api's PPK2_MP background thread: decoding 100 kS/s in the same loop
+that reads the port overflowed the USB buffer on macOS, lost about 80 % of the bytes and decoded
+the misaligned rest as nonsense (several amps). The run is marked INVALID when fewer than 95 % of
+the expected samples arrive or any sample is outside 0-1 A, so a broken stream cannot pass as a
+measurement. Check it first with a resistor (BENCH.md): 1 kOhm at 3300 mV reads about 3.3 mA.
 """
 import csv
 import statistics
@@ -29,11 +34,12 @@ def main():
     abort_ma = float(sys.argv[5]) if len(sys.argv) > 5 else 300.0
     if not 800 <= mv <= 5000:
         sys.exit('the PPK2 sources 800 to 5000 mV')
-    from ppk2_api.ppk2_api import PPK2_API  # pip install ppk2-api==0.9.2
+    from ppk2_api.ppk2_api import PPK2_API, PPK2_MP  # pip install ppk2-api==0.9.2
     ports = PPK2_API.list_devices()
     if not ports:
         sys.exit('no PPK2 found')
-    p = PPK2_API(ports[0], timeout=1, write_timeout=1, exclusive=True)
+    p = PPK2_MP(ports[0], buffer_max_size_seconds=30, buffer_chunk_seconds=0.1,
+                timeout=1, write_timeout=1, exclusive=True)
     p.stop_measuring()  # drain a stream left running by an interrupted run
     quiet = time.time()
     while time.time() - quiet < 0.5:
@@ -44,7 +50,7 @@ def main():
     p.get_modifiers()
     p.use_source_meter()
     p.set_source_voltage(mv)
-    raw, aborted = [], None
+    raw, aborted, settle_samples = [], None, 0
     try:
         p.toggle_DUT_power('ON')
         p.start_measuring()
@@ -59,12 +65,14 @@ def main():
                     break
                 if time.time() - t0 >= settle:
                     raw.extend(s)
+                else:
+                    settle_samples += len(s)
             elapsed = time.time() - t0
             if elapsed - last_print >= 30:
                 phase = 'settling' if elapsed < settle else 'recording'
                 print(f'  {elapsed:5.0f} s {phase}', flush=True)
                 last_print = elapsed
-            time.sleep(0.01)
+            time.sleep(0.05)
     finally:
         try:
             p.stop_measuring()
@@ -83,6 +91,13 @@ def main():
         print('ABORTED:', aborted)
     if not raw:
         return 1
+    expected = int(record * RATE)
+    bad = sum(1 for v in raw if v < -1000 or v > 1_000_000)  # outside -1 mA .. 1 A
+    print(f'samples: {len(raw)} of {expected} expected ({100 * len(raw) / expected:.1f} %), '
+          f'{bad} out of range; settle phase decoded {settle_samples}')
+    if len(raw) < 0.95 * expected or bad:
+        print('INVALID: samples were lost or decoded wrongly; do not use this capture')
+        return 3
     srt = sorted(raw)
     n = len(srt)
     print(f'mean {statistics.fmean(raw) / 1000:.3f} mA  median {srt[n // 2] / 1000:.3f}  '

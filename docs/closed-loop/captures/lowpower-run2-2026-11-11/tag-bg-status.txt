@@ -1,0 +1,1 @@
+version=1.6.6 role=TAG tag=1 sequence=566 connected=0 maintenance=0 confirmed=1

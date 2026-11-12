@@ -1,0 +1,263 @@
+:~$ [00:10:18.600,000] <inf> buddyguard: Presence seq=308 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ uart:~$ [00:15:06.467,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-11,10,1000) gyro_mrad_s=(3,-5,-2) samples=20974
+uart:~$ [00:15:06.790,000] <inf> buddyguard: Presence seq=452 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:15:08.489,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-7,8,1011) gyro_mrad_s=(5,-5,-2) samples=21021
+uart:~$ [00:15:08.791,000] <inf> buddyguard: Presence seq=453 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:15:09.187,000] <inf> bg_lora: TX tag=T01 type=1 seq=93 attempt=1
+uart:~$ [00:15:09.328,000] <inf> bg_lora: ACK tag=T01 type=1 seq=93 attempt=1 rssi=-17 snr=14
+uart:~$ uart:~$ [00:15:10.511,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-10,6,1013) gyro_mrad_s=(4,-5,-2) samples=21068
+uart:~$ [00:15:10.793,000] <inf> buddyguard: Presence seq=454 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:15:12.532,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-11,9,1004) gyro_mrad_s=(5,-5,-2) samples=21115
+uart:~$ [00:15:12.794,000] <inf> buddyguard: Presence seq=455 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:15:14.554,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-9,7,1003) gyro_mrad_s=(5,-5,-2) samples=21162
+uart:~$ [00:15:14.796,000] <inf> buddyguard: Presence seq=456 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:15:16.575,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-8,10,1002) gyro_mrad_s=(5,-4,-2) samples=21209
+uart:~$ [00:15:16.797,000] <inf> buddyguard: Presence seq=457 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:15:18.596,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-10,3,1012) gyro_mrad_s=(4,-5,-2) samples=21256
+uart:~$ [00:15:18.798,000] <inf> buddyguard: Presence seq=458 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:15:19.198,000] <inf> bg_lora: TX tag=T01 type=1 seq=94 attempt=1
+uart:~$ [00:15:19.339,000] <inf> bg_lora: ACK tag=T01 type=1 seq=94 attempt=1 rssi=-17 snr=13
+uart:~$ uart:~$ [00:15:20.619,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-7,7,1007) gyro_mrad_s=(5,-5,-2) samples=21303
+uart:~$ [00:15:20.800,000] <inf> buddyguard: Presence seq=459 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:15:22.640,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-9,4,1006) gyro_mrad_s=(5,-5,-2) samples=21350
+uart:~$ [00:15:22.801,000] <inf> buddyguard: Presence seq=460 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:15:24.662,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-6,8,1015) gyro_mrad_s=(4,-4,-2) samples=21397
+uart:~$ [00:15:24.803,000] <inf> buddyguard: Presence seq=461 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:15:26.685,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-14,26,1007) gyro_mrad_s=(5,-5,-1) samples=21444
+uart:~$ [00:15:26.804,000] <inf> buddyguard: Presence seq=462 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:15:28.706,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-9,10,1003) gyro_mrad_s=(5,-5,-3) samples=21491
+uart:~$ [00:15:28.805,000] <inf> buddyguard: Presence seq=463 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:15:29.210,000] <inf> bg_lora: TX tag=T01 type=1 seq=95 attempt=1
+uart:~$ [00:15:29.351,000] <inf> bg_lora: ACK tag=T01 type=1 seq=95 attempt=1 rssi=-17 snr=13
+uart:~$ uart:~$ [00:15:30.729,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-12,6,1001) gyro_mrad_s=(5,-5,-2) samples=21538
+uart:~$ [00:15:30.807,000] <inf> buddyguard: Presence seq=464 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:15:32.751,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-12,10,1009) gyro_mrad_s=(4,-5,-2) samples=21585
+uart:~$ [00:15:32.808,000] <inf> buddyguard: Presence seq=465 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:15:34.773,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-10,15,1007) gyro_mrad_s=(4,-5,-2) samples=21632
+uart:~$ [00:15:34.810,000] <inf> buddyguard: Presence seq=466 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:15:36.794,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-10,7,1013) gyro_mrad_s=(4,-5,-2) samples=21679
+uart:~$ [00:15:36.811,000] <inf> buddyguard: Presence seq=467 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:15:38.812,000] <inf> buddyguard: Presence seq=468 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:15:38.816,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-11,8,1001) gyro_mrad_s=(4,-4,-2) samples=21726
+uart:~$ [00:15:39.221,000] <inf> bg_lora: TX tag=T01 type=1 seq=96 attempt=1
+uart:~$ [00:15:39.361,000] <inf> bg_lora: ACK tag=T01 type=1 seq=96 attempt=1 rssi=-17 snr=12
+uart:~$ uart:~$ [00:15:40.814,000] <inf> buddyguard: Presence seq=469 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:15:40.838,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-7,13,1008) gyro_mrad_s=(5,-4,-2) samples=21773
+uart:~$ uart:~$ [00:15:42.815,000] <inf> buddyguard: Presence seq=470 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:15:42.860,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-11,13,1007) gyro_mrad_s=(4,-5,-2) samples=21820
+uart:~$ uart:~$ [00:15:44.817,000] <inf> buddyguard: Presence seq=471 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:15:44.881,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-9,8,1013) gyro_mrad_s=(5,-5,-2) samples=21867
+uart:~$ uart:~$ [00:15:46.818,000] <inf> buddyguard: Presence seq=472 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:15:46.903,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-10,10,1005) gyro_mrad_s=(5,-4,-2) samples=21914
+uart:~$ uart:~$ [00:15:48.819,000] <inf> buddyguard: Presence seq=473 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:15:48.924,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-11,9,1011) gyro_mrad_s=(4,-5,-2) samples=21961
+uart:~$ [00:15:49.231,000] <inf> bg_lora: TX tag=T01 type=1 seq=97 attempt=1
+uart:~$ [00:15:49.374,000] <inf> bg_lora: ACK tag=T01 type=1 seq=97 attempt=1 rssi=-18 snr=13
+uart:~$ uart:~$ [00:15:50.821,000] <inf> buddyguard: Presence seq=474 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:15:50.946,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-10,7,1007) gyro_mrad_s=(4,-5,-2) samples=22008
+uart:~$ uart:~$ [00:15:52.822,000] <inf> buddyguard: Presence seq=475 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:15:52.968,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-12,3,998) gyro_mrad_s=(5,-4,-1) samples=22055
+uart:~$ uart:~$ [00:15:54.824,000] <inf> buddyguard: Presence seq=476 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:15:54.989,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-12,6,1008) gyro_mrad_s=(5,-5,-2) samples=22102
+uart:~$ uart:~$ [00:15:56.825,000] <inf> buddyguard: Presence seq=477 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:15:57.011,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-8,7,1004) gyro_mrad_s=(4,-5,-2) samples=22149
+uart:~$ uart:~$ [00:15:58.826,000] <inf> buddyguard: Presence seq=478 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:15:59.033,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-4,8,1012) gyro_mrad_s=(4,-5,-1) samples=22196
+uart:~$ [00:15:59.245,000] <inf> bg_lora: TX tag=T01 type=1 seq=98 attempt=1
+uart:~$ [00:15:59.386,000] <inf> bg_lora: ACK tag=T01 type=1 seq=98 attempt=1 rssi=-18 snr=13
+uart:~$ uart:~$ [00:16:00.828,000] <inf> buddyguard: Presence seq=479 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:01.055,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-12,9,1010) gyro_mrad_s=(5,-5,-1) samples=22243
+uart:~$ uart:~$ [00:16:02.829,000] <inf> buddyguard: Presence seq=480 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:03.077,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-10,15,1006) gyro_mrad_s=(4,-5,-2) samples=22290
+uart:~$ uart:~$ [00:16:04.831,000] <inf> buddyguard: Presence seq=481 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:05.100,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-8,6,1007) gyro_mrad_s=(4,-5,-2) samples=22337
+uart:~$ uart:~$ [00:16:06.832,000] <inf> buddyguard: Presence seq=482 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:07.122,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-9,14,1012) gyro_mrad_s=(4,-5,-1) samples=22384
+uart:~$ uart:~$ [00:16:08.833,000] <inf> buddyguard: Presence seq=483 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:09.144,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-10,8,1003) gyro_mrad_s=(5,-5,-2) samples=22431
+uart:~$ [00:16:09.258,000] <inf> bg_lora: TX tag=T01 type=1 seq=99 attempt=1
+uart:~$ [00:16:09.399,000] <inf> bg_lora: ACK tag=T01 type=1 seq=99 attempt=1 rssi=-17 snr=12
+uart:~$ uart:~$ [00:16:10.835,000] <inf> buddyguard: Presence seq=484 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:11.166,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-7,0,1005) gyro_mrad_s=(5,-4,-2) samples=22478
+uart:~$ uart:~$ [00:16:12.836,000] <inf> buddyguard: Presence seq=485 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:13.188,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-9,14,1011) gyro_mrad_s=(5,-5,-2) samples=22525
+uart:~$ uart:~$ [00:16:14.838,000] <inf> buddyguard: Presence seq=486 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:15.210,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-11,10,1005) gyro_mrad_s=(4,-5,-2) samples=22572
+uart:~$ uart:~$ [00:16:16.839,000] <inf> buddyguard: Presence seq=487 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:17.231,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-8,6,1005) gyro_mrad_s=(4,-5,-2) samples=22619
+uart:~$ uart:~$ [00:16:18.840,000] <inf> buddyguard: Presence seq=488 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:19.253,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-9,6,1004) gyro_mrad_s=(5,-5,-2) samples=22666
+uart:~$ [00:16:19.272,000] <inf> bg_lora: TX tag=T01 type=1 seq=100 attempt=1
+uart:~$ [00:16:19.412,000] <inf> bg_lora: ACK tag=T01 type=1 seq=100 attempt=1 rssi=-18 snr=12
+uart:~$ uart:~$ [00:16:20.842,000] <inf> buddyguard: Presence seq=489 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:21.275,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-10,9,1005) gyro_mrad_s=(4,-5,-2) samples=22713
+uart:~$ uart:~$ [00:16:22.843,000] <inf> buddyguard: Presence seq=490 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:23.296,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-9,7,1004) gyro_mrad_s=(5,-5,-2) samples=22760
+uart:~$ uart:~$ [00:16:24.845,000] <inf> buddyguard: Presence seq=491 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:25.319,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-11,12,1004) gyro_mrad_s=(5,-5,-2) samples=22807
+uart:~$ uart:~$ [00:16:26.846,000] <inf> buddyguard: Presence seq=492 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:27.340,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-7,9,1007) gyro_mrad_s=(4,-5,-2) samples=22854
+uart:~$ uart:~$ [00:16:28.847,000] <inf> buddyguard: Presence seq=493 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:29.282,000] <inf> bg_lora: TX tag=T01 type=1 seq=101 attempt=1
+uart:~$ [00:16:29.362,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-18,20,1011) gyro_mrad_s=(5,-4,-3) samples=22901
+uart:~$ [00:16:29.423,000] <inf> bg_lora: ACK tag=T01 type=1 seq=101 attempt=1 rssi=-17 snr=13
+uart:~$ uart:~$ [00:16:30.849,000] <inf> buddyguard: Presence seq=494 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:31.384,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-12,6,1009) gyro_mrad_s=(5,-5,-2) samples=22948
+uart:~$ uart:~$ [00:16:32.850,000] <inf> buddyguard: Presence seq=495 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:33.406,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-5,9,1009) gyro_mrad_s=(4,-5,-2) samples=22995
+uart:~$ uart:~$ [00:16:34.852,000] <inf> buddyguard: Presence seq=496 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:35.427,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-8,6,1007) gyro_mrad_s=(5,-5,-1) samples=23042
+uart:~$ uart:~$ [00:16:36.853,000] <inf> buddyguard: Presence seq=497 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:37.449,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-5,5,1012) gyro_mrad_s=(5,-5,-2) samples=23089
+uart:~$ uart:~$ [00:16:38.854,000] <inf> buddyguard: Presence seq=498 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:39.292,000] <inf> bg_lora: TX tag=T01 type=1 seq=102 attempt=1
+uart:~$ [00:16:39.435,000] <inf> bg_lora: ACK tag=T01 type=1 seq=102 attempt=1 rssi=-18 snr=12
+uart:~$ [00:16:39.472,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-10,8,1006) gyro_mrad_s=(5,-5,-2) samples=23136
+uart:~$ uart:~$ [00:16:40.856,000] <inf> buddyguard: Presence seq=499 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:41.493,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-10,7,1003) gyro_mrad_s=(5,-5,-2) samples=23183
+uart:~$ uart:~$ [00:16:42.857,000] <inf> buddyguard: Presence seq=500 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:43.516,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-8,10,1017) gyro_mrad_s=(5,-5,-2) samples=23230
+uart:~$ uart:~$ [00:16:44.859,000] <inf> buddyguard: Presence seq=501 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:45.538,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-10,10,1007) gyro_mrad_s=(5,-5,-2) samples=23277
+uart:~$ uart:~$ [00:16:46.860,000] <inf> buddyguard: Presence seq=502 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:47.559,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-9,3,1009) gyro_mrad_s=(4,-5,-2) samples=23324
+uart:~$ uart:~$ [00:16:48.861,000] <inf> buddyguard: Presence seq=503 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:49.305,000] <inf> bg_lora: TX tag=T01 type=1 seq=103 attempt=1
+uart:~$ [00:16:49.447,000] <inf> bg_lora: ACK tag=T01 type=1 seq=103 attempt=1 rssi=-18 snr=13
+uart:~$ [00:16:49.582,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-11,12,1006) gyro_mrad_s=(4,-5,-2) samples=23371
+uart:~$ uart:~$ [00:16:50.863,000] <inf> buddyguard: Presence seq=504 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:51.604,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-5,0,1009) gyro_mrad_s=(4,-5,-2) samples=23418
+uart:~$ uart:~$ [00:16:52.864,000] <inf> buddyguard: Presence seq=505 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:53.625,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-10,12,1014) gyro_mrad_s=(4,-5,-2) samples=23465
+uart:~$ uart:~$ [00:16:54.866,000] <inf> buddyguard: Presence seq=506 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:55.646,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-6,8,1003) gyro_mrad_s=(4,-5,-2) samples=23512
+uart:~$ uart:~$ [00:16:56.867,000] <inf> buddyguard: Presence seq=507 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:57.668,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-12,5,1006) gyro_mrad_s=(5,-5,-2) samples=23559
+uart:~$ uart:~$ [00:16:58.868,000] <inf> buddyguard: Presence seq=508 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:16:59.317,000] <inf> bg_lora: TX tag=T01 type=1 seq=104 attempt=1
+uart:~$ [00:16:59.458,000] <inf> bg_lora: ACK tag=T01 type=1 seq=104 attempt=1 rssi=-18 snr=12
+uart:~$ [00:16:59.690,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-6,6,1009) gyro_mrad_s=(3,-5,-1) samples=23606
+uart:~$ uart:~$ [00:17:00.870,000] <inf> buddyguard: Presence seq=509 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:17:01.711,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-8,12,1010) gyro_mrad_s=(4,-4,-2) samples=23653
+uart:~$ [00:17:01.797,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(-100,107,1024) gyro_mrad_s=(44,-50,194) samples=23655
+uart:~$ uart:~$ [00:17:02.871,000] <inf> buddyguard: Presence seq=510 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:17:03.175,000] <wrn> bg_imu: IMPACT src=polled axis=z polled_delta_mg=1051 (threshold 1000); SOS queue result=0
+uart:~$ [00:17:03.321,000] <inf> bg_lora: TX tag=T01 type=3 seq=105 attempt=1
+uart:~$ [00:17:03.461,000] <inf> bg_lora: ACK tag=T01 type=3 seq=105 attempt=1 rssi=-21 snr=13
+uart:~$ [00:17:03.820,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(-9,17,1020) gyro_mrad_s=(6,-6,-3) samples=23702
+uart:~$ uart:~$ [00:17:04.873,000] <inf> buddyguard: Presence seq=511 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:17:05.842,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(-13,8,1029) gyro_mrad_s=(4,3,-2) samples=23749
+uart:~$ uart:~$ [00:17:06.057,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-9,7,1024) gyro_mrad_s=(3,4,-1) samples=23754
+uart:~$ [00:17:06.874,000] <inf> buddyguard: Presence seq=512 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:17:08.080,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-7,0,1022) gyro_mrad_s=(5,1,-1) samples=23801
+uart:~$ [00:17:08.875,000] <inf> buddyguard: Presence seq=513 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:17:08.897,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(54,139,1027) gyro_mrad_s=(5,2,0) samples=23820
+uart:~$ uart:~$ [00:17:09.469,000] <inf> bg_lora: TX tag=T01 type=1 seq=106 attempt=1
+uart:~$ [00:17:09.611,000] <inf> bg_lora: ACK tag=T01 type=1 seq=106 attempt=1 rssi=-19 snr=13
+uart:~$ uart:~$ [00:17:10.877,000] <inf> buddyguard: Presence seq=514 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:17:10.921,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(-14,-7,1025) gyro_mrad_s=(5,0,15) samples=23867
+uart:~$ [00:17:10.964,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-11,7,1024) gyro_mrad_s=(5,1,7) samples=23868
+uart:~$ uart:~$ [00:17:12.878,000] <inf> buddyguard: Presence seq=515 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:17:12.985,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-7,1,1030) gyro_mrad_s=(6,0,-2) samples=23915
+uart:~$ uart:~$ [00:17:14.880,000] <inf> buddyguard: Presence seq=516 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:17:15.007,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-18,-13,1030) gyro_mrad_s=(7,-1,-14) samples=23962
+uart:~$ uart:~$ [00:17:16.881,000] <inf> buddyguard: Presence seq=517 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:17:17.028,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-17,-7,1035) gyro_mrad_s=(6,1,-1) samples=24009
+uart:~$ uart:~$ [00:17:18.882,000] <inf> buddyguard: Presence seq=518 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:17:19.050,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-15,7,1032) gyro_mrad_s=(5,1,-2) samples=24056
+uart:~$ [00:17:19.481,000] <inf> bg_lora: TX tag=T01 type=1 seq=107 attempt=1
+uart:~$ [00:17:19.625,000] <inf> bg_lora: ACK tag=T01 type=1 seq=107 attempt=1 rssi=-19 snr=12
+uart:~$ [00:17:19.824,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(197,13,1037) gyro_mrad_s=(4,5,-2) samples=24074
+uart:~$ uart:~$ [00:17:20.884,000] <inf> buddyguard: Presence seq=519 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:17:21.845,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(-10,5,1035) gyro_mrad_s=(4,2,-20) samples=24121
+uart:~$ uart:~$ [00:17:21.888,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-8,6,1025) gyro_mrad_s=(4,3,-20) samples=24122
+uart:~$ [00:17:22.885,000] <inf> buddyguard: Presence seq=520 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:17:23.910,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-15,3,1034) gyro_mrad_s=(4,5,-1) samples=24169
+uart:~$ [00:17:24.887,000] <inf> buddyguard: Presence seq=521 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:17:25.931,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-11,13,1028) gyro_mrad_s=(1,7,0) samples=24216
+uart:~$ [00:17:26.888,000] <inf> buddyguard: Presence seq=522 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:17:27.954,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-10,11,1025) gyro_mrad_s=(1,7,-1) samples=24263
+uart:~$ [00:17:28.889,000] <inf> buddyguard: Presence seq=523 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:17:29.495,000] <inf> bg_lora: TX tag=T01 type=1 seq=108 attempt=1
+uart:~$ [00:17:29.635,000] <inf> bg_lora: ACK tag=T01 type=1 seq=108 attempt=1 rssi=-19 snr=13
+uart:~$ [00:17:29.976,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-14,6,1028) gyro_mrad_s=(3,5,-1) samples=24310
+uart:~$ uart:~$ [00:17:30.891,000] <inf> buddyguard: Presence seq=524 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:17:31.999,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-14,13,1030) gyro_mrad_s=(4,0,-2) samples=24357
+uart:~$ [00:17:32.892,000] <inf> buddyguard: Presence seq=525 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:17:33.849,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(-511,385,1020) gyro_mrad_s=(7,-3,-128) samples=24400
+uart:~$ uart:~$ [00:17:34.894,000] <inf> buddyguard: Presence seq=526 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:17:35.870,000] <inf> bg_imu: IMU motion=MOVING accel_mg=(-15,-4,1015) gyro_mrad_s=(6,-3,-3) samples=24447
+uart:~$ uart:~$ [00:17:36.731,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-14,5,1021) gyro_mrad_s=(7,-3,-3) samples=24467
+uart:~$ [00:17:36.895,000] <inf> buddyguard: Presence seq=527 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:17:38.752,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-15,8,1026) gyro_mrad_s=(6,-4,-3) samples=24514
+uart:~$ [00:17:38.896,000] <inf> buddyguard: Presence seq=528 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:17:39.505,000] <inf> bg_lora: TX tag=T01 type=1 seq=109 attempt=1
+uart:~$ [00:17:39.647,000] <inf> bg_lora: ACK tag=T01 type=1 seq=109 attempt=1 rssi=-21 snr=12
+uart:~$ uart:~$ [00:17:40.774,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-14,11,1026) gyro_mrad_s=(6,-5,-3) samples=24561
+uart:~$ [00:17:40.898,000] <inf> buddyguard: Presence seq=529 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:17:42.796,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-13,8,1023) gyro_mrad_s=(6,-5,-3) samples=24608
+uart:~$ [00:17:42.899,000] <inf> buddyguard: Presence seq=530 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:17:44.817,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-16,2,1021) gyro_mrad_s=(4,-5,-3) samples=24655
+uart:~$ [00:17:44.901,000] <inf> buddyguard: Presence seq=531 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:17:46.839,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-9,18,1016) gyro_mrad_s=(5,-5,-3) samples=24702
+uart:~$ [00:17:46.902,000] <inf> buddyguard: Presence seq=532 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:17:48.861,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-10,8,1014) gyro_mrad_s=(5,-5,-3) samples=24749
+uart:~$ [00:17:48.903,000] <inf> buddyguard: Presence seq=533 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:17:49.517,000] <inf> bg_lora: TX tag=T01 type=1 seq=110 attempt=1
+uart:~$ [00:17:49.658,000] <inf> bg_lora: ACK tag=T01 type=1 seq=110 attempt=1 rssi=-20 snr=12
+uart:~$ uart:~$ [00:17:50.884,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-13,15,1022) gyro_mrad_s=(5,-5,-3) samples=24796
+uart:~$ [00:17:50.905,000] <inf> buddyguard: Presence seq=534 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:17:52.906,000] <inf> buddyguard: Presence seq=535 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:17:52.907,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-15,11,1018) gyro_mrad_s=(4,-5,-3) samples=24843
+uart:~$ uart:~$ [00:17:54.908,000] <inf> buddyguard: Presence seq=536 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:17:54.928,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-12,10,1018) gyro_mrad_s=(5,-5,-3) samples=24890
+uart:~$ uart:~$ [00:17:56.909,000] <inf> buddyguard: Presence seq=537 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:17:56.950,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-8,6,1014) gyro_mrad_s=(5,-5,-3) samples=24937
+uart:~$ uart:~$ [00:17:58.910,000] <inf> buddyguard: Presence seq=538 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:17:58.971,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-10,7,1017) gyro_mrad_s=(4,-5,-3) samples=24984
+uart:~$ [00:17:59.528,000] <inf> bg_lora: TX tag=T01 type=1 seq=111 attempt=1
+uart:~$ uart:~$ [00:18:00.685,000] <inf> bg_lora: TX tag=T01 type=1 seq=111 attempt=2
+uart:~$ [00:18:00.829,000] <inf> bg_lora: ACK tag=T01 type=1 seq=111 attempt=2 rssi=-20 snr=13
+uart:~$ [00:18:00.912,000] <inf> buddyguard: Presence seq=539 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:18:00.994,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-10,10,1013) gyro_mrad_s=(5,-5,-3) samples=25031
+uart:~$ uart:~$ [00:18:02.913,000] <inf> buddyguard: Presence seq=540 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:18:03.016,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-14,9,1009) gyro_mrad_s=(5,-5,-3) samples=25078
+uart:~$ uart:~$ [00:18:04.915,000] <inf> buddyguard: Presence seq=541 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:18:05.038,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-15,10,1018) gyro_mrad_s=(5,-5,-3) samples=25125
+uart:~$ uart:~$ [00:18:06.916,000] <inf> buddyguard: Presence seq=542 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:18:07.061,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-11,9,1014) gyro_mrad_s=(5,-4,-4) samples=25172
+uart:~$ uart:~$ [00:18:08.917,000] <inf> buddyguard: Presence seq=543 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:18:09.082,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-9,13,1019) gyro_mrad_s=(5,-5,-3) samples=25219
+uart:~$ [00:18:09.627,000] <inf> bg_lora: TX tag=T01 type=1 seq=112 attempt=1
+uart:~$ [00:18:09.771,000] <inf> bg_lora: ACK tag=T01 type=1 seq=112 attempt=1 rssi=-20 snr=13
+uart:~$ uart:~$ [00:18:10.919,000] <inf> buddyguard: Presence seq=544 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:18:11.106,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-8,10,1008) gyro_mrad_s=(4,-5,-3) samples=25266
+uart:~$ uart:~$ [00:18:12.920,000] <inf> buddyguard: Presence seq=545 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:18:13.128,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-11,14,1012) gyro_mrad_s=(5,-5,-3) samples=25313
+uart:~$ uart:~$ [00:18:14.922,000] <inf> buddyguard: Presence seq=546 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:18:15.149,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-9,4,1012) gyro_mrad_s=(5,-5,-2) samples=25360
+uart:~$ uart:~$ [00:18:16.923,000] <inf> buddyguard: Presence seq=547 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:18:17.171,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-5,16,1013) gyro_mrad_s=(4,-4,-2) samples=25407
+uart:~$ uart:~$ [00:18:18.924,000] <inf> buddyguard: Presence seq=548 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:18:19.192,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-11,17,1009) gyro_mrad_s=(6,-4,-4) samples=25454
+uart:~$ [00:18:19.642,000] <inf> bg_lora: TX tag=T01 type=1 seq=113 attempt=1
+uart:~$ [00:18:19.783,000] <inf> bg_lora: ACK tag=T01 type=1 seq=113 attempt=1 rssi=-21 snr=12
+uart:~$ uart:~$ [00:18:20.926,000] <inf> buddyguard: Presence seq=549 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:18:21.214,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-12,12,1018) gyro_mrad_s=(4,-5,-3) samples=25501
+uart:~$ uart:~$ [00:18:22.927,000] <inf> buddyguard: Presence seq=550 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:18:23.236,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-18,13,1007) gyro_mrad_s=(4,-5,-2) samples=25548
+uart:~$ uart:~$ [00:18:24.929,000] <inf> buddyguard: Presence seq=551 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:18:25.257,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-6,16,1006) gyro_mrad_s=(5,-5,-2) samples=25595
+uart:~$ uart:~$ [00:18:26.930,000] <inf> buddyguard: Presence seq=552 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:18:27.279,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-10,15,1018) gyro_mrad_s=(5,-4,-3) samples=25642
+uart:~$ uart:~$ [00:18:28.931,000] <inf> buddyguard: Presence seq=553 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:18:29.300,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-10,6,1007) gyro_mrad_s=(5,-5,-3) samples=25689
+uart:~$ [00:18:29.653,000] <inf> bg_lora: TX tag=T01 type=1 seq=114 attempt=1
+uart:~$ [00:18:29.797,000] <inf> bg_lora: ACK tag=T01 type=1 seq=114 attempt=1 rssi=-21 snr=13
+uart:~$ uart:~$ [00:18:30.933,000] <inf> buddyguard: Presence seq=554 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:18:31.323,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-10,16,1007) gyro_mrad_s=(5,-4,-2) samples=25736
+uart:~$ uart:~$ [00:18:32.934,000] <inf> buddyguard: Presence seq=555 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:18:33.344,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-10,6,1006) gyro_mrad_s=(5,-5,-2) samples=25783
+uart:~$ uart:~$ [00:18:34.936,000] <inf> buddyguard: Presence seq=556 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:18:35.368,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-11,13,1007) gyro_mrad_s=(5,-5,-2) samples=25830
+uart:~$ uart:~$ 

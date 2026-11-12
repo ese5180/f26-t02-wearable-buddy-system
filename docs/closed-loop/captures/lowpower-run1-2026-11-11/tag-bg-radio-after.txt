@@ -1,0 +1,7 @@
+uart:~$ bg radio
+radio tx_attempts=68 completed=62 exhausted=0 rx=62 interleaved=0 duplicates=0 queries=0 replies=0 queue_drops=0
+uart:~$ [00:10:08.593,000] <inf> buddyguard: Presence seq=303 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:10:08.775,000] <inf> bg_lora: TX tag=T01 type=1 seq=63 attempt=1
+uart:~$ [00:10:08.917,000] <inf> bg_lora: ACK tag=T01 type=1 seq=63 attempt=1 rssi=-17 snr=13
+uart:~$ [00:10:09.557,000] <inf> bg_imu: IMU motion=STILL accel_mg=(-9,7,1009) gyro_mrad_s=(3,-5,-2) samples=14072
+uart:~$ uart:~$ 

@@ -1,0 +1,51 @@
+
+uart:~$ bg status
+version=1.6.6 role=TAG tag=1 sequence=23 connected=0 maintenance=1 confirmed=1
+uart:~$ [00:00:48.556,000] <inf> bg_lora: TX tag=T01 type=1 seq=5 attempt=2
+uart:~$ [00:00:48.687,000] <inf> bg_imu: IMU motion=STILL accel_mg=(3,12,1008) gyro_mrad_s=(6,-5,-2) samples=1036
+uart:~$ [00:00:48.697,000] <inf> bg_lora: ACK tag=T01 type=1 seq=5 attempt=2 rssi=-18 snr=13
+uart:~$ uart:~$ 
+ [00:14:33.974,000] <inf> buddyguard: Presence seq=435 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:14:35.978,000] <inf> buddyguard: Presence seq=436 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ uart:~$ 
+uart:~$ bg status
+version=1.5.3 role=COUNSELOR tag=200 sequence=866 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:28:57.760,000] <inf> buddyguard: Presence seq=866 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ 
+
+uart:~$ bg maintenance 0
+Maintenance admission window: 0 seconds
+uart:~$ [00:00:52.166,000] <inf> buddyguard: Presence seq=25 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ [00:00:52.730,000] <inf> bg_imu: IMU motion=STILL accel_mg=(0,13,1009) gyro_mrad_s=(6,-5,-2) samples=1130
+uart:~$ uart:~$ 
+
+uart:~$ bg maintenance 0
+Maintenance admission window: 0 seconds
+uart:~$ [00:29:01.769,000] <inf> buddyguard: Presence seq=868 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ 
+ples=1271
+uart:~$ uart:~$ uart:~$ 
+uart:~$ bg sos
+SOS queue result=0
+uart:~$ [00:01:10.180,000] <inf> buddyguard: Presence seq=34 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:01:10.884,000] <inf> bg_imu: IMU motion=STILL accel_mg=(2,14,1007) gyro_mrad_s=(6,-5,-2) samples=1552
+uart:~$ uart:~$ [00:01:11.196,000] <inf> bg_lora: TX tag=T01 type=3 seq=8 attempt=1
+uart:~$ [00:01:11.338,000] <inf> bg_lora: ACK tag=T01 type=3 seq=8 attempt=1 rssi=-20 snr=13
+uart:~$ [00:01:12.181,000] <inf> buddyguard: Presence seq=35 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ 
+
+uart:~$ bg heartbeat off
+Heartbeat off
+uart:~$ [00:01:18.973,000] <inf> bg_imu: IMU motion=STILL accel_mg=(1,16,1009) gyro_mrad_s=(6,-5,-2) samples=1740
+uart:~$ uart:~$ 
+dvertising=0 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ uart:~$ 
+uart:~$ bg heartbeat on
+Heartbeat on
+uart:~$ [00:01:46.193,000] <inf> buddyguard: Presence seq=52 advertising=0 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ [00:01:47.273,000] <inf> bg_imu: IMU motion=STILL accel_mg=(7,15,1008) gyro_mrad_s=(6,-5,-2) samples=2398
+uart:~$ [00:01:47.990,000] <inf> bg_lora: TX tag=T01 type=1 seq=12 attempt=1
+uart:~$ [00:01:48.132,000] <inf> bg_lora: ACK tag=T01 type=1 seq=12 attempt=1 rssi=-21 snr=13
+uart:~$ [00:01:48.195,000] <inf> bg_presence: Advertising started: presence
+uart:~$ [00:01:48.195,000] <inf> buddyguard: Presence seq=53 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ 

@@ -1,0 +1,9 @@
+50 ms MA median 74.04 mA, max 115.51 mA, threshold 89.04 mA, 6 events
+    1.513 s  width 107 ms  peak 50 ms mean 115.2 mA
+   11.560 s  width 103 ms  peak 50 ms mean 111.9 mA
+   21.588 s  width 104 ms  peak 50 ms mean 111.9 mA
+   31.789 s  width 106 ms  peak 50 ms mean 112.0 mA
+   41.801 s  width 107 ms  peak 50 ms mean 115.5 mA
+   51.985 s  width 107 ms  peak 50 ms mean 112.3 mA
+intervals s: [10.05, 10.03, 10.2, 10.01, 10.18]
+min 10.01 max 10.20 s; all 10 +/- 1 s: True

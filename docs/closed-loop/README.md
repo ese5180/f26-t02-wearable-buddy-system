@@ -4,8 +4,8 @@ Two tag features were built with an AI agent in a closed loop: **write the pass 
 
 | Feature | Requirement | Instrument | Pass test | Status |
 | --- | --- | --- | --- | --- |
-| 1. Impact → automatic SOS | ≥ 1000 mg single-axis change between 417 Hz IMU samples → 50 ms marker on D0 + one LoRa SOS, 3 s lockout | Saleae (D0, SDA, SCL) | [impact-pass-test.md](impact-pass-test.md) | iterations 1–2 tuned on the bench (see below); iteration 3 (1.6.4) built; Saleae run pending |
-| 2. Low-power profile | tag average current −10 % or better, same behaviour | PPK2 (source 3300 mV) | [lowpower-pass-test.md](lowpower-pass-test.md) | iteration 2 (1.6.6, 80 MHz only) built; PPK2 before/after pending |
+| 1. Impact → automatic SOS | ≥ 1000 mg single-axis change between 417 Hz IMU samples → 50 ms marker on D0 + one LoRa SOS, 3 s lockout | Saleae (D0, SDA, SCL) | [impact-pass-test.md](impact-pass-test.md) | iterations 1–2 tuned on the bench (see below); iteration 3 (1.6.4): **PASS** T1–T7 (Saleae run 2026-11-11) |
+| 2. Low-power profile | tag average current −10 % or better, same behaviour | PPK2 (source 3300 mV) | [lowpower-pass-test.md](lowpower-pass-test.md) | iteration 2 (1.6.6, 80 MHz only): **PASS** P1–P5, 74.88 → 63.24 mA (−15.5 %) |
 
 ## Feature 1: impact detection → automatic SOS
 
@@ -66,9 +66,15 @@ Filled in from the instrument runs (files under [captures/](captures/)).
 
 | Pass test | Measured | Pass? |
 | --- | --- | --- |
-| T1–T7 impact | _pending Saleae run_ | |
-| P1 average current | before _–_ mA → after _–_ mA (_–_ %) | |
-| P2–P5 behaviour | _pending_ | |
+| T1–T7 impact | 1.6.4, Saleae 4 MS/s: 0 false edges at rest; pulses 50.03–50.05 ms; 3 knocks → 3 pulses + 3 `IMPACT`; double knock → 1 pulse; marker 0.022–0.024 ms after the I2C read; SOS ACKed 165–332 ms (see [impact-pass-test.md](impact-pass-test.md)) | PASS |
+| P1 average current | before **74.881 mA** (1.6.4) → after **63.243 mA** (1.6.6), **−15.5 %** (limit −10 %). PPK2 3300 mV, 60 s after 320 s settle, 6,000,000 samples each ([before](captures/lowpower-before-2026-11-11.csv), [after](captures/lowpower-after-2026-11-11.csv)) | PASS |
+| P2 LoRa peaks | 6 TX events per capture, every 10.01–10.20 s (before) and 10.01 s (after); TX 50 ms mean 112–116 → 101–104 mA | PASS |
+| P3 presence | counselor roster `ONLINE tag=T01 maintenance=0`, then 0 `BLE MISSING` in 196 s ([run 2](captures/lowpower-run2-2026-11-11/)) | PASS |
+| P4 demo | SOS → ACTION; heartbeat off → MISSING after 9.85 s → QUERY answered (attempt 1); heartbeat on → RECOVERED ([demo logs](captures/lowpower-demo-2026-11-11/)) | PASS |
+| P5 impact | one knock → one `IMPACT` (1051 mg) → one `ACTION`; `impacts` counter +1 (run 2). Run 1's double trigger came from the board tipping after the knock (see the pass test) | PASS |
+
+PPK2 caveat: the resistor known-answer check in BENCH.md was not done. The runs rely on the script's
+built-in sample-count and range check (both 100 %, 0 out of range).
 
 ## Limits
 

@@ -1,0 +1,25 @@
+     30 s settling
+     60 s settling
+     90 s settling
+    120 s settling
+    150 s settling
+    180 s settling
+    210 s settling
+    240 s settling
+    270 s settling
+    300 s settling
+    330 s recording
+    360 s recording
+3300 mV, settle 320 s, record 60 s, port /dev/cu.usbmodemDFCCAF094DE02, 1077885 samples -> docs/closed-loop/captures/before.csv, output OFF
+mean 9669.492 mA  median 9457.197  p99 22365.273  max 22367.386 mA
+  s0   mean 9669.512 mA  max 22367.386 mA
+  s1   mean 9669.558 mA  max 22367.386 mA
+  s2   mean 9669.424 mA  max 22367.386 mA
+  s3   mean 9669.555 mA  max 22367.386 mA
+  s4   mean 9669.432 mA  max 22367.386 mA
+  s5   mean 9669.557 mA  max 22367.386 mA
+  s6   mean 9669.426 mA  max 22367.386 mA
+  s7   mean 9669.554 mA  max 22367.386 mA
+  s8   mean 9669.425 mA  max 22367.386 mA
+  s9   mean 9669.558 mA  max 22367.386 mA
+  s10  mean 9669.388 mA  max 22367.386 mA

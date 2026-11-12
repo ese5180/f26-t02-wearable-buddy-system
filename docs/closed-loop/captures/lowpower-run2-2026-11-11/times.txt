@@ -1,0 +1,5 @@
+monitors start 22:26:13
+counselor reboot sent 22:26:16
+knock cue 22:28:30 (= counselor uptime ~133 s, after the 120 s watch)
+knock reported by operator 22:28:27
+monitors ended 22:29:44

@@ -1,0 +1,196 @@
+[00:09:37.357,000] <inf> buddyguard: Presence seq=287 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ [00:09:38.645,000] <inf> bg_lora: RX tag=T01 type=1 seq=60 rssi=-17 snr=12 motion=STILL battery=unavailable
+uart:~$ [00:15:06.036,000] <inf> buddyguard: Presence seq=451 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ uart:~$ [00:15:08.040,000] <inf> buddyguard: Presence seq=452 advertising=1 connected=0 maintenance=0 confirmed=1
+uart:~$ uart:~$ 
+uart:~$ bg reboot
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4038802c
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fcb6900,len:0x165c
+load:0x3fce4f08,len:0x748
+load:0x403bdc00,len:0xc4bc
+load:0x403d5b00,len:0x162c
+entry 0x403bf64c
+I (soc_init): MCUboot 2nd stage bootloader
+I (soc_init): compile time Oct 31 2026 11:22:17
+W (soc_init): Unicore bootloader
+I (soc_init): chip revision: v0.2
+I (flash_init): Boot SPI Speed : 80MHz
+I (flash_init): SPI Mode       : DIO
+I (flash_init): SPI Flash Size : 8MB
+*** Using Zephyr OS build v4.4.0-13528-gf80761e49401 ***
+I (boot): Loading image 0 - slot 0 from flash, area id: 2
+I (boot): Application start=40382808h
+I (boot): DRAM	: lma=000365b0h vma=3fc9a520h size=0534ch ( 21324) load
+I (boot): IRAM	: lma=000200a4h vma=40374000h size=1650ch ( 91404) load
+I (boot): IROM	: lma=00040000h vma=42000000h size=A0DE0h (658912) map
+I (boot): DROM	: lma=000f0000h vma=3c0b0000h size=1BC44h (113732) map
+I (boot): libc heap size 67 kB.
+I (cache): Instruction cache: size 16KB, 8Ways, cache line size 32Byte
+I (spi_flash): detected chip: gd
+I (spi_flash): flash io: dio
+I (octal_psram): vendor id    : 0x0d (AP)
+I (octal_psram): dev id       : 0x02 (generation 3)
+I (octal_psram): density      : 0x03 (64 Mbit)
+I (octal_psram): good-die     : 0x01 (Pass)
+I (octal_psram): Latency      : 0x01 (Fixed)
+I (octal_psram): VCC          : 0x01 (3V)
+I (octal_psram): SRF          : 0x01 (Fast Refresh)
+I (octal_psram): BurstType    : 0x01 (Hybrid Wrap)
+I (octal_psram): BurstLen     : 0x01 (32 Byte)
+I (octal_psram): Readlatency  : 0x02 (10 cycles@Fixed)
+I (octal_psram): DriveStrength: 0x00 (1/1)
+I (esp_psram): Found 8MB PSRAM device
+I (esp_psram): Speed: 40MHz
+
+uart:~$ [00:00:04.117,000] <inf> bg_wio: SX1262 SPI readback: private sync word=0x1424 (expected 0x1424)
+uart:~$ [00:00:04.117,000] <inf> bg_wio: Wio-SX1262 ready: 915 MHz SF7 BW125 CR4/5 power=4 dBm role=COUNSELOR
+uart:~$ I (BLE_INIT): BT controller compile version [51d9dfd]
+uart:~$ W (BLE_INIT): CONFIG_BT_CTRL_CHECK_CONFIG_EFF is not defined; using compile-time default BLE controller feature options
+uart:~$ I (BLE_INIT): Using main XTAL as clock source
+uart:~$ I (BLE_INIT): Feature Config, ADV:1, BLE_50:1, DTM:1, SCAN:1, CCA:0, SMP:1, CONNECT:1
+uart:~$ I (BLE_INIT): Bluetooth MAC: e0:72:a1:f8:01:b2
+uart:~$ [00:00:04.122,000] <wrn> bt_hci_core: Num of Controller's ACL packets != ACL bt_conn_tx contexts (12 != 10)
+uart:~$ [00:00:04.122,000] <inf> bt_hci_core: HW Platform: Espressif Systems (0x0004)
+uart:~$ [00:00:04.122,000] <inf> bt_hci_core: HW Variant: ESP32-S3 (0x0002)
+uart:~$ [00:00:04.122,000] <inf> bt_hci_core: Controller: Standard Bluetooth controller (0x00) manufacturer 0x02e5 Version 4.4 Build 99
+uart:~$ [00:00:04.122,000] <inf> bt_hci_core: HCI transport: BT ESP32
+uart:~$ [00:00:04.123,000] <inf> bt_hci_core: Identity: E0:72:A1:F8:01:B2 (public)
+uart:~$ [00:00:04.123,000] <inf> bt_hci_core: HCI: version 5.0 (0x09) revision 0x0016, manufacturer 0x02e5
+uart:~$ [00:00:04.123,000] <inf> bt_hci_core: LMP: version 5.0 (0x09) subver 0x0016
+uart:~$ [00:00:04.124,000] <inf> bg_roster: Counselor BLE roster started: controller duplicate filtering OFF; demo timeout=8000 ms; maintenance grace=600 s
+uart:~$ [00:00:04.138,000] <inf> fs_nvs: 8 Sectors of 4096 bytes
+uart:~$ [00:00:04.138,000] <inf> fs_nvs: alloc wra: 0, fb8
+uart:~$ [00:00:04.138,000] <inf> fs_nvs: data wra: 0, b0
+uart:~$ [00:00:04.138,000] <inf> bg_wifi: Wi-Fi STA MAC E0:72:A1:F8:01:B0; configured=1
+uart:~$ [00:00:04.142,000] <inf> bg_roster: ONLINE tag=T01 seq=458 maintenance=0
+uart:~$ [00:00:04.144,000] <inf> bg_presence: Advertising started: maintenance/SMP
+uart:~$ [00:00:04.144,000] <inf> buddyguard: Presence seq=1 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ uart:~$ [00:00:04.279,000] <inf> bg_lora: RX tag=T01 type=1 seq=94 rssi=-17 snr=12 motion=STILL battery=unavailable
+uart:~$ uart:~$ [00:00:06.148,000] <inf> buddyguard: Presence seq=2 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:00:08.152,000] <inf> buddyguard: Presence seq=3 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:00:10.157,000] <inf> buddyguard: Presence seq=4 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:00:12.161,000] <inf> buddyguard: Presence seq=5 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:00:14.166,000] <inf> buddyguard: Presence seq=6 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ [00:00:14.290,000] <inf> bg_lora: RX tag=T01 type=1 seq=95 rssi=-18 snr=12 motion=STILL battery=unavailable
+uart:~$ uart:~$ [00:00:16.170,000] <inf> buddyguard: Presence seq=7 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:00:18.174,000] <inf> buddyguard: Presence seq=8 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:00:20.179,000] <inf> buddyguard: Presence seq=9 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:00:22.183,000] <inf> buddyguard: Presence seq=10 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:00:24.187,000] <inf> buddyguard: Presence seq=11 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ [00:00:24.301,000] <inf> bg_lora: RX tag=T01 type=1 seq=96 rssi=-18 snr=12 motion=STILL battery=unavailable
+uart:~$ uart:~$ [00:00:26.192,000] <inf> buddyguard: Presence seq=12 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:00:28.196,000] <inf> buddyguard: Presence seq=13 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:00:30.200,000] <inf> buddyguard: Presence seq=14 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:00:32.204,000] <inf> buddyguard: Presence seq=15 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:00:34.209,000] <inf> buddyguard: Presence seq=16 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ [00:00:34.311,000] <inf> bg_lora: RX tag=T01 type=1 seq=97 rssi=-19 snr=13 motion=STILL battery=unavailable
+uart:~$ uart:~$ [00:00:36.213,000] <inf> buddyguard: Presence seq=17 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:00:38.217,000] <inf> buddyguard: Presence seq=18 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:00:40.222,000] <inf> buddyguard: Presence seq=19 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:00:42.226,000] <inf> buddyguard: Presence seq=20 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:00:44.147,000] <wrn> bg_wifi: Wi-Fi connection failed: -11
+uart:~$ [00:00:44.230,000] <inf> buddyguard: Presence seq=21 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ [00:00:44.325,000] <inf> bg_lora: RX tag=T01 type=1 seq=98 rssi=-19 snr=13 motion=STILL battery=unavailable
+uart:~$ uart:~$ [00:00:46.234,000] <inf> buddyguard: Presence seq=22 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:00:48.239,000] <inf> buddyguard: Presence seq=23 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:00:50.243,000] <inf> buddyguard: Presence seq=24 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:00:52.247,000] <inf> buddyguard: Presence seq=25 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:00:54.252,000] <inf> buddyguard: Presence seq=26 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ [00:00:54.338,000] <inf> bg_lora: RX tag=T01 type=1 seq=99 rssi=-18 snr=12 motion=STILL battery=unavailable
+uart:~$ uart:~$ [00:00:56.256,000] <inf> buddyguard: Presence seq=27 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:00:58.260,000] <inf> buddyguard: Presence seq=28 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:01:00.265,000] <inf> buddyguard: Presence seq=29 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:01:02.269,000] <inf> buddyguard: Presence seq=30 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:01:04.273,000] <inf> buddyguard: Presence seq=31 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ [00:01:04.352,000] <inf> bg_lora: RX tag=T01 type=1 seq=100 rssi=-18 snr=13 motion=STILL battery=unavailable
+uart:~$ uart:~$ [00:01:06.278,000] <inf> buddyguard: Presence seq=32 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:01:08.282,000] <inf> buddyguard: Presence seq=33 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:01:10.286,000] <inf> buddyguard: Presence seq=34 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:01:12.290,000] <inf> buddyguard: Presence seq=35 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:01:14.295,000] <inf> buddyguard: Presence seq=36 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ [00:01:14.362,000] <inf> bg_lora: RX tag=T01 type=1 seq=101 rssi=-18 snr=12 motion=STILL battery=unavailable
+uart:~$ uart:~$ [00:01:16.299,000] <inf> buddyguard: Presence seq=37 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:01:18.303,000] <inf> buddyguard: Presence seq=38 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:01:20.308,000] <inf> buddyguard: Presence seq=39 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:01:22.312,000] <inf> buddyguard: Presence seq=40 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:01:24.316,000] <inf> buddyguard: Presence seq=41 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ [00:01:24.373,000] <inf> bg_lora: RX tag=T01 type=1 seq=102 rssi=-19 snr=13 motion=STILL battery=unavailable
+uart:~$ uart:~$ [00:01:26.321,000] <inf> buddyguard: Presence seq=42 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:01:28.325,000] <inf> buddyguard: Presence seq=43 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:01:30.329,000] <inf> buddyguard: Presence seq=44 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:01:32.334,000] <inf> buddyguard: Presence seq=45 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:01:34.338,000] <inf> buddyguard: Presence seq=46 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ [00:01:34.385,000] <inf> bg_lora: RX tag=T01 type=1 seq=103 rssi=-19 snr=13 motion=STILL battery=unavailable
+uart:~$ uart:~$ [00:01:36.342,000] <inf> buddyguard: Presence seq=47 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:01:38.347,000] <inf> buddyguard: Presence seq=48 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:01:40.351,000] <inf> buddyguard: Presence seq=49 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:01:42.355,000] <inf> buddyguard: Presence seq=50 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:01:44.360,000] <inf> buddyguard: Presence seq=51 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ [00:01:44.397,000] <inf> bg_lora: RX tag=T01 type=1 seq=104 rssi=-19 snr=12 motion=STILL battery=unavailable
+uart:~$ uart:~$ [00:01:46.364,000] <inf> buddyguard: Presence seq=52 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:01:48.369,000] <inf> buddyguard: Presence seq=53 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ [00:01:48.401,000] <inf> bg_lora: RX tag=T01 type=3 seq=105 rssi=-21 snr=13 motion=MOVING battery=unavailable
+uart:~$ [00:01:48.401,000] <wrn> bg_lora: ACTION: counselor check tag T01, SOS received
+uart:~$ uart:~$ [00:01:50.373,000] <inf> buddyguard: Presence seq=54 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:01:52.377,000] <inf> buddyguard: Presence seq=55 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:01:54.148,000] <wrn> bg_wifi: Wi-Fi connection failed: -11
+uart:~$ [00:01:54.382,000] <inf> buddyguard: Presence seq=56 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ [00:01:54.549,000] <inf> bg_lora: RX tag=T01 type=1 seq=106 rssi=-20 snr=13 motion=MOVING battery=unavailable
+uart:~$ uart:~$ [00:01:56.386,000] <inf> buddyguard: Presence seq=57 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:01:58.390,000] <inf> buddyguard: Presence seq=58 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:02:00.394,000] <inf> buddyguard: Presence seq=59 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:02:02.399,000] <inf> buddyguard: Presence seq=60 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:02:04.403,000] <inf> buddyguard: Presence seq=61 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ [00:02:04.561,000] <inf> bg_lora: RX tag=T01 type=1 seq=107 rssi=-19 snr=13 motion=STILL battery=unavailable
+uart:~$ uart:~$ [00:02:06.407,000] <inf> buddyguard: Presence seq=62 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:02:08.411,000] <inf> buddyguard: Presence seq=63 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:02:10.416,000] <inf> buddyguard: Presence seq=64 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:02:12.420,000] <inf> buddyguard: Presence seq=65 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:02:14.424,000] <inf> buddyguard: Presence seq=66 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ [00:02:14.575,000] <inf> bg_lora: RX tag=T01 type=1 seq=108 rssi=-20 snr=13 motion=STILL battery=unavailable
+uart:~$ uart:~$ [00:02:16.428,000] <inf> buddyguard: Presence seq=67 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:02:18.433,000] <inf> buddyguard: Presence seq=68 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:02:20.437,000] <inf> buddyguard: Presence seq=69 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:02:22.441,000] <inf> buddyguard: Presence seq=70 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:02:24.446,000] <inf> buddyguard: Presence seq=71 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ [00:02:24.585,000] <inf> bg_lora: RX tag=T01 type=1 seq=109 rssi=-21 snr=12 motion=STILL battery=unavailable
+uart:~$ uart:~$ [00:02:26.450,000] <inf> buddyguard: Presence seq=72 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:02:28.454,000] <inf> buddyguard: Presence seq=73 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:02:30.459,000] <inf> buddyguard: Presence seq=74 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:02:32.463,000] <inf> buddyguard: Presence seq=75 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:02:34.467,000] <inf> buddyguard: Presence seq=76 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ [00:02:34.597,000] <inf> bg_lora: RX tag=T01 type=1 seq=110 rssi=-21 snr=12 motion=STILL battery=unavailable
+uart:~$ uart:~$ [00:02:36.472,000] <inf> buddyguard: Presence seq=77 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:02:38.476,000] <inf> buddyguard: Presence seq=78 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:02:40.481,000] <inf> buddyguard: Presence seq=79 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:02:42.485,000] <inf> buddyguard: Presence seq=80 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:02:44.489,000] <inf> buddyguard: Presence seq=81 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:02:45.765,000] <inf> bg_lora: RX tag=T01 type=1 seq=111 rssi=-21 snr=13 motion=STILL battery=unavailable
+uart:~$ [00:02:46.494,000] <inf> buddyguard: Presence seq=82 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:02:48.498,000] <inf> buddyguard: Presence seq=83 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:02:50.503,000] <inf> buddyguard: Presence seq=84 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:02:52.507,000] <inf> buddyguard: Presence seq=85 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:02:54.511,000] <inf> buddyguard: Presence seq=86 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ [00:02:54.707,000] <inf> bg_lora: RX tag=T01 type=1 seq=112 rssi=-22 snr=13 motion=STILL battery=unavailable
+uart:~$ uart:~$ [00:02:56.515,000] <inf> buddyguard: Presence seq=87 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:02:58.520,000] <inf> buddyguard: Presence seq=88 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:03:00.524,000] <inf> buddyguard: Presence seq=89 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:03:02.528,000] <inf> buddyguard: Presence seq=90 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:03:04.149,000] <wrn> bg_wifi: Wi-Fi connection failed: -11
+uart:~$ [00:03:04.533,000] <inf> buddyguard: Presence seq=91 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ [00:03:04.722,000] <inf> bg_lora: RX tag=T01 type=1 seq=113 rssi=-21 snr=12 motion=STILL battery=unavailable
+uart:~$ uart:~$ [00:03:06.537,000] <inf> buddyguard: Presence seq=92 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:03:08.541,000] <inf> buddyguard: Presence seq=93 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:03:10.545,000] <inf> buddyguard: Presence seq=94 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:03:12.550,000] <inf> buddyguard: Presence seq=95 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:03:14.554,000] <inf> buddyguard: Presence seq=96 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ [00:03:14.733,000] <inf> bg_lora: RX tag=T01 type=1 seq=114 rssi=-22 snr=12 motion=STILL battery=unavailable
+uart:~$ uart:~$ [00:03:16.558,000] <inf> buddyguard: Presence seq=97 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:03:18.563,000] <inf> buddyguard: Presence seq=98 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ [00:03:20.567,000] <inf> buddyguard: Presence seq=99 advertising=1 connected=0 maintenance=1 confirmed=1
+uart:~$ uart:~$ 
