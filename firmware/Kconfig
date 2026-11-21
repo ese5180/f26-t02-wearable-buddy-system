@@ -32,6 +32,21 @@ config BUDDYGUARD_IMU
 	  Poll a deferred LSM6DSO at address 0x6b or 0x6a. Missing or stale
 	  measurements produce UNKNOWN and do not block the wireless service.
 
+config BUDDYGUARD_GNSS
+	bool "Optional L76K on the tag UART0"
+	depends on !BUDDYGUARD_COUNSELOR && SERIAL && SERIAL_SUPPORT_INTERRUPT
+	select UART_INTERRUPT_DRIVEN
+	help
+	  Receive and validate NMEA at 9600 baud on D7. The USB shell reports
+	  reception and the receiver's fix status.
+
+config BUDDYGUARD_HAPTICS
+	bool "Optional DRV2605L and ERM motor on the tag I2C bus"
+	depends on !BUDDYGUARD_COUNSELOR && DT_HAS_TI_DRV2605_ENABLED
+	select HAPTICS
+	help
+	  Use the Zephyr DRV2605 driver for the finite bench vibration effect.
+
 config BUDDYGUARD_IMPACT_THRESHOLD_MG
 	int "Impact: single-axis change between consecutive IMU samples (mg)"
 	depends on BUDDYGUARD_IMU

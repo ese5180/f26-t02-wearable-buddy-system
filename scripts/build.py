@@ -36,6 +36,8 @@ def main():
     p.add_argument('--counselor', action='store_true', help='Compatibility alias for --role counselor')
     p.add_argument('--tag-id', type=int, choices=range(1, 4), default=None)
     p.add_argument('--imu', action='store_true', help='Tag only: enable SparkFun LSM6DSO on I2C D4/D5')
+    p.add_argument('--gnss', action='store_true', help='Tag only: enable L76K receive on UART0 D7')
+    p.add_argument('--haptics', action='store_true', help='Tag only: enable DRV2605L on I2C D4/D5')
     p.add_argument('--fleet', action='store_true', help='Enable Memfault diagnostics via the USB host gateway')
     p.add_argument('--wifi', action='store_true', help='Enable direct Wi-Fi HTTPS telemetry/OTA (implies --fleet)')
     p.add_argument('--heartbeat-seconds', type=int, choices=(15, 60),
@@ -55,6 +57,8 @@ def main():
         p.error('--tag-id applies only to the tag role')
     if role == 'counselor' and args.imu:
         p.error('--imu applies only to the tag role')
+    if role == 'counselor' and (args.gnss or args.haptics):
+        p.error('--gnss and --haptics apply only to the tag role')
     tag = 200 if role == 'counselor' else (args.tag_id or 1)
     workspace = args.workspace or os.environ.get('BUDDYGUARD_ZEPHYR_WORKSPACE')
     if workspace is None:
@@ -89,6 +93,10 @@ def main():
             p.error(f'Memfault SDK must be pinned to {expected}; found {revision}')
     profile = {'board': BOARD, 'role': role, 'tag_id': tag, 'fault': args.fault, 'imu': args.imu,
                'serial_recovery': args.serial_recovery, 'key': str(key)}
+    if args.gnss:
+        profile['gnss'] = True
+    if args.haptics:
+        profile['haptics'] = True
     if args.fleet:
         profile['fleet'] = True
         profile['heartbeat_seconds'] = args.heartbeat_seconds or 60
@@ -127,11 +135,17 @@ def main():
         f'CONFIG_BUDDYGUARD_TAG_ID={tag}\n'
         f'CONFIG_BT_DEVICE_NAME="BG-{ "C01" if role == "counselor" else f"T{tag:02d}" }"\n'
         f'CONFIG_BUDDYGUARD_FAULT_ON_BOOT={"y" if args.fault else "n"}\n'
-        f'CONFIG_BUDDYGUARD_IMU={"y" if args.imu else "n"}\n')
+        f'CONFIG_BUDDYGUARD_IMU={"y" if args.imu else "n"}\n'
+        f'CONFIG_BUDDYGUARD_GNSS={"y" if args.gnss else "n"}\n'
+        f'CONFIG_BUDDYGUARD_HAPTICS={"y" if args.haptics else "n"}\n')
     marker.write_text(json.dumps(profile, indent=2) + '\n')
     env = os.environ.copy()
     env['PATH'] = str(west.parent) + os.pathsep + env['PATH']
     overlays = [str(application / 'conf/lsm6dso.overlay')] if args.imu else []
+    if args.gnss:
+        overlays.append(str(application / 'conf/l76k.overlay'))
+    if args.haptics:
+        overlays.append(str(application / 'conf/drv2605l.overlay'))
     if args.wifi:
         overlays.append(str(application / 'conf/wifi.overlay'))
     if args.low_power:

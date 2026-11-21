@@ -8,12 +8,17 @@ if(CONFIG_BUDDYGUARD_FLEET)
   zephyr_include_directories(config)
   target_sources(app PRIVATE src/fleet/fleet.c)
 endif()
+if(CONFIG_BUDDYGUARD_GNSS)
+  target_sources(app PRIVATE src/drivers/l76k.c)
+endif()
 target_sources(app PRIVATE
   src/main.c
+  src/actuators/haptics.c
   src/ble/presence.c
   src/console/commands.c
   src/update/health.c
   src/protocol/wire.c
+  src/sensors/gnss.c
   src/sensors/motion.c
   src/sensors/imu.c
   src/drivers/wio_sx1262.c

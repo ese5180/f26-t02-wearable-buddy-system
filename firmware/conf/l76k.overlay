@@ -1,0 +1,10 @@
+/* L76K TX -> XIAO D7/GPIO44. The USB console uses a separate device. */
+/ {
+	aliases {
+		buddyguard-gnss = &uart0;
+	};
+};
+
+&uart0 {
+	current-speed = <9600>;
+};

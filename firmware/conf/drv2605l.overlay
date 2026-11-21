@@ -1,0 +1,11 @@
+/* D4/D5, shared with the LSM6DSO. OUT+/OUT- drive the coin motor. */
+&i2c0 {
+	haptics_motor: drv2605@5a {
+		compatible = "ti,drv2605";
+		reg = <0x5a>;
+		actuator-mode = "ERM";
+		/* The Zephyr driver maps these to the bench-tested 0x8d/0x8c. */
+		vib-rated-mv = <3100>;
+		vib-overdrive-mv = <3080>;
+	};
+};

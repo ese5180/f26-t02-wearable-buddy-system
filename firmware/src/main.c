@@ -7,6 +7,7 @@
 #include <zephyr/logging/log.h>
 #include "health.h"
 #include "fleet.h"
+#include "gnss.h"
 #include "wifi_fleet.h"
 #include "imu.h"
 #include "presence.h"
@@ -38,6 +39,7 @@ int main(void)
 		}
 	}
 	bg_imu_start();
+	bg_gnss_start();
 	bg_health_begin();
 	bg_wifi_start();
 	for (;;) {

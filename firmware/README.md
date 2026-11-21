@@ -13,6 +13,8 @@ Start with [main.c](src/main.c), then the interfaces under [include/](include/).
 | Wire format / 帧格式 | [wire.c](src/protocol/wire.c), [wire.h](include/wire.h) | [中文字段表](../docs/zh/FIRMWARE.md#无线帧格式), [English fields](../docs/en/FIRMWARE.md#on-air-formats) |
 | Wio radio hardware / 硬件 | [wio_sx1262.c](src/drivers/wio_sx1262.c) | [Full setup / 完整搭建](../docs/en/GETTING_STARTED.md) |
 | IMU / 运动采样 | [imu.c](src/sensors/imu.c), [motion.c](src/sensors/motion.c) | [中文](../docs/zh/IMU_LSM6DSO.md), [English](../docs/en/IMU_LSM6DSO.md) |
+| GNSS / 定位接收 | [L76K UART driver](src/drivers/l76k.c), [GNSS status service](src/sensors/gnss.c) | [MVP hardware / 接线和验证](../docs/MVP_HARDWARE.md) |
+| Haptics / 振动 | Zephyr `ti,drv2605` driver, [effect service](src/actuators/haptics.c) | [MVP hardware / 接线和验证](../docs/MVP_HARDWARE.md) |
 | Signed update and confirmation / 签名更新与确认 | [health.c](src/update/health.c), [MCUboot config](sysbuild/mcuboot.conf) | [中文](../docs/zh/FIRMWARE_SECURITY_CHECKOFF.md), [English](../docs/en/FIRMWARE_SECURITY_CHECKOFF.md) |
 | Fleet diagnostics / 云端诊断 | [fleet.c](src/fleet/fleet.c), [fleet.conf](conf/fleet.conf) | [操作与指标](../docs/zh/FLEET_MANAGEMENT.md) |
 | Wi-Fi cloud OTA / 直连云端更新 | [wifi_fleet.c](src/fleet/wifi_fleet.c), [wifi.conf](conf/wifi.conf) | [中文](../docs/zh/FLEET_MANAGEMENT.md), [English](../docs/en/FLEET_MANAGEMENT.md) |

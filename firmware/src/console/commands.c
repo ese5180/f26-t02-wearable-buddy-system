@@ -12,6 +12,8 @@
 #include "presence.h"
 #include "radio_link.h"
 #include "imu.h"
+#include "gnss.h"
+#include "haptics.h"
 #if defined(CONFIG_BUDDYGUARD_FLEET)
 #include "memfault/core/reboot_tracking.h"
 #endif
@@ -36,6 +38,20 @@ static int cmd_bg(const struct shell *shell, size_t argc, char **argv)
 			s.gyro_mrad_s[1], s.gyro_mrad_s[2]);
 		shell_print(shell, "impacts=%u last_impact_mg=%d", s.impacts, s.last_impact_mg);
 		return 0;
+	}
+	if (!strcmp(argv[1], "gnss") && argc == 2) {
+		const struct bg_gnss_status status = bg_gnss_status();
+		shell_print(shell,
+			"gnss enabled=%u rx_bytes=%u valid=%u invalid=%u dropped=%u age_ms=%lld fix=%s error=%d",
+			status.enabled, status.bytes, status.valid_sentences, status.invalid_sentences,
+			status.dropped_sentences, (long long)status.sentence_age_ms,
+			bg_gnss_fix_name(status.fix), status.error);
+		return 0;
+	}
+	if (!strcmp(argv[1], "vibrate") && argc == 2) {
+		int rc = bg_haptics_play();
+		shell_print(shell, "vibrate start result=%d", rc);
+		return rc;
 	}
 	if (!strcmp(argv[1], "status") && argc == 2) {
 		struct bg_presence_status s = bg_presence_status();
@@ -84,7 +100,7 @@ static int cmd_bg(const struct shell *shell, size_t argc, char **argv)
 		}
 		return bg_radio_query(tag);
 	}
-	shell_error(shell, "bg status | radio | imu | maintenance <0..600> | heartbeat <on|off> | sos | query <1..3> | reboot");
+	shell_error(shell, "bg status | radio | imu | gnss | vibrate | maintenance <0..600> | heartbeat <on|off> | sos | query <1..3> | reboot");
 	return -EINVAL;
 }
 
