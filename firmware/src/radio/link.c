@@ -4,12 +4,14 @@
 #include <errno.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/random/random.h>
 #include <zephyr/sys/atomic.h>
 #include <zephyr/sys/byteorder.h>
 #include "radio_link.h"
 #include "radio_driver.h"
 #include "radio_exchange.h"
 #include "radio_history.h"
+#include "haptics.h"
 #include "imu.h"
 
 LOG_MODULE_REGISTER(bg_lora, LOG_LEVEL_INF);
@@ -81,6 +83,24 @@ static void acknowledge(uint8_t *frame)
 	}
 }
 
+static void receive_gather(uint8_t *frame, uint16_t seq)
+{
+	if (bg_radio_history_contains(&history, frame)) {
+		atomic_inc(&counters[RX_DUPLICATES]);
+		acknowledge(frame);
+		return;
+	}
+
+	int rc = bg_haptics_play();
+	if (rc != 0) {
+		LOG_WRN("GATHER vibration not started seq=%u rc=%d", seq, rc);
+		return; /* A busy motor can still accept a later retry. */
+	}
+	bg_radio_history_record(&history, frame);
+	LOG_INF("GATHER vibration started seq=%u", seq);
+	acknowledge(frame);
+}
+
 static void dispatch(uint8_t *frame, int16_t rssi, int8_t snr)
 {
 	uint8_t type = frame[3];
@@ -91,7 +111,8 @@ static void dispatch(uint8_t *frame, int16_t rssi, int8_t snr)
 	if (bg_radio_exchange_accept(&exchange, frame, BG_RADIO_FRAME_SIZE)) {
 		atomic_inc(&counters[TX_COMPLETED]);
 		LOG_INF("%s tag=T%02u type=%u seq=%u attempt=%u rssi=%d snr=%d",
-			exchange.frame[3] == BG_RADIO_QUERY ? "QUERY complete" : "ACK",
+			exchange.frame[3] == BG_RADIO_QUERY ? "QUERY complete" :
+				exchange.frame[3] == BG_RADIO_GATHER ? "GATHER confirmed" : "ACK",
 			tag, exchange.frame[3], seq, exchange.attempts, rssi, snr);
 	} else if (was_active && type != BG_RADIO_ACK) {
 		atomic_inc(&counters[RX_INTERLEAVED]);
@@ -115,6 +136,9 @@ static void dispatch(uint8_t *frame, int16_t rssi, int8_t snr)
 		}
 		acknowledge(frame); /* Also ACK duplicates, even while another query waits. */
 	} else if (!IS_ENABLED(CONFIG_BUDDYGUARD_COUNSELOR) &&
+		type == BG_RADIO_GATHER && tag == CONFIG_BUDDYGUARD_TAG_ID) {
+		receive_gather(frame, seq);
+	} else if (!IS_ENABLED(CONFIG_BUDDYGUARD_COUNSELOR) &&
 		type == BG_RADIO_QUERY && tag == CONFIG_BUDDYGUARD_TAG_ID) {
 		atomic_inc(&counters[QUERIES_RECEIVED]);
 		LOG_INF("Received counselor QUERY seq=%u", seq);
@@ -136,6 +160,10 @@ static void worker(void *a, void *b, void *c)
 {
 	ARG_UNUSED(a); ARG_UNUSED(b); ARG_UNUSED(c);
 	k_sem_take(&radio_started, K_FOREVER);
+	if (IS_ENABLED(CONFIG_BUDDYGUARD_COUNSELOR)) {
+		/* Avoid reusing the prior session's first command after reboot. */
+		next_sequence = (uint16_t)sys_rand32_get();
+	}
 	uint32_t next_status = (uint32_t)k_uptime_get() + 3000;
 	for (;;) {
 		uint32_t now = (uint32_t)k_uptime_get();
@@ -197,12 +225,22 @@ int bg_radio_sos(void)
 		enqueue(BG_RADIO_SOS, CONFIG_BUDDYGUARD_TAG_ID);
 }
 
-int bg_radio_query(uint8_t tag)
+static int enqueue_counselor_request(uint8_t type, uint8_t tag)
 {
 	if (!IS_ENABLED(CONFIG_BUDDYGUARD_COUNSELOR) || tag == 0 || tag > BG_MAX_TAGS) {
 		return -EINVAL;
 	}
-	return enqueue(BG_RADIO_QUERY, tag);
+	return enqueue(type, tag);
+}
+
+int bg_radio_query(uint8_t tag)
+{
+	return enqueue_counselor_request(BG_RADIO_QUERY, tag);
+}
+
+int bg_radio_gather(uint8_t tag)
+{
+	return enqueue_counselor_request(BG_RADIO_GATHER, tag);
 }
 
 struct bg_radio_stats bg_radio_get_stats(void)

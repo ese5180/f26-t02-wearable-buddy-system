@@ -99,15 +99,15 @@ The legacy advertising payload totals 31 bytes: flags, SMP service UUID and manu
 |---|---|---|
 | 0 | 2 | ASCII `BG` |
 | 2 | 1 | Protocol = 1 |
-| 3 | 1 | STATUS=1, ACK=2, SOS=3, QUERY=4, REPLY=5 |
+| 3 | 1 | STATUS=1, ACK=2, SOS=3, QUERY=4, REPLY=5, GATHER=6 |
 | 4 | 1 | Target/source tag ID1–3 |
-| 5 | 1 | ACK: optional acknowledged message type; legacy0 accepted. Other messages:0 |
+| 5 | 1 | ACK: acknowledged message type. Legacy 0 is accepted for older transactions. GATHER requires 6. Other messages: 0. |
 | 6 | 2 | Radio sequence, independent of BLE sequence |
 | 8 | 1 | Motion: 0 UNKNOWN, 1 STILL, 2 MOVING |
 | 9 | 1 | Clasp, 0 = UNKNOWN |
 | 10 | 2 | Battery, `FFFF` = unavailable |
 
-Validation checks exact size/magic/protocol, known type and ID range; it does not authenticate senders or prevent replay. STATUS first becomes due about three seconds after worker startup and then ten seconds after the preceding STATUS starts, subject to queued transactions. STATUS/SOS/REPLY expect ACK within600 ms; QUERY expects matching REPLY within1500 ms. All have at most three attempts with the same sequence and deterministic tag/sequence backoff. Driver-send errors also consume an attempt and remain bounded.
+Validation checks exact size/magic/protocol, known type and ID range; it does not authenticate senders or prevent replay. STATUS first becomes due about three seconds after worker startup and then ten seconds after the preceding STATUS starts, subject to queued transactions. STATUS/SOS/REPLY/GATHER expect ACK within 600 ms; QUERY expects matching REPLY within 1500 ms. All have at most three attempts with the same sequence and deterministic tag/sequence backoff. Driver-send errors also consume an attempt and remain bounded. For the [gather cue](../MVP_HARDWARE.md#lora-gather-cue--lora-集合提示), the destination tag records the request after the motor driver accepts playback.
 
 `exchange.c` holds one transaction; it never sleeps or calls hardware. `link.c` continues dispatching all valid packets while waiting/backing off, using the established200 ms receive window. Timeouts can have one window of scheduling delay. Other STATUS/SOS frames are reported and ACKed while a query waits. A tag can defer one query response while its current transmission completes; duplicate query retries coalesce. `history.c` retains the last16 `(tag,type,sequence)` identities; duplicates are still ACKed but do not repeat business logs. This bounded cache is not replay protection. New nonzero ACK byte5 values disambiguate message type; zero-valued legacy ACKs are accepted for rolling upgrades with weaker type matching.
 

@@ -101,15 +101,15 @@ LoRa 工作线程栈 3072 字节、优先级 5，请求队列容量 8，radio �
 |---|---|---|
 | 0 | 2 | ASCII `BG` |
 | 2 | 1 | 协议版本 1 |
-| 3 | 1 | STATUS=1、ACK=2、SOS=3、QUERY=4、REPLY=5 |
+| 3 | 1 | STATUS=1、ACK=2、SOS=3、QUERY=4、REPLY=5、GATHER=6 |
 | 4 | 1 | 来源／目标标签 ID1–3 |
-| 5 | 1 | ACK 可填写原消息类型；兼容旧0值。其他消息为0 |
+| 5 | 1 | ACK 填写原消息类型。旧事务兼容 0，GATHER 必须为 6。其他消息为 0。 |
 | 6 | 2 | LoRa 序号，与 BLE 序号独立 |
 | 8 | 1 | motion：0 UNKNOWN、1 STILL、2 MOVING |
 | 9 | 1 | clasp，0=UNKNOWN |
 | 10 | 2 | 电池，`FFFF`=unavailable |
 
-校验只检查长度、magic、协议、类型和 ID，不认证发送方或防重放。首个 STATUS 约在工作线程启动3秒后到期，之后距前一个 STATUS 开始约10秒，排队事务可能延迟它。STATUS／SOS／REPLY 等 ACK600 ms，QUERY 等同标签同序号的 REPLY1500 ms；均最多发送3次，重试保留序号，并用标签／序号决定短退避。发送驱动错误也消耗一次尝试，保证有限重试。
+校验只检查长度、magic、协议、类型和 ID，不认证发送方或防重放。首个 STATUS 约在工作线程启动 3 秒后到期，之后距前一个 STATUS 开始约 10 秒，排队事务可能延迟它。STATUS／SOS／REPLY／GATHER 等待 ACK 600 ms，QUERY 等待同标签同序号的 REPLY 1500 ms。均最多发送 3 次，重试保留序号，并用标签／序号决定短退避。发送驱动错误也消耗一次尝试。[集合提示](../MVP_HARDWARE.md#lora-gather-cue--lora-集合提示)的目标标签在马达驱动接受播放后才记录指令并确认。
 
 `exchange.c` 只维护一个事务，不休眠、不调用硬件；`link.c` 在等待／退避时仍使用原200 ms接收窗口分发每个有效帧，超时决策可能延迟一个窗口。辅导员等待查询时仍处理并确认 STATUS／SOS。标签可暂存一个查询回复，现有事务完成后发出；相同查询的重传会合并。`history.c` 保存最近16个 `(tag,type,sequence)`，重复业务消息仍 ACK，但不重复记录事件。该有限历史不是安全防重放；新 ACK 的非零byte5可区分原消息类型，旧0值 ACK 为滚动升级保留较弱兼容匹配。
 

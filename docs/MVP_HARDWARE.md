@@ -24,7 +24,7 @@ From the repository root, set `BG_WS`, `BG_KEY`, and `TAG_PORT` for your setup. 
 ```sh
 "$BG_WS/.venv/bin/python" scripts/build.py --workspace "$BG_WS" --key "$BG_KEY" \
   --build-dir "$BG_WS/build-bg-tag1-mvp" --role tag --tag-id 1 \
-  --imu --low-power --gnss --haptics --version 1.6.10
+  --imu --low-power --gnss --haptics --version 1.6.11
 
 .venv/bin/python tools/bg_serial.py --port "$TAG_PORT" command bg gnss
 .venv/bin/python tools/bg_serial.py --port "$TAG_PORT" command bg vibrate
@@ -34,8 +34,27 @@ From the repository root, set `BG_WS`, `BG_KEY`, and `TAG_PORT` for your setup. 
 - `bg vibrate` starts one finite effect. `result=0` means the driver accepted it. Feel for one pulse on the bench. Run it again after at least one second.
 - 间隔几秒运行两次 `bg gnss`。`rx_bytes` 和 `valid` 持续增加说明已收到并校验 GPS 数据。室内可以用 `NO_FIX` 验证接收。运行 `bg vibrate` 后实际确认马达有一次短振。
 
+## LoRa gather cue / LoRa 集合提示
+
+Build both roles from this revision. Use the tag build above and a separate build directory for the handheld. Send the command over the handheld's USB console:
+
+```sh
+"$BG_WS/.venv/bin/python" scripts/build.py --workspace "$BG_WS" --key "$BG_KEY" \
+  --build-dir "$BG_WS/build-bg-counselor-mvp" --role counselor --version 1.6.11
+
+.venv/bin/python tools/bg_serial.py --port "$COUNSELOR_PORT" command bg gather 1
+```
+
+The counselor sends a unicast GATHER request to T01. T01 starts one short vibration and returns an ACK after the driver accepts the request. Look for `GATHER vibration started` on T01 and `GATHER confirmed` on the counselor. Retransmissions of the same request are ACKed without starting a second vibration. The current LoRa link is for trusted bench use.
+
+两端都用此版本构建，标签端加 `--haptics`。在辅导员端输入 `bg gather 1`，T01 收到后短振一次。看 T01 的 `GATHER vibration started` 和辅导员端的 `GATHER confirmed`。重复收到同一序号时只补发 ACK。可把目标改成已配置的其他标签编号。
+
+The two-board bench tracked one driver start and an ACK on the second LoRa attempt. For a physical check, feel for the short pulse, then repeat with the assembled tag resting still and monitor the IMU for unintended SOS events.
+
+双板已验证一次马达驱动启动和第二次发送后的 LoRa 确认。装壳后用手确认短振，再让标签静置复测，观察 IMU 是否误报 SOS。
+
 ## Code to extend / 后续接手
 
 The [L76K driver](../firmware/src/drivers/l76k.c) owns UART0, frame boundaries, checksum validation, and its receive queue. The [GNSS service](../firmware/src/sensors/gnss.c) turns received frames into a status snapshot. The [haptics service](../firmware/src/actuators/haptics.c) selects a fixed effect using Zephyr's DRV2605 driver. The [USB commands](../firmware/src/console/commands.c) call those services.
 
-L76K 驱动负责串口、分帧、校验和入队，GNSS 应用只维护状态。振动应用调用 Zephyr 的 DRV2605 驱动。下一步由队友接坐标和告警策略。当前命令只验证接收和短振，坐标上报、告警联动和马达对 IMU 的影响尚待集成验证。
+L76K 驱动负责串口、分帧、校验和入队，GNSS 应用只维护状态。振动应用调用 Zephyr 的 DRV2605 驱动。`radio/link.c` 把集合指令交给同一个振动服务。`bg gather` 目前用于集合提示，坐标上报、摔倒告警联动和穿戴时马达对 IMU 的影响由后续验证覆盖。

@@ -36,6 +36,7 @@ void bg_radio_frame_encode(uint8_t out[BG_RADIO_FRAME_SIZE], uint8_t type,
 bool bg_radio_frame_valid(const uint8_t *data, size_t size)
 {
 	return data && size == BG_RADIO_FRAME_SIZE && data[0] == 'B' &&
-		data[1] == 'G' && data[2] == 1 && data[3] >= 1 && data[3] <= 5 &&
+		data[1] == 'G' && data[2] == 1 &&
+		data[3] >= BG_RADIO_STATUS && data[3] <= BG_RADIO_GATHER &&
 		data[4] > 0 && data[4] <= BG_MAX_TAGS;
 }

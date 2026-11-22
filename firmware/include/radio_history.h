@@ -12,4 +12,8 @@ struct bg_radio_history {
  * 只输入已校验的业务帧；重复消息仍需 ACK，此缓存不是安全防重放。 */
 bool bg_radio_history_seen(struct bg_radio_history *history,
 	const uint8_t frame[BG_RADIO_FRAME_SIZE]);
+bool bg_radio_history_contains(const struct bg_radio_history *history,
+	const uint8_t frame[BG_RADIO_FRAME_SIZE]);
+void bg_radio_history_record(struct bg_radio_history *history,
+	const uint8_t frame[BG_RADIO_FRAME_SIZE]);
 #endif

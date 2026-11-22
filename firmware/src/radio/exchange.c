@@ -55,9 +55,10 @@ bool bg_radio_exchange_accept(struct bg_radio_exchange *e,
 	if (frame[3] != expected) {
 		return false;
 	}
-	/* Byte5 was reserved. New ACKs identify the acknowledged type; legacy
-	 * zero ACKs remain accepted for rolling upgrades (weaker ambiguity check). */
-	if (expected == BG_RADIO_ACK && frame[5] && frame[5] != e->frame[3]) {
+	/* GATHER is new and requires a typed ACK. Preserve legacy support for
+	 * pre-existing packets whose older peers may use an untyped ACK. */
+	if (expected == BG_RADIO_ACK && frame[5] != e->frame[3] &&
+		(frame[5] != 0 || e->frame[3] == BG_RADIO_GATHER)) {
 		return false;
 	}
 	e->active = false;

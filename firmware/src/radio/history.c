@@ -4,7 +4,7 @@
  */
 #include "radio_history.h"
 
-bool bg_radio_history_seen(struct bg_radio_history *h,
+bool bg_radio_history_contains(const struct bg_radio_history *h,
 	const uint8_t frame[BG_RADIO_FRAME_SIZE])
 {
 	uint16_t seq = (uint16_t)(frame[6] | ((uint16_t)frame[7] << 8));
@@ -14,10 +14,25 @@ bool bg_radio_history_seen(struct bg_radio_history *h,
 			return true;
 		}
 	}
+	return false;
+}
+
+void bg_radio_history_record(struct bg_radio_history *h,
+	const uint8_t frame[BG_RADIO_FRAME_SIZE])
+{
 	h->entries[h->next].tag = frame[4];
 	h->entries[h->next].type = frame[3];
-	h->entries[h->next].sequence = seq;
+	h->entries[h->next].sequence = (uint16_t)(frame[6] | ((uint16_t)frame[7] << 8));
 	h->entries[h->next].valid = true;
 	h->next = (h->next + 1) % BG_RADIO_HISTORY_SIZE;
+}
+
+bool bg_radio_history_seen(struct bg_radio_history *h,
+	const uint8_t frame[BG_RADIO_FRAME_SIZE])
+{
+	if (bg_radio_history_contains(h, frame)) {
+		return true;
+	}
+	bg_radio_history_record(h, frame);
 	return false;
 }
