@@ -16,6 +16,7 @@ target_sources(app PRIVATE
   src/actuators/haptics.c
   src/ble/presence.c
   src/console/commands.c
+  src/input/user_button.c
   src/update/health.c
   src/protocol/wire.c
   src/sensors/gnss.c

@@ -12,6 +12,7 @@ Start with [main.c](src/main.c), then the interfaces under [include/](include/).
 | LoRa receive/retry / 收发重试 | [link.c](src/radio/link.c), [exchange.c](src/radio/exchange.c), [history.c](src/radio/history.c) | [中文](../docs/zh/FIRMWARE.md#无线帧格式), [English](../docs/en/FIRMWARE.md#on-air-formats) |
 | Wire format / 帧格式 | [wire.c](src/protocol/wire.c), [wire.h](include/wire.h) | [中文字段表](../docs/zh/FIRMWARE.md#无线帧格式), [English fields](../docs/en/FIRMWARE.md#on-air-formats) |
 | Wio radio hardware / 硬件 | [wio_sx1262.c](src/drivers/wio_sx1262.c) | [Full setup / 完整搭建](../docs/en/GETTING_STARTED.md) |
+| Wio USER / 板载 SOS 和集合键 | [user_button.c](src/input/user_button.c), [roster.c](src/roster/roster.c) | [MVP handoff / 固件交接](../docs/MVP_HARDWARE.md) |
 | IMU / 运动采样 | [imu.c](src/sensors/imu.c), [motion.c](src/sensors/motion.c) | [中文](../docs/zh/IMU_LSM6DSO.md), [English](../docs/en/IMU_LSM6DSO.md) |
 | GNSS / 定位接收 | [L76K UART driver](src/drivers/l76k.c), [GNSS status service](src/sensors/gnss.c) | [MVP hardware / 接线和验证](../docs/MVP_HARDWARE.md) |
 | Haptics / 振动 | Zephyr `ti,drv2605` driver, [effect service](src/actuators/haptics.c) | [MVP hardware / 接线和验证](../docs/MVP_HARDWARE.md) |

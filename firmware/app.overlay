@@ -1,10 +1,34 @@
 #include <zephyr/dt-bindings/gpio/gpio.h>
+#include <zephyr/dt-bindings/input/input-event-codes.h>
 #include <zephyr/dt-bindings/lora/sx126x.h>
 
 / {
 	aliases {
 		lora0 = &wio_lora;
 	};
+
+	wio_keys: wio-keys {
+		compatible = "gpio-keys";
+		debounce-interval-ms = <25>;
+
+		user-button {
+			gpios = <&gpio0 21 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+			zephyr,code = <INPUT_BTN_0>;
+		};
+	};
+
+	wio_longpress: wio-longpress {
+		compatible = "zephyr,input-longpress";
+		input = <&wio_keys>;
+		input-codes = <INPUT_BTN_0>;
+		long-codes = <INPUT_BTN_1>;
+		long-delay-ms = <1000>;
+	};
+};
+
+/* On the B2B kit the USER switch shares GPIO21 with the XIAO LED. */
+&led0 {
+	status = "disabled";
 };
 
 /* ESP32S3 B2B kit, not the nRF52840 through-hole module pinout.

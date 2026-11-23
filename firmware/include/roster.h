@@ -6,4 +6,6 @@
 int bg_roster_start(void);
 void bg_roster_poll(void);
 uint32_t bg_roster_missing_count(void);
+/* Bit N is set after the first valid heartbeat from tag N this boot. */
+uint32_t bg_roster_known_mask(void);
 #endif

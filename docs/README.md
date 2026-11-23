@@ -13,5 +13,6 @@
 - [3.8 Concept Refinement](CONCEPT.md) records the current product and market assumptions. See the [financial model](CONCEPT.md#385-financial-model) for the pilot quote and the commercial scenario. Use these assumptions for pitch and final-report materials, and reconcile changes with the linked cost workbook.
 - [Project log](PROJECT_LOG.md) tracks course milestones and links to their deliverables.
 - [Bench validation](VALIDATION.md) records observed results and test limits.
+- [MVP firmware handoff / 固件交接](MVP_HARDWARE.md) covers the T01 and C01 builds, Wio buttons, hardware wiring and the open T01 GPS issue.
 - [Firmware source map](../firmware/README.md) identifies the code for each device feature.
 - [3.6 submission PDF](submissions/3.6-fleet-management/README.pdf) is the export of the Markdown in the same directory.

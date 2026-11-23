@@ -117,10 +117,15 @@ static bool update_complete(void *unused)
 static void cloud_cycle(void)
 {
 	/* Upload pending crashes before OTA can touch the secondary slot. */
-	int rc = memfault_zephyr_port_post_data();
-	LOG_INF("Wi-Fi telemetry upload result=%d", rc);
+	ssize_t uploaded = memfault_zephyr_port_post_data_return_size();
+	if (uploaded < 0) {
+		LOG_WRN("Wi-Fi telemetry upload failed: %d", (int)uploaded);
+	} else {
+		LOG_INF("Wi-Fi telemetry upload: %u bytes", (unsigned int)uploaded);
+	}
 	size_t core_size;
-	if (rc || !boot_is_img_confirmed() || memfault_coredump_has_valid_coredump(&core_size)) {
+	if (uploaded < 0 || !boot_is_img_confirmed() ||
+	    memfault_coredump_has_valid_coredump(&core_size)) {
 		return;
 	}
 	sMemfaultOtaUpdateHandler handler = {
@@ -129,7 +134,7 @@ static void cloud_cycle(void)
 		.handle_download_complete = update_complete,
 	};
 	memset(&image, 0, sizeof(image));
-	rc = memfault_zephyr_port_ota_update(&handler);
+	int rc = memfault_zephyr_port_ota_update(&handler);
 	/* Failed/interrupted downloads never request a swap; next attempt starts over. */
 	if (image.flash_area) { flash_area_close(image.flash_area); image.flash_area = NULL; }
 	if (downloading) { bg_presence_maintenance(0); downloading = false; }

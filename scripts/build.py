@@ -36,7 +36,7 @@ def main():
     p.add_argument('--counselor', action='store_true', help='Compatibility alias for --role counselor')
     p.add_argument('--tag-id', type=int, choices=range(1, 4), default=None)
     p.add_argument('--imu', action='store_true', help='Tag only: enable SparkFun LSM6DSO on I2C D4/D5')
-    p.add_argument('--gnss', action='store_true', help='Tag only: enable L76K receive on UART0 D7')
+    p.add_argument('--gnss', action='store_true', help='Enable L76K receive on UART0 D7')
     p.add_argument('--haptics', action='store_true', help='Tag only: enable DRV2605L on I2C D4/D5')
     p.add_argument('--fleet', action='store_true', help='Enable Memfault diagnostics via the USB host gateway')
     p.add_argument('--wifi', action='store_true', help='Enable direct Wi-Fi HTTPS telemetry/OTA (implies --fleet)')
@@ -57,8 +57,8 @@ def main():
         p.error('--tag-id applies only to the tag role')
     if role == 'counselor' and args.imu:
         p.error('--imu applies only to the tag role')
-    if role == 'counselor' and (args.gnss or args.haptics):
-        p.error('--gnss and --haptics apply only to the tag role')
+    if role == 'counselor' and args.haptics:
+        p.error('--haptics applies only to the tag role')
     tag = 200 if role == 'counselor' else (args.tag_id or 1)
     workspace = args.workspace or os.environ.get('BUDDYGUARD_ZEPHYR_WORKSPACE')
     if workspace is None:

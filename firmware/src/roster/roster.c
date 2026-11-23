@@ -22,12 +22,18 @@ struct member {
 	bool missing;
 };
 static struct member roster[BG_MAX_TAGS + 1];
+static atomic_t known_tags;
 /* Count online -> missing transitions once; RAM resets this count on reboot. */
 static atomic_t missing_events;
 
 uint32_t bg_roster_missing_count(void)
 {
 	return (uint32_t)atomic_get(&missing_events);
+}
+
+uint32_t bg_roster_known_mask(void)
+{
+	return (uint32_t)atomic_get(&known_tags);
 }
 
 static bool parse_presence(struct bt_data *data, void *user_data)
@@ -45,6 +51,7 @@ static bool parse_presence(struct bt_data *data, void *user_data)
 		atomic_set(&m->maintenance, frame.flags & 1);
 		atomic_set(&m->last_seen, (atomic_val_t)(uint32_t)k_uptime_get());
 	}
+	atomic_or(&known_tags, BIT(frame.tag));
 	return false;
 }
 
@@ -111,4 +118,5 @@ void bg_roster_poll(void)
 int bg_roster_start(void) { return 0; }
 void bg_roster_poll(void) {}
 uint32_t bg_roster_missing_count(void) { return 0; }
+uint32_t bg_roster_known_mask(void) { return 0; }
 #endif
