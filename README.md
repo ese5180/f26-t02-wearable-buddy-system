@@ -28,7 +28,7 @@ BuddyGuard helps camp counselors notice when a camper falls behind or may need h
 The live demo uses one student tag (T01) and one counselor gateway (C01). Both boards booted signed `1.6.16` images and reported `confirmed=1`.
 
 - **Routine check-in.** Tags already broadcast BLE heartbeats. C01 reports online, missing and recovered states. When a heartbeat goes missing, C01 asks over LoRa for tag status. The status frames carry motion information. / 平时签到已经自动运行。C01 按 BLE 心跳判断在线、失联和恢复，失联后用 LoRa 查询标签状态。
-- **On-demand GPS.** The browser requests a roll call over BLE. C01 then asks each tag it has seen since boot for one recent valid fix over LoRa and forwards each accepted fix as a BLE `TAG_POSITION` event. The two-board test returned a valid T01 fix, and the team confirmed the Web map updates. A tag with no fresh fix leaves its previous map position and timestamp in place. / GPS 已实现按需回传。点一次名，标签通过 LoRa 回一次有效定位，由 C01 转给网页。[Web integration](docs/WEB_ROLL_CALL.md)
+- **Roll-call GPS.** The browser requests a roll call over BLE. C01 then asks each tag it has seen since boot for one recent valid fix over LoRa and forwards each accepted fix as a BLE `TAG_POSITION` event. The two-board test returned a valid T01 fix, and the team confirmed the Web map updates. A tag with no fresh fix leaves its previous map position and timestamp in place. / 网页点名的 GPS 回传已实现。点一次名，标签通过 LoRa 回一次有效定位，由 C01 转给网页。[Web integration](docs/WEB_ROLL_CALL.md)
 - **IMU, SOS and gather.** T01 reports moving or still. A strong impact currently triggers the same SOS path as the Wio USER button. The bench tests verified button SOS and a GATHER request that started one short vibration with a LoRa ACK. / 当前 IMU 能判断动静和撞击，撞击会触发 SOS。摔倒识别是下一阶段。
 - **GPS and fleet management.** Both boards obtained GPS fixes outdoors. C01's Wi-Fi telemetry upload to Memfault was verified independently of the Web BLE session.
 
@@ -36,13 +36,26 @@ To reproduce the demo, build both roles using the [MVP handoff](docs/MVP_HARDWAR
 
 复现时先确认 T01 在线、有有效定位，再点一次名，检查网页最后定位时间是否刷新。
 
+### Location triggers / 定位发送条件
+
+GPS reports are event-triggered. The tag sends a position over LoRa to C01, and C01 forwards it to the Web client over BLE. Routine BLE check-ins report presence. / 平时用 BLE 心跳签到。以下四种事件触发 GPS，通过 LoRa 回传给 C01，再由 C01 通过 BLE 更新网页。
+
+| Trigger / 触发事件 | Expected behavior / 行为 | Status / 进度 |
+| --- | --- | --- |
+| Possible fall / 疑似摔倒 | The tag sends the fall alert and its available GPS position. / 标签发出疑似摔倒告警，并回传可用位置。 | Fall classification and GPS reporting pending. / 摔倒判断与定位联动待做。 |
+| Missing check-in / 丢签到 | When BLE heartbeats time out, C01 requests the missing tag's position over LoRa. / BLE 心跳超时后，C01 用 LoRa 向对应标签查位置。 | LoRa status query is available. GPS request pending. / 已能查状态，查位置待接。 |
+| Web roll call / 网页点名 | C01 asks each enrolled tag for one position per roll call. / C01 逐个向已登记标签查一次位置。 | Verified with T01 and C01. / 单标签实测通过。 |
+| Manual SOS / 手动 SOS | The tag sends the SOS and its available GPS position. / 标签发出手动 SOS，并回传可用位置。 | Button SOS verified. GPS reporting pending. / 按键 SOS 已实测，定位联动待做。 |
+
+Send the alert promptly while obtaining location. When a fresh fix or LoRa reply is unavailable, keep the last received location and timestamp visible and show the outcome. / 告警先发，定位有结果再更新。无新定位或无回包时，网页保留最近位置和时间，并显示本次结果。
+
 ### Next steps / 后续工作
 
 1. **Build and test IMU fall detection.** With the IMU fixed in the enclosure, evaluate whether an impact followed by a posture change or a short period of low motion can separate a possible fall from an ordinary knock. Use controlled simulations and ordinary walking, running, putting the tag down and motor vibration as comparison cases. Verify that one simulated fall raises one **Possible fall** alert on the Web UI and that the manual SOS remains usable. / IMU 固定在外壳后，用撞击、姿态变化和随后动静做判断。用模拟跌倒和日常动作测漏报、误报。验收时网页收到一次「疑似摔倒」，实体 SOS 照常可用。
 2. **Run the one-counselor, three-tag test.** Provision T02 and T03 with distinct IDs. Verify that C01 shows all three routine check-ins, detects and recovers one missing tag, and receives one location per tag with a fresh fix after one roll call. Repeat with one tag offline and one without a GPS fix. Check that the other tags still update. / 配好 T02、T03，验收三标签签到、单标签失联与恢复、一次点名多标签定位，以及某个标签掉线或无定位时其余标签仍能更新。
-3. **Show per-tag roll-call results in the Web UI.** Add explicit pending, no-fix and no-reply states. Keep the previous position visible with its age. Test reconnect and re-sync during a round. / 网页补齐等待、无定位和无回包状态，保留上次位置和时间，并测试断线重连。
+3. **Connect GPS to the three alert paths.** Add position reporting for possible falls and manual SOS, and request a position for a missing BLE check-in. Verify each event with a valid fix and with no fresh fix or reply. Show pending, no-fix and no-reply states in the Web UI, and test reconnect and re-sync. / 把定位接到疑似摔倒、手动 SOS 和丢签到，再逐项验证有定位、无定位和无回包。网页显示各状态，并测试断线重连。
 4. **Validate the assembled wearable and signed updates.** Repeat GPS cold starts and outdoor walks with the enclosure, antenna and battery installed. Verify C01's signed BLE update workflow with the new GATT service and pairing settings. / 装壳和装电池后复测 GPS 冷启动与户外定位，并回归新版 C01 的 BLE 签名更新。
-5. **Prepare location handling for a pilot.** Keep GPS transmission on demand for the MVP. An SOS can later request a fresh fix or show a timestamped last-known position. Authenticate and encrypt location messages over LoRa and define enrollment and retention before a camp pilot. / MVP 保持按需传位置。后续可给 SOS 加上请求定位或显示带时间的最近位置。营地试点前补齐 LoRa 位置消息认证、加密、设备登记和位置保留规则。
+5. **Prepare location handling for a pilot.** Authenticate and encrypt location messages over LoRa and define enrollment and retention. / 营地试点前补齐 LoRa 位置消息认证、加密、设备登记和位置保留规则。
 
 ## 3.6 Fleet Management submission
 
