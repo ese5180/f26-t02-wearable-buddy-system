@@ -93,6 +93,11 @@ static int cmd_bg(const struct shell *shell, size_t argc, char **argv)
 		shell_print(shell, "SOS queue result=%d", rc);
 		return rc;
 	}
+	if (!strcmp(argv[1], "locate") && argc == 2) {
+		int rc = bg_radio_locate_group();
+		shell_print(shell, "LOCATE group queue result=%d", rc);
+		return rc;
+	}
 	bool gather = !strcmp(argv[1], "gather");
 	if (argc == 3 && (gather || !strcmp(argv[1], "query"))) {
 		char *end;
@@ -107,7 +112,7 @@ static int cmd_bg(const struct shell *shell, size_t argc, char **argv)
 		shell_print(shell, "GATHER queue T%02lu result=%d", tag, rc);
 		return rc;
 	}
-	shell_error(shell, "bg status | radio | imu | gnss | vibrate | maintenance <0..600> | heartbeat <on|off> | sos | query <1..3> | gather <1..3> | reboot");
+	shell_error(shell, "bg status | radio | imu | gnss | vibrate | maintenance <0..600> | heartbeat <on|off> | sos | query <1..3> | gather <1..3> | locate | reboot");
 	return -EINVAL;
 }
 

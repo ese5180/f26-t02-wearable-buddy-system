@@ -4,6 +4,7 @@
  */
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
+#include "app_ble.h"
 #include "radio_link.h"
 #include "roster.h"
 #include "wire.h"
@@ -34,6 +35,14 @@ uint32_t bg_roster_missing_count(void)
 uint32_t bg_roster_known_mask(void)
 {
 	return (uint32_t)atomic_get(&known_tags);
+}
+
+int64_t bg_roster_last_seen(uint8_t tag)
+{
+	uint32_t last = (uint32_t)atomic_get(&roster[tag].last_seen);
+	int64_t now = k_uptime_get();
+
+	return last ? now - (uint32_t)((uint32_t)now - last) : -1;
 }
 
 static bool parse_presence(struct bt_data *data, void *user_data)
@@ -101,11 +110,14 @@ void bg_roster_poll(void)
 		if (!m->announced || (m->missing && !missing)) {
 			LOG_INF("%s tag=T%02u seq=%ld maintenance=%ld", m->announced ? "RECOVERED" : "ONLINE",
 				tag, (long)atomic_get(&m->sequence), (long)atomic_get(&m->maintenance));
+			bg_app_tag_event(tag, m->announced ? BG_APP_RECOVERED : BG_APP_ONLINE,
+					 bg_roster_last_seen(tag));
 			m->announced = true;
 		}
 		if (missing && !m->missing) {
 			atomic_inc(&missing_events);
 			LOG_WRN("BLE MISSING tag=T%02u age_ms=%u; requesting LoRa status", tag, age);
+			bg_app_tag_event(tag, BG_APP_MISSING, bg_roster_last_seen(tag));
 			int rc = bg_radio_query(tag);
 			if (rc) {
 				LOG_WRN("Unable to queue status query for T%02u: %d", tag, rc);
@@ -119,4 +131,5 @@ int bg_roster_start(void) { return 0; }
 void bg_roster_poll(void) {}
 uint32_t bg_roster_missing_count(void) { return 0; }
 uint32_t bg_roster_known_mask(void) { return 0; }
+int64_t bg_roster_last_seen(uint8_t tag) { ARG_UNUSED(tag); return -1; }
 #endif

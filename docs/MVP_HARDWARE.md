@@ -6,12 +6,12 @@ Team 02 · Jet2Holiday · XIAO ESP32S3 + Wio-SX1262 B2B
 
 | Device / 设备 | Verified / 已验证 | Open / 待验证 |
 | --- | --- | --- |
-| T01, `1.6.12` | LSM6DSO reports motion. Holding Wio USER sends a LoRa SOS to C01. A GATHER starts one short vibration and C01 receives its ACK. / IMU 动静状态、实体按键 SOS、马达短振及 LoRa 确认已实测。 | The soldered L76K sends no readable UART data. / 叠焊的 GPS 尚无 UART 数据。 |
-| C01, `1.6.13` | Wio USER sent GATHER to T01. Its own L76K received valid NMEA indoors and reported `NO_FIX`. The background worker uploaded 229 bytes to Memfault over HTTPS. / 实测集合发送、室内 GPS 串口接收和后台遥测上传。 | Counselor phone GATT bridge and a three-tag group test. / 手机 GATT 桥接及三标签联测。 |
+| T01, `1.6.16` | L76K acquired an outdoor fix and T01 replied to one LoRa location request with a valid position. LSM6DSO motion, button SOS and GATHER short vibration were verified on the bench. / 实测户外定位、点名坐标回传、IMU 动静状态、按键 SOS 和集合短振。 | Repeat GPS cold starts and test the enclosed, battery-powered tag. / 复测 GPS 冷启动、装壳和电池供电。 |
+| C01, `1.6.16` | GATT `SYNC`, one-tag LoRa roll call and forwarding `TAG_POSITION` to the live Web client were verified. C01 also reported its own GPS fix and uploaded telemetry to Memfault. / 实测 BLE 同步、单标签点名、网页位置更新、C01 自身定位和云端遥测。 | Three-tag roll call and signed BLE update regression with this GATT build. / 三标签联测及新版 C01 的 BLE 签名更新回归。 |
 
-T01–T03 use BLE advertisements for presence and LoRa P2P for SOS, queries and GATHER. C01 can use Wi-Fi for fleet management at base. This firmware reports GNSS reception and fix status on the USB console. It does not yet send coordinates or events to the phone.
+Tags broadcast BLE presence. SOS, queries, GATHER and on-demand GPS use LoRa P2P. The browser sends commands and receives events over a direct BLE connection to C01. C01 Wi-Fi handles fleet management at base. See the [Web roll-call contract](WEB_ROLL_CALL.md).
 
-标签用 BLE 广播心跳，SOS、状态查询和集合通过 LoRa 点对点传输。C01 可通过 Wi-Fi 做设备管理。当前 GPS 通过 USB 命令查看接收和定位状态。坐标和告警到手机的链路需要接手实现。
+标签用 BLE 广播心跳。SOS、状态查询、集合和点名位置走 LoRa。网页直接通过 BLE 与 C01 收发，C01 的 Wi-Fi 用于设备管理。
 
 ## Wiring / 硬件接线
 
@@ -33,12 +33,12 @@ Use the `codex/mvp-firmware-handoff` branch. Follow the [English setup guide](en
 git switch codex/mvp-firmware-handoff
 
 "$BG_WS/.venv/bin/python" scripts/build.py --workspace "$BG_WS" --key "$BG_KEY" \
-  --build-dir "$BG_WS/build-bg-tag1-mvp" --role tag --tag-id 1 \
-  --imu --low-power --gnss --haptics --version 1.6.12
+  --build-dir "$BG_WS/build-bg-tag1-rollcall" --role tag --tag-id 1 \
+  --imu --low-power --gnss --haptics --tag-position --version 1.6.16
 
 "$BG_WS/.venv/bin/python" scripts/build.py --workspace "$BG_WS" --key "$BG_KEY" \
-  --build-dir "$BG_WS/build-bg-counselor-mvp-wifi" --role counselor \
-  --gnss --wifi --version 1.6.13
+  --build-dir "$BG_WS/build-bg-counselor-rollcall" --role counselor \
+  --gnss --wifi --version 1.6.16
 
 .venv/bin/python -m serial.tools.list_ports -v
 ```
@@ -50,25 +50,24 @@ Use each build's `firmware/zephyr/zephyr.signed.bin` with the [signed BLE update
 1. **Identify / 识别。** Run `bg status` on each board. Check role, tag ID, version and `confirmed=1`. On T01, run `bg imu` and `bg vibrate`; observe motion and feel the pulse. / 两端先核对身份，再单测 IMU 和马达。
 2. **SOS / 求助。** Wait for C01 to see T01's BLE heartbeat. Monitor both USB consoles and hold the tag's Wio USER button for about 1.5 s. Look for `USER SOS queue result=0` on T01 and `SOS received` on C01. / 先确认 C01 收到 T01 心跳，再长按学生端 USER，观察两个日志。
 3. **GATHER / 集合。** Hold C01's Wio USER for about 1.5 s. It queues individual requests for tags seen since boot, including ones whose BLE heartbeats have since gone missing. Confirm one short pulse on T01, `GATHER vibration started` on T01, and `GATHER confirmed` on C01. An ACK means the vibration driver accepted the request. Retransmission of the same request ACKs it again without replaying the vibration. / 辅导员端长按后逐个通知已登记标签。核对实际短振和对应 ACK，重复包不会再振一次。
-4. **GNSS / 定位。** Run `bg gnss` twice, a few seconds apart. Increasing `rx_bytes` and `valid` prove communication. An indoor `NO_FIX` is enough for this check. / 两个计数持续增加即通过串口接收检查。室内无定位也可以验证。
-5. **Fleet / 云端。** Provision C01 per the [Memfault guide](en/FLEET_MANAGEMENT.md) or [中文云端指南](zh/FLEET_MANAGEMENT.md). Run `mflt test heartbeat` and look for `Wi-Fi telemetry upload: … bytes` with a positive count. / 由设备后台上传，核对日志和云端设备报告。
+4. **GNSS / 定位。** Run `bg gnss` twice, a few seconds apart. Increasing `rx_bytes` and `valid` prove UART reception. Wait for `FIX_REPORTED` on T01 before testing the map. / 计数增加可验证串口。地图实测前确认 T01 显示 `FIX_REPORTED`。
+5. **Roll call / 点名。** Connect the Web client to `BG-C01` and wait until T01 appears. Click Roll call once and check the last-location time. For a USB-only trigger run `bg locate` on C01 and look for `LOCATE complete tag=T01 ... fix=1`. / 网页连接后点一次名，核对最后定位时间。串口 `bg locate` 可独立触发同一条 LoRa 路径。
+6. **Fleet / 云端。** Provision C01 per the [Memfault guide](en/FLEET_MANAGEMENT.md) or [中文云端指南](zh/FLEET_MANAGEMENT.md). Run `mflt test heartbeat` and look for `Wi-Fi telemetry upload: … bytes` with a positive count. / 由设备后台上传，核对日志和云端设备报告。
 
 ```sh
 .venv/bin/python tools/bg_serial.py --port "$TAG_PORT" command bg status
 .venv/bin/python tools/bg_serial.py --port "$COUNSELOR_PORT" monitor --seconds 60
 # Single-tag GATHER, with the counselor serial monitor closed:
 .venv/bin/python tools/bg_serial.py --port "$COUNSELOR_PORT" command bg gather 1
+# Roll call, with the counselor serial monitor closed:
+.venv/bin/python tools/bg_serial.py --port "$COUNSELOR_PORT" command bg locate
 ```
 
 ## T01 GPS follow-up / T01 GPS 接手顺序
 
-1. **Pin conflict.** Full-header stacking connects GPS `WUP` to `D0/GPIO1`. The current IMU overlay drives D0 low as an idle Saleae marker, which puts the L76K in standby. Reserve D0 for WUP in a stacked profile and omit that debug marker there. On older Seeed boards, GPS `RST` is on D10, shared with Wio SPI MOSI. On the revised module, RST moved to D2. Check the actual revision before using the full headers. [Seeed change record](https://www.seeedstudio.com/L76K-GNSS-Module-for-Seeed-Studio-XIAO-p-5864.html)
-2. **What the bench proved.** T01 received all 33 bytes and parsed one valid test NMEA frame in UART loopback while the IMU was online. The T01 GPS board measured 3.3 V supply and TX, 0 V WUP, and 3.3 V RST. Temporarily driving D0 high brought the measured WUP to 3.3 V but still yielded zero bytes. Two 12-second hardware UART captures in ROM mode, with D0 released and then held high, also saw no bytes or RX edges. The temporary register settings were restored.
-3. **Next hardware check.** Probe the GPS TX using its own ground and confirm VCC and reset at the module. If the fully stacked board stays silent with WUP released and RST high, compare it with a known-good L76K on the same three-wire interface, or isolate the current GPS wiring on the bench. Once `rx_bytes` and `valid` advance, verify the module reports a fresh fix outdoors before sending coordinates to the phone.
-
-1. **引脚冲突。** GPS 整排叠焊后，WUP 接 D0。现有 IMU 调试标记把 D0 拉低，GPS 会待机。叠焊版应把 D0 留给 WUP，并关闭这一路调试标记。旧版 L76K 的 RST 在 D10，与 Wio SPI MOSI 共线；新版改到了 D2。接手先核对实物版本。
-2. **已排查。** T01 UART 回环收到全部 33 字节并解析出一条有效 NMEA，当时 IMU 在线。GPS 板实测供电和 TX 都是 3.3 V，WUP 是 0 V，RST 是 3.3 V。临时拉高 D0 后，GPS 板的 WUP 实测升到 3.3 V，但仍无数据。进入原厂下载模式后，释放 D0 和拉高 D0 各监听 12 秒，两次均无字节、无 UART 边沿。临时配置已恢复。
-3. **下一步。** 先量 GPS 模块侧供电、复位和 TX 波形。若 WUP 已释放、RST 高电平，但还是无 UART 输出，用已知正常的 L76K 三线接法做对照，或在台架隔离这块 GPS。串口通过后再到户外验证实际定位，最后接上坐标转发。
+1. **Stacked boards.** Full-header mounting connects GPS `WUP` to D0. The `--tag-position` overlay keeps D0 pulled up as an input and removes the IMU's Saleae marker from that pin. Older Seeed modules route GPS `RST` to D10, which shares Wio SPI MOSI. The revised module routes it to D2. Check your actual board revision. / 叠焊时 D0 连接 WUP，新配置用上拉输入并停用调试脉冲。旧版 RST 在 D10，新版在 D2。[Seeed change record](https://www.seeedstudio.com/L76K-GNSS-Module-for-Seeed-Studio-XIAO-p-5864.html)
+2. **Continuous bad checksums.** During the bench test, raw bytes arrived but the `invalid` count rose continuously. A full T01 power cycle, with USB and battery power removed, restored valid NMEA. The tag then obtained a fix and returned it in a roll call. Repeat this on fully assembled tags and record occurrences. / 若字节增加但校验持续失败，台架上完全断电后恢复了有效报文并成功回传定位。装壳后要复测故障频率。
+3. **Map not updating.** If T01 shows `FIX_REPORTED`, watch C01 for a LoRa LOCATE after the click. If `bg locate` updates the map and the button triggers no LOCATE, check the Web Control write for `op=3` and a fresh request ID. / 串口触发能更新但网页按钮没有发定位请求时，核对请求格式和请求号。
 
 ## Code ownership / 模块入口
 
@@ -77,9 +76,8 @@ Use each build's `firmware/zephyr/zephyr.signed.bin` with the [signed BLE update
 | Wio button and eligible tags / 板载按键和标签列表 | [user_button.c](../firmware/src/input/user_button.c), [roster.c](../firmware/src/roster/roster.c) |
 | LoRa messages, retries and vibration / LoRa 消息及振动 | [link.c](../firmware/src/radio/link.c), [exchange.c](../firmware/src/radio/exchange.c), [haptics.c](../firmware/src/actuators/haptics.c) |
 | GPS UART driver and application status / GPS 驱动和应用状态 | [l76k.c](../firmware/src/drivers/l76k.c), [gnss.c](../firmware/src/sensors/gnss.c), [l76k.overlay](../firmware/conf/l76k.overlay) |
-| D0 debug marker / D0 调试标记 | [lsm6dso.overlay](../firmware/conf/lsm6dso.overlay), [imu.c](../firmware/src/sensors/imu.c) |
+| Web GATT and location forwarding / 网页 GATT 与定位转发 | [app_ble.c](../firmware/src/ble/app_ble.c), [wire.c](../firmware/src/protocol/wire.c) |
+| D0 marker and GPS wake-up / D0 调试标记和 GPS 唤醒 | [lsm6dso.overlay](../firmware/conf/lsm6dso.overlay), [l76k-position.overlay](../firmware/conf/l76k-position.overlay) |
 | Fleet Wi-Fi and signed OTA / 遥测和签名更新 | [wifi_fleet.c](../firmware/src/fleet/wifi_fleet.c), [health.c](../firmware/src/update/health.c) |
 
-For the phone, agree on the App's BLE interface first. Add the C01 GATT bridge above the roster and LoRa services, then verify T01 SOS and GATHER end to end on a real phone. Keep the existing BLE heartbeat, signed SMP update and Memfault paths as separate checks.
-
-接手机前先对齐 App 的 BLE 接口。C01 从 roster 和 LoRa 服务取状态与事件，再走 GATT 发给手机。先用实机完成 SOS 和集合闭环，再验 GPS 坐标、T02/T03 及原有 BLE 更新和 Memfault。
+See [next steps in the project README](../README.md#next-steps--后续工作) for multi-tag testing, the Web UI's no-fix and no-reply states, and update regression. / 后续任务见项目 README。

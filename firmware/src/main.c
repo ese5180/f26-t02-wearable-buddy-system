@@ -5,6 +5,7 @@
 #include <zephyr/dfu/mcuboot.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
+#include "app_ble.h"
 #include "health.h"
 #include "fleet.h"
 #include "gnss.h"
@@ -25,6 +26,7 @@ int main(void)
 		LOG_ERR("Watchdog unavailable: %d; image will not be confirmed", rc);
 		return rc;
 	}
+	bg_app_init();
 	if (bg_health_check_slots() != 0 || bg_radio_init() != 0 || bg_presence_init() != 0 ||
 		bg_roster_start() != 0) {
 		LOG_ERR("Startup health check failed; waiting for watchdog reset");
@@ -45,6 +47,7 @@ int main(void)
 	for (;;) {
 		bg_fleet_poll();
 		bg_roster_poll();
+		bg_app_poll();
 		rc = bg_presence_tick();
 		if (rc != 0) {
 			bg_health_cycle(false, false);

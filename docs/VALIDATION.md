@@ -2,6 +2,18 @@
 
 Fleet results below were reported by Siwei Lei in the [source commit](https://github.com/Alex-lei-1/buddyguard/commit/5a730b1823df74a9970945415dc7b4f58a03e83f). Dates, versions and release status describe those sessions.
 
+## Web roll call, 2026-11-22
+
+| Check / 项目 | Observed result / 实测结果 |
+| --- | --- |
+| Signed firmware / 签名固件 | T01 and C01 both booted `1.6.16` and reported `confirmed=1`. Both images verify with the Team 2 public key. |
+| GNSS recovery / GPS 恢复 | T01's invalid NMEA count initially rose; after a full cold power cycle it received valid NMEA and obtained an outdoor fix. C01 also reported an outdoor fix. |
+| LoRa roll call / LoRa 点名 | On one USB-triggered roll call, T01 and C01 logged the same sequence. C01 accepted one valid fix on the first attempt. |
+| GATT and Web / 网页回传 | C01 had a live, synced BLE client and encoded a kind-5 event for T01. The other computer's map last-location time refreshed. The team subsequently confirmed the Web roll call worked. |
+| Fleet / 云端 | C01 reported a 214-byte HTTPS telemetry upload while its BLE client was connected. |
+
+The live test used one tag. See the [hardware handoff](MVP_HARDWARE.md) for reproduction and the [README](../README.md#next-steps--后续工作) for the remaining checks.
+
 ## Course repository integration
 
 Local builds passed for the Wi-Fi tag (IMU, 60 s metrics), Wi-Fi counselor (15 s metrics and UART recovery) and baseline BLE/LoRa counselor. Both Wi-Fi builds keep the original image slots and validate against the Team 2 public key. The eight upstream host-tool checks passed against the imported tools. Hardware and Memfault results below are the team's earlier bench evidence.
@@ -29,7 +41,7 @@ C01 before/after reports supply a same-device functional comparison. Different t
 
 All six 1.5.x role/variant builds passed signature verification. Eight host tests passed; the build rejects an interval override without a fleet profile.
 
-The current source VERSION defaults to the A baseline 1.5.0; B builds must use explicit `--heartbeat-seconds 15 --version 1.5.1` (or the next distinct version). Existing bootloaders and runtime credentials were preserved. The exact [live checkoff sequence](zh/FLEET_CHECKOFF.md) and [experiment explanation](zh/FLEET_AB_TEST.md) are included in the project package.
+The A/B experiment used 1.5.0 for A and 1.5.1 for B. Reproducing it from a newer branch requires explicit version values and matching role profiles. B uses `--heartbeat-seconds 15`. Existing bootloaders and runtime credentials were preserved. See the [live checkoff sequence](zh/FLEET_CHECKOFF.md) and [experiment explanation](zh/FLEET_AB_TEST.md).
 
 ## Direct Wi-Fi fleet validation, 2026-11-08 (earlier 1.4.x run)
 

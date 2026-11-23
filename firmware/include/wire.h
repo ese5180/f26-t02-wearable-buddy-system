@@ -6,11 +6,19 @@
 #include <stdint.h>
 /* Wire boundary only; no transport or mutable service state. See firmware guide for offsets.
  * 只定义帧与编码校验，不承担传输、不持有服务状态；字段偏移见固件解释。 */
-enum { BG_PRESENCE_SIZE = 8, BG_RADIO_FRAME_SIZE = 12, BG_MAX_TAGS = 3 };
+enum { BG_PRESENCE_SIZE = 8, BG_RADIO_FRAME_SIZE = 12, BG_POSITION_FRAME_SIZE = 16, BG_MAX_TAGS = 3 };
 enum bg_radio_type {
 	BG_RADIO_STATUS = 1, BG_RADIO_ACK, BG_RADIO_SOS, BG_RADIO_QUERY, BG_RADIO_REPLY,
-	BG_RADIO_GATHER,
+	BG_RADIO_GATHER, BG_RADIO_POSITION, BG_RADIO_LOCATE,
 };
+enum { BG_POSITION_NO_FIX = UINT8_MAX };
+struct bg_position_frame {
+	int32_t latitude_e7, longitude_e7;
+	uint16_t sequence;
+	uint8_t tag, age_s;
+};
+void bg_position_encode(uint8_t out[BG_POSITION_FRAME_SIZE], const struct bg_position_frame *position);
+bool bg_position_decode(const uint8_t *data, size_t size, struct bg_position_frame *position);
 struct bg_presence_frame { uint8_t tag, flags; uint16_t sequence; };
 void bg_presence_encode(uint8_t out[BG_PRESENCE_SIZE], uint8_t tag,
 						uint16_t sequence, uint8_t flags, uint8_t role);

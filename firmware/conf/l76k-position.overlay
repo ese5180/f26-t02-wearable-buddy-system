@@ -1,0 +1,17 @@
+/* Stacked L76K connects WUP to D0. Keep the receiver awake without
+ * driving the debug pulse used by the standalone IMU bench build. */
+#include <zephyr/dt-bindings/gpio/gpio.h>
+
+/ {
+	zephyr,user {
+		/delete-property/ impact-gpios;
+	};
+};
+
+&gpio0 {
+	l76k-wakeup {
+		gpio-hog;
+		gpios = <1 GPIO_PULL_UP>;
+		input;
+	};
+};

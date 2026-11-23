@@ -25,4 +25,6 @@ enum bg_radio_exchange_action bg_radio_exchange_next(
 void bg_radio_exchange_sent(struct bg_radio_exchange *exchange, uint32_t now_ms);
 bool bg_radio_exchange_accept(struct bg_radio_exchange *exchange,
 	const uint8_t *frame, size_t size);
+bool bg_radio_exchange_accept_position(struct bg_radio_exchange *exchange,
+	const struct bg_position_frame *position);
 #endif

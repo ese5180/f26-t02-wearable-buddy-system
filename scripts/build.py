@@ -37,6 +37,7 @@ def main():
     p.add_argument('--tag-id', type=int, choices=range(1, 4), default=None)
     p.add_argument('--imu', action='store_true', help='Tag only: enable SparkFun LSM6DSO on I2C D4/D5')
     p.add_argument('--gnss', action='store_true', help='Enable L76K receive on UART0 D7')
+    p.add_argument('--tag-position', action='store_true', help='Tag only: reply to LoRa requests with the latest GNSS fix')
     p.add_argument('--haptics', action='store_true', help='Tag only: enable DRV2605L on I2C D4/D5')
     p.add_argument('--fleet', action='store_true', help='Enable Memfault diagnostics via the USB host gateway')
     p.add_argument('--wifi', action='store_true', help='Enable direct Wi-Fi HTTPS telemetry/OTA (implies --fleet)')
@@ -59,6 +60,8 @@ def main():
         p.error('--imu applies only to the tag role')
     if role == 'counselor' and args.haptics:
         p.error('--haptics applies only to the tag role')
+    if args.tag_position and (role != 'tag' or not args.gnss):
+        p.error('--tag-position requires --role tag and --gnss')
     tag = 200 if role == 'counselor' else (args.tag_id or 1)
     workspace = args.workspace or os.environ.get('BUDDYGUARD_ZEPHYR_WORKSPACE')
     if workspace is None:
@@ -95,6 +98,8 @@ def main():
                'serial_recovery': args.serial_recovery, 'key': str(key)}
     if args.gnss:
         profile['gnss'] = True
+    if args.tag_position:
+        profile['tag_position'] = True
     if args.haptics:
         profile['haptics'] = True
     if args.fleet:
@@ -138,12 +143,25 @@ def main():
         f'CONFIG_BUDDYGUARD_IMU={"y" if args.imu else "n"}\n'
         f'CONFIG_BUDDYGUARD_GNSS={"y" if args.gnss else "n"}\n'
         f'CONFIG_BUDDYGUARD_HAPTICS={"y" if args.haptics else "n"}\n')
+    if role == 'counselor':
+        with config.open('a') as stream:
+            stream.write('CONFIG_SETTINGS_NVS=y\nCONFIG_BT_MAX_PAIRED=2\n'
+                         'CONFIG_MCUMGR_TRANSPORT_BT_PERM_RW_ENCRYPT=y\n')
+            if args.wifi:
+                # Pairing adds P-256 while HTTPS also needs P-384. Use the complete
+                # software implementation of both curves in this profile.
+                stream.write('CONFIG_MBEDTLS_PSA_P256M_DRIVER_ENABLED=n\n')
+    if args.tag_position:
+        with config.open('a') as stream:
+            stream.write('CONFIG_BUDDYGUARD_TAG_POSITION=y\n')
     marker.write_text(json.dumps(profile, indent=2) + '\n')
     env = os.environ.copy()
     env['PATH'] = str(west.parent) + os.pathsep + env['PATH']
     overlays = [str(application / 'conf/lsm6dso.overlay')] if args.imu else []
     if args.gnss:
         overlays.append(str(application / 'conf/l76k.overlay'))
+    if args.tag_position:
+        overlays.append(str(application / 'conf/l76k-position.overlay'))
     if args.haptics:
         overlays.append(str(application / 'conf/drv2605l.overlay'))
     if args.wifi:

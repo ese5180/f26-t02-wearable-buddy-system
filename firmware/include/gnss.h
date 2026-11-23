@@ -24,6 +24,7 @@ struct bg_gnss_status {
 
 void bg_gnss_start(void);
 struct bg_gnss_status bg_gnss_status(void);
+bool bg_gnss_position(int32_t *lat_e7, int32_t *lon_e7, uint8_t *age_s);
 const char *bg_gnss_fix_name(enum bg_gnss_fix fix);
 
 #endif

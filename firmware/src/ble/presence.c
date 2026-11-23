@@ -8,9 +8,11 @@
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/mgmt/mcumgr/transport/smp_bt.h>
+#include <zephyr/settings/settings.h>
 #include <zephyr/sys/atomic.h>
 #include <zephyr/sys/util.h>
 #include "presence.h"
+#include "app_ble.h"
 #include "wire.h"
 
 LOG_MODULE_REGISTER(bg_presence, LOG_LEVEL_INF);
@@ -22,13 +24,25 @@ LOG_MODULE_REGISTER(bg_presence, LOG_LEVEL_INF);
 static uint8_t presence[] = {0xff, 0xff, 1, CONFIG_BUDDYGUARD_TAG_ID, 0, 0, 0, 1};
 static const struct bt_data ad[] = {
 	BT_DATA_BYTES(BT_DATA_FLAGS, BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR),
+#if defined(CONFIG_BUDDYGUARD_APP_BLE)
+	BT_DATA_BYTES(BT_DATA_UUID128_ALL, BG_APP_SERVICE_UUID),
+#else
 	BT_DATA_BYTES(BT_DATA_UUID128_ALL, SMP_BT_SVC_UUID_VAL),
+#endif
 	BT_DATA(BT_DATA_MANUFACTURER_DATA, presence, sizeof(presence)),
 };
 static const struct bt_data sd[] = {
 	BT_DATA(BT_DATA_NAME_COMPLETE, CONFIG_BT_DEVICE_NAME,
 		sizeof(CONFIG_BT_DEVICE_NAME) - 1),
 };
+#if defined(CONFIG_BUDDYGUARD_APP_BLE)
+static const struct bt_data maintenance_sd[] = {
+	BT_DATA(BT_DATA_NAME_COMPLETE, CONFIG_BT_DEVICE_NAME, sizeof(CONFIG_BT_DEVICE_NAME) - 1),
+	BT_DATA_BYTES(BT_DATA_UUID128_ALL, SMP_BT_SVC_UUID_VAL),
+};
+/* Zephyr's SMP transport registers at boot. Keep it available during maintenance. */
+static bool smp_registered = true;
+#endif
 
 /* Non-connectable presence advertising. Interval units are 0.625 ms; the default
  * 100 ms (max 150 ms) equals Zephyr's BT_LE_ADV_NCONN_IDENTITY used before.
@@ -92,6 +106,9 @@ BT_CONN_CB_DEFINE(connection_callbacks) = {
 static int update_advertising(void)
 {
 	bool maintenance = in_maintenance();
+	bool connectable = maintenance || IS_ENABLED(CONFIG_BUDDYGUARD_APP_BLE);
+	const struct bt_data *response = connectable ? sd : NULL;
+	size_t response_len = connectable ? ARRAY_SIZE(sd) : 0;
 	if (atomic_get(&connected)) {
 		/* Limit the maintenance admission window; an active upload is allowed to
 		 * finish. Production access authorization is a separate requirement.
@@ -99,6 +116,19 @@ static int update_advertising(void)
 		advertising = false;
 		return 0;
 	}
+#if defined(CONFIG_BUDDYGUARD_APP_BLE)
+	if (smp_registered != maintenance) {
+		int rc = maintenance ? smp_bt_register() : smp_bt_unregister();
+		if (rc) {
+			return rc;
+		}
+		smp_registered = maintenance;
+	}
+	if (maintenance) {
+		response = maintenance_sd;
+		response_len = ARRAY_SIZE(maintenance_sd);
+	}
+#endif
 	if (atomic_cas(&restart_advertising, 1, 0)) {
 		if (advertising) {
 			(void)bt_le_adv_stop();
@@ -112,7 +142,7 @@ static int update_advertising(void)
 		}
 		return 0;
 	}
-	if (advertising && advertising_connectable != maintenance) {
+	if (advertising && advertising_connectable != connectable) {
 		(void)bt_le_adv_stop();
 		advertising = false;
 	}
@@ -120,17 +150,16 @@ static int update_advertising(void)
 		(maintenance ? 1 : 0) | (boot_is_img_confirmed() ? 0 : 2),
 		IS_ENABLED(CONFIG_BUDDYGUARD_COUNSELOR) ? 2 : 1);
 	if (advertising) {
-		return bt_le_adv_update_data(ad, ARRAY_SIZE(ad),
-			maintenance ? sd : NULL, maintenance ? ARRAY_SIZE(sd) : 0);
+		return bt_le_adv_update_data(ad, ARRAY_SIZE(ad), response, response_len);
 	}
-	const struct bt_le_adv_param *params = maintenance ?
+	const struct bt_le_adv_param *params = connectable ?
 		BT_LE_ADV_CONN_FAST_1 : &presence_params;
-	int rc = bt_le_adv_start(params, ad, ARRAY_SIZE(ad),
-		maintenance ? sd : NULL, maintenance ? ARRAY_SIZE(sd) : 0);
+	int rc = bt_le_adv_start(params, ad, ARRAY_SIZE(ad), response, response_len);
 	if (rc == 0) {
 		advertising = true;
-		advertising_connectable = maintenance;
-		LOG_INF("Advertising started: %s", maintenance ? "maintenance/SMP" : "presence");
+		advertising_connectable = connectable;
+		LOG_INF("Advertising started: %s", IS_ENABLED(CONFIG_BUDDYGUARD_APP_BLE) ?
+			"BuddyGuard App" : maintenance ? "maintenance/SMP" : "presence");
 	}
 	return rc;
 }
@@ -138,6 +167,14 @@ static int update_advertising(void)
 int bg_presence_init(void)
 {
 	int rc = bt_enable(NULL);
+#if defined(CONFIG_BUDDYGUARD_APP_BLE)
+	if (rc == 0) {
+		rc = settings_subsys_init();
+	}
+	if (rc == 0) {
+		rc = settings_load();
+	}
+#endif
 	if (rc == 0) {
 		bg_presence_maintenance(CONFIG_BUDDYGUARD_MAINTENANCE_SECONDS);
 	}

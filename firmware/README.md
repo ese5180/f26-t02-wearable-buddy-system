@@ -9,6 +9,7 @@ Start with [main.c](src/main.c), then the interfaces under [include/](include/).
 | Topic / 内容 | Implementation / 实现 | Learning guide / 学习与复现 |
 |---|---|---|
 | BLE presence / 心跳 | [presence.c](src/ble/presence.c), [roster.c](src/roster/roster.c) | [中文](../docs/zh/FIRMWARE.md), [English](../docs/en/FIRMWARE.md) |
+| Web GATT and GPS roll call / 网页 GATT 与 GPS 点名 | [app_ble.c](src/ble/app_ble.c), [link.c](src/radio/link.c), [wire.c](src/protocol/wire.c) | [Web protocol / 网页接口](../docs/WEB_ROLL_CALL.md) |
 | LoRa receive/retry / 收发重试 | [link.c](src/radio/link.c), [exchange.c](src/radio/exchange.c), [history.c](src/radio/history.c) | [中文](../docs/zh/FIRMWARE.md#无线帧格式), [English](../docs/en/FIRMWARE.md#on-air-formats) |
 | Wire format / 帧格式 | [wire.c](src/protocol/wire.c), [wire.h](include/wire.h) | [中文字段表](../docs/zh/FIRMWARE.md#无线帧格式), [English fields](../docs/en/FIRMWARE.md#on-air-formats) |
 | Wio radio hardware / 硬件 | [wio_sx1262.c](src/drivers/wio_sx1262.c) | [Full setup / 完整搭建](../docs/en/GETTING_STARTED.md) |

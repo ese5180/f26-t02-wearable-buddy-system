@@ -7,6 +7,8 @@ int bg_radio_init(void);
 int bg_radio_sos(void);
 int bg_radio_query(uint8_t tag);
 int bg_radio_gather(uint8_t tag);
+int bg_radio_gather_for_app(uint8_t tag, uint32_t request);
+int bg_radio_locate_group(void);
 /* Approximate monotonic counters since boot, copied atomically per field. */
 struct bg_radio_stats {
 	uint32_t tx_attempts, tx_completed, tx_exhausted;

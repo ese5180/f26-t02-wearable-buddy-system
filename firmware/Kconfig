@@ -23,6 +23,18 @@ config BUDDYGUARD_COUNSELOR
 	bool "Build the counselor receiver role"
 	default n
 
+config BUDDYGUARD_APP_BLE
+	bool "Counselor phone service"
+	depends on BUDDYGUARD_COUNSELOR
+	default y
+	select BT_SMP
+	select SETTINGS
+	select NVS
+	select BT_SETTINGS
+	select BT_GATT_SERVICE_CHANGED
+	select BT_GATT_DYNAMIC_DB
+	select MCUMGR_TRANSPORT_BT_DYNAMIC_SVC_REGISTRATION
+
 config BUDDYGUARD_IMU
 	bool "Optional SparkFun LSM6DSO on the tag I2C bus"
 	depends on !BUDDYGUARD_COUNSELOR
@@ -39,6 +51,10 @@ config BUDDYGUARD_GNSS
 	help
 	  Receive and validate NMEA at 9600 baud on D7. The USB shell reports
 	  reception and the receiver's fix status.
+
+config BUDDYGUARD_TAG_POSITION
+	bool "Reply to counselor position requests over the bench LoRa link"
+	depends on BUDDYGUARD_GNSS && !BUDDYGUARD_COUNSELOR
 
 config BUDDYGUARD_HAPTICS
 	bool "Optional DRV2605L and ERM motor on the tag I2C bus"

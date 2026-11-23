@@ -166,7 +166,9 @@ K_THREAD_DEFINE(bg_wifi_thread, 12288, worker, NULL, NULL, NULL, 8, 0, 0);
 void bg_wifi_start(void)
 {
 	iface = net_if_get_first_wifi();
-	if (!iface || settings_subsys_init() || settings_load() || memfault_zephyr_port_install_root_certs()) {
+	if (!iface ||
+	    (!IS_ENABLED(CONFIG_BUDDYGUARD_APP_BLE) && (settings_subsys_init() || settings_load())) ||
+	    memfault_zephyr_port_install_root_certs()) {
 		LOG_ERR("Wi-Fi fleet initialization failed"); return;
 	}
 	net_mgmt_init_event_callback(&ip_event, on_ip, NET_EVENT_IPV4_DHCP_BOUND);

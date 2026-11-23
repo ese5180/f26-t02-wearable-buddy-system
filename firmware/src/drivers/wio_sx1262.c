@@ -37,15 +37,18 @@ static int set_mode(bool tx)
 	return tx_mode == tx ? 0 : configure(tx);
 }
 
-int bg_radio_driver_send(uint8_t *frame)
+static int send_packet(uint8_t *frame, uint32_t size)
 {
 	int rc = set_mode(true);
 	if (rc == 0) {
-		rc = lora_send(radio, frame, FRAME_SIZE);
+		rc = lora_send(radio, frame, size);
 	}
 	int rx_rc = set_mode(false);
 	return rc ? rc : rx_rc;
 }
+
+int bg_radio_driver_send(uint8_t *frame) { return send_packet(frame, FRAME_SIZE); }
+int bg_radio_driver_send_position(uint8_t *frame) { return send_packet(frame, BG_POSITION_FRAME_SIZE); }
 
 int bg_radio_driver_receive(uint8_t *frame, k_timeout_t timeout, int16_t *rssi, int8_t *snr)
 {
@@ -53,7 +56,7 @@ int bg_radio_driver_receive(uint8_t *frame, k_timeout_t timeout, int16_t *rssi, 
 	if (rc) {
 		return rc;
 	}
-	return lora_recv(radio, frame, FRAME_SIZE, timeout, rssi, snr);
+	return lora_recv(radio, frame, BG_POSITION_FRAME_SIZE, timeout, rssi, snr);
 }
 
 int bg_radio_driver_init(void)

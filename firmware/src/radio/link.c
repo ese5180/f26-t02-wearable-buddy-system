@@ -7,23 +7,29 @@
 #include <zephyr/random/random.h>
 #include <zephyr/sys/atomic.h>
 #include <zephyr/sys/byteorder.h>
+#include "app_ble.h"
+#include "gnss.h"
 #include "radio_link.h"
 #include "radio_driver.h"
 #include "radio_exchange.h"
 #include "radio_history.h"
 #include "haptics.h"
 #include "imu.h"
+#include "roster.h"
 
 LOG_MODULE_REGISTER(bg_lora, LOG_LEVEL_INF);
 
-struct request { uint8_t type; uint8_t tag; };
+struct request { uint32_t app_request; uint8_t type; uint8_t tag; };
 K_MSGQ_DEFINE(requests, sizeof(struct request), 8, 1);
 K_SEM_DEFINE(radio_started, 0, 1);
 static uint16_t next_sequence;
 static struct bg_radio_exchange exchange;
+static uint32_t app_request;
 static struct bg_radio_history history;
 static bool reply_pending;
 static uint16_t reply_sequence;
+static struct bg_position_frame last_position_reply;
+static bool position_cached;
 
 enum counter {
 	TX_ATTEMPTS, TX_COMPLETED, TX_EXHAUSTED, RX_VALID, RX_INTERLEAVED,
@@ -43,7 +49,7 @@ static void begin(uint8_t *frame, uint32_t now)
 	/* QUERY expects a REPLY, not an ACK. Deterministic tag/sequence jitter
 	 * separates retries without blocking reception or fabricating randomness. */
 	bg_radio_exchange_start(&exchange, frame, now,
-		frame[3] == BG_RADIO_QUERY ? 1500 : 600,
+		frame[3] == BG_RADIO_QUERY || frame[3] == BG_RADIO_LOCATE ? 1500 : 600,
 		80 + frame[4] * 17 + (seq % 7) * 25);
 }
 
@@ -59,6 +65,8 @@ static void transmit_due(uint32_t now)
 		atomic_inc(&counters[TX_EXHAUSTED]);
 		LOG_WRN("Delivery unconfirmed tag=T%02u type=%u seq=%u after %u attempts",
 			frame[4], frame[3], seq, exchange.attempts);
+		bg_app_gather_done(frame[4], app_request, BG_APP_NO_ACK);
+		app_request = 0;
 		return;
 	}
 	LOG_INF("TX tag=T%02u type=%u seq=%u attempt=%u",
@@ -101,6 +109,39 @@ static void receive_gather(uint8_t *frame, uint16_t seq)
 	acknowledge(frame);
 }
 
+static void respond_position(uint16_t seq)
+{
+	if (!position_cached || last_position_reply.sequence != seq) {
+		last_position_reply = (struct bg_position_frame){
+			.sequence = seq, .tag = CONFIG_BUDDYGUARD_TAG_ID, .age_s = BG_POSITION_NO_FIX,
+		};
+		(void)bg_gnss_position(&last_position_reply.latitude_e7, &last_position_reply.longitude_e7,
+				       &last_position_reply.age_s);
+		position_cached = true;
+	}
+	uint8_t packet[BG_POSITION_FRAME_SIZE];
+	bg_position_encode(packet, &last_position_reply);
+	int rc = bg_radio_driver_send_position(packet);
+	LOG_INF("LOCATE reply seq=%u fix=%u result=%d", seq,
+		last_position_reply.age_s != BG_POSITION_NO_FIX, rc);
+}
+
+static void receive_position(const uint8_t *frame, size_t size)
+{
+	struct bg_position_frame position;
+	if (!bg_position_decode(frame, size, &position) ||
+	    !bg_radio_exchange_accept_position(&exchange, &position)) {
+		return;
+	}
+	atomic_inc(&counters[TX_COMPLETED]);
+	atomic_inc(&counters[RX_VALID]);
+	bool has_fix = position.age_s != BG_POSITION_NO_FIX;
+	LOG_INF("LOCATE complete tag=T%02u seq=%u fix=%u", position.tag, position.sequence, has_fix);
+	if (has_fix) {
+		bg_app_position(position.tag, position.latitude_e7, position.longitude_e7, position.age_s);
+	}
+}
+
 static void dispatch(uint8_t *frame, int16_t rssi, int8_t snr)
 {
 	uint8_t type = frame[3];
@@ -110,6 +151,8 @@ static void dispatch(uint8_t *frame, int16_t rssi, int8_t snr)
 	bool was_active = exchange.active;
 	if (bg_radio_exchange_accept(&exchange, frame, BG_RADIO_FRAME_SIZE)) {
 		atomic_inc(&counters[TX_COMPLETED]);
+		bg_app_gather_done(tag, app_request, BG_APP_STARTED);
+		app_request = 0;
 		LOG_INF("%s tag=T%02u type=%u seq=%u attempt=%u rssi=%d snr=%d",
 			exchange.frame[3] == BG_RADIO_QUERY ? "QUERY complete" :
 				exchange.frame[3] == BG_RADIO_GATHER ? "GATHER confirmed" : "ACK",
@@ -130,6 +173,7 @@ static void dispatch(uint8_t *frame, int16_t rssi, int8_t snr)
 				tag, type, seq, rssi, snr, bg_motion_name(frame[8]));
 			if (type == BG_RADIO_SOS) {
 				LOG_WRN("ACTION: counselor check tag T%02u, SOS received", tag);
+				bg_app_sos(tag);
 			}
 		} else {
 			atomic_inc(&counters[RX_DUPLICATES]);
@@ -138,6 +182,9 @@ static void dispatch(uint8_t *frame, int16_t rssi, int8_t snr)
 	} else if (!IS_ENABLED(CONFIG_BUDDYGUARD_COUNSELOR) &&
 		type == BG_RADIO_GATHER && tag == CONFIG_BUDDYGUARD_TAG_ID) {
 		receive_gather(frame, seq);
+	} else if (IS_ENABLED(CONFIG_BUDDYGUARD_TAG_POSITION) &&
+		   type == BG_RADIO_LOCATE && tag == CONFIG_BUDDYGUARD_TAG_ID) {
+		respond_position(seq);
 	} else if (!IS_ENABLED(CONFIG_BUDDYGUARD_COUNSELOR) &&
 		type == BG_RADIO_QUERY && tag == CONFIG_BUDDYGUARD_TAG_ID) {
 		atomic_inc(&counters[QUERIES_RECEIVED]);
@@ -165,13 +212,24 @@ static void worker(void *a, void *b, void *c)
 		next_sequence = (uint16_t)sys_rand32_get();
 	}
 	uint32_t next_status = (uint32_t)k_uptime_get() + 3000;
+	uint8_t locate_mask = 0;
 	for (;;) {
 		uint32_t now = (uint32_t)k_uptime_get();
-		uint8_t frame[BG_RADIO_FRAME_SIZE];
+		uint8_t frame[BG_POSITION_FRAME_SIZE];
 		struct request req;
 		if (!exchange.active) {
-			if (k_msgq_get(&requests, &req, K_NO_WAIT) == 0) {
+			bool has_request = !locate_mask && k_msgq_get(&requests, &req, K_NO_WAIT) == 0;
+			if (has_request && req.type == BG_RADIO_LOCATE) {
+				locate_mask = req.tag;
+			}
+			if (locate_mask) {
+				uint8_t tag = find_lsb_set(locate_mask) - 1;
+				locate_mask &= ~BIT(tag);
+				make_frame(frame, BG_RADIO_LOCATE, tag, ++next_sequence);
+				begin(frame, now);
+			} else if (has_request) {
 				make_frame(frame, req.type, req.tag, ++next_sequence);
+				app_request = req.app_request;
 				begin(frame, now);
 			} else if (reply_pending) {
 				make_frame(frame, BG_RADIO_REPLY, CONFIG_BUDDYGUARD_TAG_ID, reply_sequence);
@@ -193,6 +251,8 @@ static void worker(void *a, void *b, void *c)
 		int size = bg_radio_driver_receive(frame, K_MSEC(200), &rssi, &snr);
 		if (size >= 0 && bg_radio_frame_valid(frame, (size_t)size)) {
 			dispatch(frame, rssi, snr);
+		} else if (size == BG_POSITION_FRAME_SIZE && IS_ENABLED(CONFIG_BUDDYGUARD_APP_BLE)) {
+			receive_position(frame, size);
 		}
 	}
 }
@@ -208,9 +268,9 @@ int bg_radio_init(void)
 	return rc;
 }
 
-static int enqueue(uint8_t type, uint8_t tag)
+static int enqueue(uint8_t type, uint8_t tag, uint32_t request_id)
 {
-	struct request req = {.type = type, .tag = tag};
+	struct request req = {.app_request = request_id, .type = type, .tag = tag};
 	int rc = k_msgq_put(&requests, &req, K_NO_WAIT);
 	if (rc) {
 		atomic_inc(&counters[QUEUE_DROPS]);
@@ -222,25 +282,39 @@ static int enqueue(uint8_t type, uint8_t tag)
 int bg_radio_sos(void)
 {
 	return IS_ENABLED(CONFIG_BUDDYGUARD_COUNSELOR) ? -EINVAL :
-		enqueue(BG_RADIO_SOS, CONFIG_BUDDYGUARD_TAG_ID);
+		enqueue(BG_RADIO_SOS, CONFIG_BUDDYGUARD_TAG_ID, 0);
 }
 
-static int enqueue_counselor_request(uint8_t type, uint8_t tag)
+static int enqueue_counselor_request(uint8_t type, uint8_t tag, uint32_t request)
 {
 	if (!IS_ENABLED(CONFIG_BUDDYGUARD_COUNSELOR) || tag == 0 || tag > BG_MAX_TAGS) {
 		return -EINVAL;
 	}
-	return enqueue(type, tag);
+	return enqueue(type, tag, request);
 }
 
 int bg_radio_query(uint8_t tag)
 {
-	return enqueue_counselor_request(BG_RADIO_QUERY, tag);
+	return enqueue_counselor_request(BG_RADIO_QUERY, tag, 0);
 }
 
 int bg_radio_gather(uint8_t tag)
 {
-	return enqueue_counselor_request(BG_RADIO_GATHER, tag);
+	return enqueue_counselor_request(BG_RADIO_GATHER, tag, 0);
+}
+
+int bg_radio_gather_for_app(uint8_t tag, uint32_t request)
+{
+	return enqueue_counselor_request(BG_RADIO_GATHER, tag, request);
+}
+
+int bg_radio_locate_group(void)
+{
+	uint32_t tags = bg_roster_known_mask();
+	if (!IS_ENABLED(CONFIG_BUDDYGUARD_COUNSELOR) || !tags) {
+		return -ENOENT;
+	}
+	return enqueue(BG_RADIO_LOCATE, (uint8_t)tags, 0);
 }
 
 struct bg_radio_stats bg_radio_get_stats(void)

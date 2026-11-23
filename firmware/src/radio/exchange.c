@@ -3,6 +3,7 @@
  * 只管理一个待完成事务的期限、有限重试及应答匹配，不执行收发。
  */
 #include <string.h>
+#include <zephyr/sys/byteorder.h>
 #include "radio_exchange.h"
 
 void bg_radio_exchange_start(struct bg_radio_exchange *e,
@@ -46,7 +47,8 @@ void bg_radio_exchange_sent(struct bg_radio_exchange *e, uint32_t now)
 bool bg_radio_exchange_accept(struct bg_radio_exchange *e,
 	const uint8_t *frame, size_t size)
 {
-	if (!e->active || !e->attempts || !bg_radio_frame_valid(frame, size) ||
+	if (!e->active || !e->attempts || e->frame[3] == BG_RADIO_LOCATE ||
+		!bg_radio_frame_valid(frame, size) ||
 		frame[4] != e->frame[4] || frame[6] != e->frame[6] ||
 		frame[7] != e->frame[7]) {
 		return false;
@@ -59,6 +61,17 @@ bool bg_radio_exchange_accept(struct bg_radio_exchange *e,
 	 * pre-existing packets whose older peers may use an untyped ACK. */
 	if (expected == BG_RADIO_ACK && frame[5] != e->frame[3] &&
 		(frame[5] != 0 || e->frame[3] == BG_RADIO_GATHER)) {
+		return false;
+	}
+	e->active = false;
+	return true;
+}
+
+bool bg_radio_exchange_accept_position(struct bg_radio_exchange *e,
+	const struct bg_position_frame *position)
+{
+	if (!e->active || !e->attempts || e->frame[3] != BG_RADIO_LOCATE ||
+	    e->frame[4] != position->tag || sys_get_le16(e->frame + 6) != position->sequence) {
 		return false;
 	}
 	e->active = false;
