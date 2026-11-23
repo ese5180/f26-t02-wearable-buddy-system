@@ -53,11 +53,44 @@ Send the alert promptly while obtaining location. When a fresh fix or LoRa reply
 
 ### Next steps / 后续工作
 
-1. **Build and test IMU fall detection.** With the IMU fixed in the enclosure, evaluate whether an impact followed by a posture change or a short period of low motion can separate a possible fall from an ordinary knock. Use controlled simulations and ordinary walking, running, putting the tag down and motor vibration as comparison cases. Verify that one simulated fall raises one **Possible fall** alert on the Web UI and that the manual SOS remains usable. / IMU 固定在外壳后，用撞击、姿态变化和随后动静做判断。用模拟跌倒和日常动作测漏报、误报。验收时网页收到一次「疑似摔倒」，实体 SOS 照常可用。
-2. **Run the one-counselor, three-tag test.** Provision T02 and T03 with distinct IDs. Verify that C01 shows all three routine check-ins, detects and recovers one missing tag, and receives one location per tag with a fresh fix after one roll call. Repeat with one tag offline and one without a GPS fix. Check that the other tags still update. / 配好 T02、T03，验收三标签签到、单标签失联与恢复、一次点名多标签定位，以及某个标签掉线或无定位时其余标签仍能更新。
-3. **Connect location and C01 vibration to alerts.** Add position reporting for possible falls and manual SOS, and request a position for a missing BLE check-in. Reuse the DRV2605L haptics driver for C01 and verify one local vibration per new alert, including with the Web client disconnected. Show pending, no-fix and no-reply states in the Web UI, and test reconnect and re-sync. / 把定位接到疑似摔倒、手动 SOS 和丢签到。C01 复用 DRV2605L 驱动，验收每个新告警短振一次，并测网页断线时的本地提醒。网页显示等待、无定位和无回包，并测试重连。
-4. **Validate the assembled wearable and signed updates.** Repeat GPS cold starts and outdoor walks with the enclosure, antenna and battery installed. Verify C01's signed BLE update workflow with the new GATT service and pairing settings. / 装壳和装电池后复测 GPS 冷启动与户外定位，并回归新版 C01 的 BLE 签名更新。
-5. **Prepare location handling for a pilot.** Authenticate and encrypt location messages over LoRa and define enrollment and retention. / 营地试点前补齐 LoRa 位置消息认证、加密、设备登记和位置保留规则。
+The work below is pending. Prepare T02 and T03 in parallel with the enclosed IMU tests. Fix alert delivery and check-in timing before enabling the C01 motor. / 以下为待做项。摔倒台架测试和 T02、T03 的准备可并行，启用 C01 马达前先补齐告警送达和丢签到判断。
+
+#### 1. Alert delivery and check-in / 告警送达与签到
+
+- **SOS identity and priority.** Tags can reuse a LoRa sequence after reboot, and C01's current duplicate check uses tag, type and sequence. Add a tag boot/session ID and keep the same event ID across retransmissions. C01 should ACK retries and record each new alert once. Prioritize manual SOS and possible-fall messages ahead of routine status and queued position requests. / 给告警加入标签开机标识和事件序号，重发沿用同一个编号。C01 对重发继续回 ACK，只登记一次。手动 SOS 和疑似摔倒优先于普通状态和排队中的定位请求。[Radio dispatch](firmware/src/radio/link.c) · [Deduplication](firmware/src/radio/history.c)
+- **Check-in timing.** Use a timestamp read after the heartbeat snapshot or a wrap-safe time comparison so a heartbeat received during polling cannot appear overdue. Report the first missing transition once. A new BLE heartbeat marks the tag recovered. A LoRa reply reports separate reachability and can supply a position. / 修正心跳时间差，防止刚收到的心跳被判成超时。首次丢签到只报一次，新 BLE 心跳标记恢复。LoRa 回包单独显示可达，并可补位置。[Roster](firmware/src/roster/roster.c)
+- **Maintenance state.** The current build uses an 8 s ordinary timeout and a 600 s grace period based on the last maintenance heartbeat. Show maintenance separately on the Web and test the expiry and return to normal check-ins. / 当前普通超时 8 秒，最后收到维护心跳时宽限 600 秒。网页明确显示维护，并测宽限到期和恢复普通签到。[Timeout configuration](firmware/Kconfig)
+
+#### 2. Fall, local vibration and location / 摔倒、振动与定位
+
+- **Possible fall.** Secure the IMU in its enclosure. Evaluate an impact followed by a posture change or a short period of low motion. Give the event its own cause so C01 and the Web can distinguish it from manual SOS. Compare controlled fall simulations with walking, running, putting the device down and motor vibration. Record misses and false alerts. / 固定 IMU 后用撞击、姿态变化和随后动静判断疑似摔倒，单独上报原因。用受控模拟和日常动作测漏报、误报。[IMU](firmware/src/sensors/imu.c) · [Motion logic](firmware/src/sensors/motion.c)
+- **C01 haptics.** Enable the DRV2605L motor on C01 and route new SOS, possible-fall and missing events to a local vibration queue. Keep alerts moving while the motor is busy and give urgent alerts priority. Repeated packets and the same ongoing missing state share one pulse. / C01 启用 DRV2605L，三个告警走本地振动队列。马达忙时保留新告警，紧急告警优先。重发和持续失联只振一次。[Haptics driver](firmware/src/actuators/haptics.c)
+- **Send the alert first, then update its location.** Connect GPS reporting to the three alert paths above and keep the existing one-shot Web roll call. Associate each location result with the original tag and alert or roll-call round. Carry the sampling time or fix age through retries. / 手动 SOS、疑似摔倒和丢签到先发告警，再补位置。保留现有的一次点名一次回传。定位结果带对应的标签、告警或点名编号，以及采样时间或定位年龄。[Web roll call](docs/WEB_ROLL_CALL.md)
+
+#### 3. Web alert handling / 网页告警处理
+
+- Show tag, event type and event time. Track **Received**, **Seen by counselor**, and **Resolved** separately. A recovered heartbeat clears the missing state. Manual SOS and possible-fall alerts stay open until a counselor resolves them. / 显示标签、事件类型和时间。区分 C01 已收到、辅导员已查看和已处理。心跳恢复可清除失联状态，SOS 和疑似摔倒由辅导员处理后关闭。
+- Show **Waiting**, **Fresh fix**, **No fix** (the tag answered without a valid position), or **No reply** (the LoRa request timed out). Keep the last known position and its age visible. / 定位明确显示等待、有效定位、已回包但无定位、超时未回包。保留上次有效位置和时间。
+- Keep C01 local alerts working during a Web disconnect. On reconnect, sync open alerts and the latest tag positions without duplicating alerts. The current history is in RAM. Define how unresolved alerts are restored after a C01 restart, and expose any history gap to the counselor. / 网页断线时 C01 仍提醒，重连补回未处理告警和最新有效位置，避免重复弹报。当前记录在 RAM，需要补 C01 重启后未处理告警的恢复和历史缺失提示。[BLE sync](firmware/src/ble/app_ble.c)
+
+#### 4. One C01 + three tags / 三标签验收
+
+Provision T01, T02 and T03 with distinct IDs. Run the following cases against the same C01 and record the result and alert delay. / 使用三个不同标签 ID，在同一台 C01 上逐项实测并记录结果和告警延迟。
+
+| Scenario / 场景 | Pass condition / 通过条件 |
+| --- | --- |
+| Normal check-ins and roll call / 正常签到并点名 | All three tags appear online. One click returns one position per tag with a fresh fix. / 三枚都在线，有有效定位的标签各更新一次。 |
+| One tag loses BLE, then returns / 单标签丢签到再恢复 | C01 alerts once and requests that tag's position. A new BLE heartbeat clears its missing state. The other two tags remain active. / C01 提醒一次并查对应位置，心跳回来后恢复，其余标签照常。 |
+| One tag has no fix, or one gives no reply / 一枚无定位或无回包 | The Web distinguishes the two outcomes and preserves the old location time. The other tags still update. / 网页区分两种结果，保留旧定位时间，其余标签继续更新。 |
+| SOS during a roll call, plus a second tag alert while C01 vibrates / 点名途中 SOS，振动时另一枚报警 | SOS is shown promptly. Both new alerts are recorded and handled without duplicate pulses or a lost alert. / SOS 及时显示，两条新告警都记录和提醒，重发不重复振。 |
+| Retry and tag reboot / 重发与标签重启 | A retry creates one alert in total. An SOS immediately after a tag reboot creates a new alert. / 同一事件重发只告警一次，标签重启后发出的新 SOS 单独告警。 |
+| Web disconnect and C01 restart / 网页断开与 C01 重启 | C01 alerts locally while offline. On reconnect, the Web shows the unresolved alerts and positions, or explicitly reports a history gap after restart. / 断线仍有本地提醒，重连恢复未处理告警和位置。重启后若历史缺失要明确显示。 |
+| Maintenance or brief packet loss / 维护或短时丢包 | Maintenance is visible, expiry restores normal timeout behavior, and valid recent heartbeats avoid a false missing alert. / 维护状态可见，到期恢复普通超时，近期有效心跳不会误报失联。 |
+
+#### 5. Before a camp pilot / 试点前检查
+
+- Repeat GPS cold starts and outdoor walks with the enclosure, antenna and battery installed. Verify C01's signed BLE update workflow with the Web service and pairing settings. / 装壳和电池后复测 GPS 冷启动、户外定位及新版 C01 的 BLE 签名更新。
+- Assign each C01 an explicit tag roster. Authenticate and encrypt LoRa location messages, and define who can view locations and how long they are retained. / 每台 C01 按明确的组名单接收标签，给 LoRa 位置消息加认证和加密，明确查看权限及位置保留时间。
 
 ## 3.6 Fleet Management submission
 
