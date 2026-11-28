@@ -57,7 +57,7 @@ Complete the [3.11 MVP checkoff checklist](docs/MVP_CHECKOFF.md) before marking 
 
 - Provision T02 and T03, run the 30-minute three-tag offline test, and verify LoRa when a tag stops checking in or two tags send SOS during roll call. / 完成三标签离线联测，覆盖丢签到和双标签并发 SOS。
 - Add a distinct possible-fall alert, C01 haptics and incident GPS. Verify no-fix handling and browser disconnect/reconnect. / 补独立摔倒告警、辅导员短振和事件定位，复测无定位及网页重连。
-- Verify the final C01 BLE OTA and Memfault flow. Publish the matching firmware, Web entry point and README, then submit the README PDF to Gradescope before checkoff. / 复测 OTA 与云端，更新 GitHub 后从同一版 README 导出 PDF 提交。
+- Verify signed Wi-Fi OTA through Memfault at base. Disconnect the Web BLE session before updating C01, then reconnect after confirmation. Publish the matching firmware, Web entry point and README, then submit the README PDF to Gradescope. / 基地通过 Memfault 做 Wi-Fi 签名更新。C01 更新前断开网页 BLE，确认新版本后重新连接。更新 GitHub 后从同一版 README 导出 PDF 提交。
 
 ## 3.6 Fleet Management submission
 
@@ -77,12 +77,12 @@ Follow [Getting started](docs/en/GETTING_STARTED.md) or [中文复现](docs/zh/G
 
 | Build profile | What it enables |
 | --- | --- |
-| `--role tag` / `--role counselor` | BLE presence and signed BLE SMP updates, LoRa P2P and role-specific application behavior |
+| `--role tag` / `--role counselor` | BLE presence, LoRa P2P and role-specific application behavior |
 | `--imu` | Optional LSM6DSO on a tag, with impact → automatic SOS |
 | `--gnss` | L76K receive and GPS fix status on either role |
 | `--tag-position` | Tag only, with `--gnss`. Replies to LoRa roll-call requests with a recent GPS fix |
 | `--haptics` | Tag only. Enables the DRV2605L vibration driver for GATHER |
-| `--wifi` | Memfault diagnostics and signed HTTPS OTA |
+| `--wifi` | MVP update profile for both roles. Enables Memfault diagnostics and signed Wi-Fi OTA at base |
 | `--fleet` | Memfault diagnostics with a USB host gateway when used without `--wifi` |
 | `--serial-recovery` | Optional MCUboot recovery over UART |
 | `--low-power` | Closed-loop low-power profile: 80 MHz CPU |

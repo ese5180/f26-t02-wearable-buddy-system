@@ -4,7 +4,7 @@ Team 02 · Jet2Holiday · BuddyGuard
 
 **当前基线。** C01 + T01 已运行签名固件 `1.6.16`，两端均报告 `confirmed=1`。已有单标签签到、LoRa 失联查询、按键 SOS、集合短振、户外定位、网页点名和 C01 Memfault 上传的记录。强撞击当前触发 SOS。三标签联测、独立疑似摔倒、告警定位联动和 C01 告警振动待完成。 [实测记录](VALIDATION.md) · [接线、构建和复现](MVP_HARDWARE.md)
 
-**本轮验收。** 老师默认要求至少两台设备。团队的 SRS 01 另外要求 C01 同时监控三枚标签，因此准备 C01 + T01/T02/T03 四台。现场保留 BLE 签到、LoRa P2P 星型通信和 C01 到 Web 的 BLE 连接。基地 Wi-Fi 用于设备诊断和更新。 [课程 3.11](https://docs.google.com/document/d/1gKqiMN2WEVwAf0uwNyS8Gh1MBPQqg_3FwDCZpiu_ctY/edit?tab=t.0#heading=h.uh1r3r3u4myw) · [HRS/SRS/SEC](CONCEPT.md#security-requirements-specification)
+**本轮验收。** 老师默认要求至少两台设备。团队的 SRS 01 另外要求 C01 同时监控三枚标签，因此准备 C01 + T01/T02/T03 四台。现场保留 BLE 签到、LoRa P2P 星型通信和 C01 到 Web 的 BLE 连接。基地通过 Wi-Fi／HTTPS 连接 Memfault，完成诊断和签名 OTA。 [课程 3.11](https://docs.google.com/document/d/1gKqiMN2WEVwAf0uwNyS8Gh1MBPQqg_3FwDCZpiu_ctY/edit?tab=t.0#heading=h.uh1r3r3u4myw) · [HRS/SRS/SEC](CONCEPT.md#security-requirements-specification)
 
 ## 1. Implementation · 实现顺序
 
@@ -18,7 +18,7 @@ Team 02 · Jet2Holiday · BuddyGuard
 | GNSS · 四种定位触发 | 网页点名每轮每枚标签请求一次。在 SOS 和疑似摔倒时先发告警，再发送可用位置或无定位结果。签到超时后 C01 先显示 Missing，再用 LoRa 查询状态和位置。用标签 ID 加事件或点名编号关联结果，携带采样时间或定位年龄。重试沿用原采样时间。 |
 | C01 haptics · 本地振动 | 新的 SOS、疑似摔倒及首次 Missing 各短振一次。马达异步排队，忙时保留后续告警。同一事件重传只补 ACK，持续失联沿用首次告警。Web 断开或 GPS 等待期间仍可本地提醒。 |
 | Web · 告警、位置与重连 | 显示标签 ID、事件类型、事件时间及 Received / Seen / Resolved。恢复签到只关闭 Missing，SOS 和疑似摔倒由辅导员处理。逐枚显示 Waiting / Fresh fix / Stale fix / No fix / No reply，保留上次有效位置的采样时间。重连同步开放告警和位置，按事件 ID 去重。C01 重启后恢复可用记录，无法恢复时明确提示历史缺口。补可访问的 Web 入口、源码链接和测试版本。 |
-| Fleet and OTA · 回归 | 在基地用最终 C01 构建验证 Memfault 版本与诊断上报，并用演示用 BLE 配对配置跑完签名上传、试启动和确认。核对 Web BLE 在更新后能重新连接。用指定测试板验证签名正确但健康检查失败的镜像会回滚。记录坏签名、损坏和中断测试对应的固件版本，区分既有证据和本轮复测。 |
+| Fleet and OTA · 回归 | 四台都用 `--wifi` 构建并在基地登记。由 Memfault 向指定设备发签名镜像，核对下载、MCUboot 试启动、版本和 `confirmed=1`。标签 ID 写在镜像里，按设备分发。C01 更新前断开 Web BLE，更新后复测网页连接。用指定测试板验证签名正确但健康检查失败的镜像会回滚。记录过往和本轮失败测试各自的版本及传输方式。 |
 
 代码入口见[固件源文件索引](../firmware/README.md)。网页和固件先对齐[现有 Web 点名接口](WEB_ROLL_CALL.md)，再同步新事件及状态字段。
 
@@ -31,7 +31,7 @@ Team 02 · Jet2Holiday · BuddyGuard
 - [ ] **四种定位触发（SRS 04）。** 分别触发 SOS、疑似摔倒、丢签到和网页点名，核对位置与事件对应。覆盖有定位、过期定位、已回包但无定位、完全无回包。SOS 先于定位到达。一次点名每枚标签最多更新一次，一枚失败时其余标签仍能完成。
 - [ ] **LoRa 并发与重发。** 点名途中让两枚标签同时发 SOS，另测 C01 振动中收到下一条告警。两条告警都要在 Web 可见，分别记录送达时间和尝试次数。同一事件重试只登记和振动一次，标签重启后的新 SOS 仍能独立登记。
 - [ ] **Web 断线和 C01 重启。** 断开网页后触发告警，确认 C01 本地短振。重连后检查开放告警和最近位置同步。另测 C01 重启，核对记录恢复或历史缺口提示。
-- [ ] **Fleet、OTA 和回滚（SRS 05、SEC 01）。** 在 Memfault 核对设备 ID、运行版本和诊断报告。在最终演示配置上完成签名更新、试启动和确认，验证未确认的故障镜像回滚。按版本留存坏签名、损坏或中断结果及各自的恢复行为。
+- [ ] **Fleet、OTA 和回滚（SRS 05、SEC 01）。** 在 Memfault 核对四台的设备 ID、运行版本和诊断报告。用最终演示配置完成签名 Wi-Fi 下载、试启动和确认，检查更新后标签 ID 未变。验证未确认的故障镜像回滚。按版本留存坏签名、损坏或中断结果及各自的恢复行为。 [Wi-Fi OTA 操作](MVP_HARDWARE.md#wi-fi-ota--基地更新)
 
 每条结果填入 [VALIDATION.md](VALIDATION.md)，记录日期、固件提交和版本、Web 版本、设备 ID、测试条件、预期、实测结果及日志或截图。测试用标签 ID。对外分享定位日志时使用测试坐标或去掉精确位置，凭据和私钥留在本地。
 
@@ -45,5 +45,5 @@ Team 02 · Jet2Holiday · BuddyGuard
 
 - [ ] **GitHub。** 确认老师打开的提交链接指向最终固件、Web 版本和 README。若课程链接指向 `main`，先把最终提交纳入该分支。README 写明演示设备、构建与运行入口、验证结果和已知缺项。
 - [ ] **Gradescope。** 用同一个 GitHub 提交的根 README 导出 PDF，检查表格、链接和字体后上传。GitHub 和 Gradescope 都提交后再约 teaching-team checkoff。
-- [ ] **现场顺序。** 核对设备版本 → 看三标签签到 → SOS 与 C01 振动 → 模拟疑似摔倒 → C01 集合、标签振动 → 网页点名与地图更新时间 → 丢签到、LoRa 查询与恢复 → Memfault 和 OTA 验证。室内演示定位前先确认有效 fix。
+- [ ] **现场顺序。** 核对设备版本 → 看三标签签到 → SOS 与 C01 振动 → 模拟疑似摔倒 → C01 集合、标签振动 → 网页点名与地图更新时间 → 丢签到、LoRa 查询与恢复 → Memfault 和 Wi-Fi OTA 验证。室内演示定位前先确认有效 fix。
 - [ ] **无 AI 讲解。** 团队各自能讲清 BLE/LoRa/Wi-Fi 分工、签名和无线数据保护现状、MCUboot 内存图与失败回滚、用实测推翻或确认一次 Closed Loop 改动、Memfault 设备诊断、数据收集目的和频率。说明坐标走本地 LoRa → BLE，基地 Wi-Fi 用于诊断及更新。 [Firmware security](en/FIRMWARE_SECURITY_CHECKOFF.md) · [Closed Loop](closed-loop/README.md) · [Fleet](en/FLEET_MANAGEMENT.md)

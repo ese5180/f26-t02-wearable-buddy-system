@@ -7,11 +7,11 @@ Team 02 · Jet2Holiday · XIAO ESP32S3 + Wio-SX1262 B2B
 | Device / 设备 | Verified / 已验证 | Open / 待验证 |
 | --- | --- | --- |
 | T01, `1.6.16` | L76K acquired an outdoor fix and T01 replied to one LoRa location request with a valid position. LSM6DSO motion, button SOS and GATHER short vibration were verified on the bench. / 实测户外定位、点名坐标回传、IMU 动静状态、按键 SOS 和集合短振。 | Repeat GPS cold starts and test the enclosed, battery-powered tag. / 复测 GPS 冷启动、装壳和电池供电。 |
-| C01, `1.6.16` | GATT `SYNC`, one-tag LoRa roll call and forwarding `TAG_POSITION` to the live Web client were verified. C01 also reported its own GPS fix and uploaded telemetry to Memfault. / 实测 BLE 同步、单标签点名、网页位置更新、C01 自身定位和云端遥测。 | Three-tag roll call and signed BLE update regression with this GATT build. / 三标签联测及新版 C01 的 BLE 签名更新回归。 |
+| C01, `1.6.16` | GATT `SYNC`, one-tag LoRa roll call and forwarding `TAG_POSITION` to the live Web client were verified. C01 also reported its own GPS fix and uploaded telemetry to Memfault. / 实测 BLE 同步、单标签点名、网页位置更新、C01 自身定位和云端遥测。 | Three-tag roll call and signed Wi-Fi OTA regression on the final build. / 三标签联测及最终固件的 Wi-Fi 签名更新回归。 |
 
-Tags broadcast BLE presence. SOS, queries, GATHER and on-demand GPS use LoRa P2P. The browser sends commands and receives events over a direct BLE connection to C01. C01 Wi-Fi handles fleet management at base. See the [Web roll-call contract](WEB_ROLL_CALL.md).
+Tags broadcast BLE presence. SOS, queries, GATHER and on-demand GPS use LoRa P2P. The browser sends commands and receives events over a direct BLE connection to C01. Both roles use Wi-Fi at base for Memfault diagnostics and signed OTA. See the [Web roll-call contract](WEB_ROLL_CALL.md).
 
-标签用 BLE 广播心跳。SOS、状态查询、集合和点名位置走 LoRa。网页直接通过 BLE 与 C01 收发，C01 的 Wi-Fi 用于设备管理。
+标签用 BLE 广播心跳。SOS、状态查询、集合和点名位置走 LoRa。网页直接通过 BLE 与 C01 收发，两种设备都在基地用 Wi-Fi 做设备管理和签名 OTA。
 
 ## Wiring / 硬件接线
 
@@ -27,25 +27,25 @@ GPIO21 is assigned to the button in this build. If using MCUboot UART recovery, 
 
 Use the `codex/mvp-firmware-handoff` branch. Follow the [English setup guide](en/GETTING_STARTED.md) or [中文环境指南](zh/GETTING_STARTED.md) for the pinned Zephyr workspace and host tools. When cloning for the first time, select this branch before running `west init`. Set `BG_WS` to the West workspace and `BG_KEY` to the key it can read outside the repository. Team boards require the existing signing identity or pre-signed artifacts from the team.
 
-先切到交接分支，再按指南安装依赖。已有 Team 02 板子用现有签名身份构建，也可以请队友通过私有渠道提供对应的签名镜像。保留签名私钥在仓库外。以下版本号用于复现实机基线，后续候选镜像使用新版本号。
+先切到交接分支，再按指南安装依赖。已有 Team 02 板子用现有签名身份构建，也可以请队友通过私有渠道提供对应的签名镜像。保留签名私钥在仓库外。先把 `BG_T01_VERSION` 和 `BG_C01_VERSION` 设成准备发布的新版本号。
 
 ```sh
 git switch codex/mvp-firmware-handoff
 
 "$BG_WS/.venv/bin/python" scripts/build.py --workspace "$BG_WS" --key "$BG_KEY" \
   --build-dir "$BG_WS/build-bg-tag1-rollcall" --role tag --tag-id 1 \
-  --imu --low-power --gnss --haptics --tag-position --version 1.6.16
+  --imu --low-power --gnss --haptics --tag-position --wifi --version "$BG_T01_VERSION"
 
 "$BG_WS/.venv/bin/python" scripts/build.py --workspace "$BG_WS" --key "$BG_KEY" \
   --build-dir "$BG_WS/build-bg-counselor-rollcall" --role counselor \
-  --gnss --wifi --version 1.6.16
+  --gnss --wifi --version "$BG_C01_VERSION"
 
 .venv/bin/python -m serial.tools.list_ports -v
 ```
 
-Use each build's `firmware/zephyr/zephyr.signed.bin` with the [signed BLE update procedure](en/GETTING_STARTED.md#8-signed-update-over-ble). Use separate build directories and IDs `2` or `3` for extra tags. Set `TAG_PORT` and `COUNSELOR_PORT` to the detected ports. If a board is still in ROM download mode, tap the XIAO **R** button with **B** released to return to the installed image.
+Use separate build directories and IDs `2` and `3` for T02 and T03. Set `TAG_PORT` and `COUNSELOR_PORT` to the detected ports. Use the [USB provisioning procedure](en/GETTING_STARTED.md#6-first-usb-provisioning--new-boards-only) for a new board. The historical T01 MVP build omitted `--wifi`. A board still on that build needs a Wi-Fi-enabled signed baseline installed and verified before its first cloud update. Back up the board before any USB re-provisioning.
 
-按[中文 BLE 更新流程](zh/GETTING_STARTED.md)给已装 MCUboot 的板子升级。T02、T03 使用独立构建目录和各自 ID。把两个串口变量设为本机识别到的端口。若 T01 停在原厂下载模式，松开 **B** 并按一下 **R**，即可回到已安装固件。
+T02、T03 使用独立构建目录和各自 ID。新板先经 USB 安装签名基线。若标签仍在未启用 Wi-Fi 的旧构建，先备份并装好带 `--wifi` 的签名基线，再配置无线网络和 Memfault。已有可用 Wi-Fi 基线的板可直接走下面的云端更新流程。
 
 1. **Identify / 识别。** Run `bg status` on each board. Check role, tag ID, version and `confirmed=1`. On T01, run `bg imu` and `bg vibrate`; observe motion and feel the pulse. / 两端先核对身份，再单测 IMU 和马达。
 2. **SOS / 求助。** Wait for C01 to see T01's BLE heartbeat. Monitor both USB consoles and hold the tag's Wio USER button for about 1.5 s. Look for `USER SOS queue result=0` on T01 and `SOS received` on C01. / 先确认 C01 收到 T01 心跳，再长按学生端 USER，观察两个日志。
@@ -62,6 +62,13 @@ Use each build's `firmware/zephyr/zephyr.signed.bin` with the [signed BLE update
 # Roll call, with the counselor serial monitor closed:
 .venv/bin/python tools/bg_serial.py --port "$COUNSELOR_PORT" command bg locate
 ```
+
+## Wi-Fi OTA / 基地更新
+
+1. **Provision / 配置。** Verify `bg status` reports the intended device and `confirmed=1`. Configure each device's 2.4 GHz Wi-Fi and Memfault access with the [Fleet provisioning guide](en/FLEET_MANAGEMENT.md#2-install-and-provision) or [中文配置指南](zh/FLEET_MANAGEMENT.md). / 先核对设备和确认状态，再在基地为每台配置 Wi-Fi 和 Memfault。
+2. **Target / 定向发布。** Upload the role's `firmware/zephyr/zephyr.signed.bin` and matching ELF to Memfault. Tag IDs are compiled into the images. Give each tag image a distinct release version and target only the matching device using its cohort. / 标签 ID 写在镜像里，每枚标签使用独立发布版本和对应 cohort，避免更新后多枚标签变成同一个 ID。
+3. **Install / 更新。** For C01, disconnect the Web BLE session before requesting `bg_wifi check`. The current firmware defers the download while a BLE client is connected. Wait for Wi-Fi OTA progress and reboot. / C01 先断开网页 BLE，再用 `bg_wifi check` 触发检查，看下载进度和重启。
+4. **Verify / 验证。** Check the new version, device ID and `confirmed=1` via `bg status` and check the updated version in Memfault. Reconnect the Web client on C01 after confirmation. / 核对新版、设备 ID 与确认状态，再连回网页。
 
 ## T01 GPS follow-up / T01 GPS 接手顺序
 
