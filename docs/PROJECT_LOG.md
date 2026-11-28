@@ -18,7 +18,7 @@ This log follows the [IoT Venture manual](https://docs.google.com/document/d/1gK
 | 3.8 Concept Refinement | The [refined concept](CONCEPT.md) covers market, competitors, stakeholder targets, requirements and an audit of the power and cost model. | Written. Diagrams, battery measurements and cost reconciliation are open. |
 | 3.9 Pitch #2 | Use the [eight-tag investor scenario](CONCEPT.md#eight-tag-investor-scenario) for the financial slide. Link the final deck and project overview slide when available. | Scenario documented. Pricing, cost quotes and pitch materials not verified. |
 | 3.10 Stakeholder Meeting | Record stakeholder feedback and resulting design changes. | BuddyGuard meeting notes not verified. |
-| 3.11 MVP Demo | The [Fleet checkoff card](zh/FLEET_CHECKOFF.md) and [wireless setup guide](en/GETTING_STARTED.md) cover the current two-board prototype. | Component demos documented. Integrated MVP checkoff not verified. |
+| 3.11 MVP Demo | [MVP checkoff checklist](MVP_CHECKOFF.md) · [Hardware handoff](MVP_HARDWARE.md) · [Bench validation](VALIDATION.md) | C01 + T01 bench-tested. Three-tag validation, remaining features and submission are open. |
 | 3.12 Demo Day | Rehearse the full product demo and link the final pitch materials. | Demo Day materials not verified. |
 | 3.13 Final Report (Website) | Use this log, the firmware guides and the validation record as sources for the final site. Add the published URL, final video, hardware photos and retrospective. | Website and final report not verified. |
 
